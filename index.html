@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,6 +10,14 @@
         label { margin-right: 10px; }
         input { width: 80px; margin-right: 20px; }
         #result { margin-top: 20px; font-size: 1.2em; color: darkred; }
+        .formula-box {
+            margin-top: 35px;
+            background: #f5f5f5;
+            padding: 18px 20px 8px 20px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            max-width: 700px;
+        }
     </style>
 </head>
 <body>
@@ -31,6 +38,15 @@
 <hr>
 <h3>ICH Probability vs GFAP (Dynamic Curve)</h3>
 <div id="plot"></div>
+
+<div class="formula-box">
+    <h4>Logistic Regression Formula Used:</h4>
+    <b>logit(p) = –9.4520 &nbsp; – &nbsp; 0.0504 × Age &nbsp; + &nbsp; 0.0168 × Systolic BP &nbsp; + &nbsp; 4.8941 × log<sub>10</sub>(GFAP)</b>
+    <br>
+    <span style="font-size:0.96em;">
+        Probability of ICH = <b>1 / [1 + exp(–logit(p))]</b>
+    </span>
+</div>
 
 <script>
 // Logistic regression function using log10(GFAP)
