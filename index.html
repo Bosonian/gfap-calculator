@@ -1,103 +1,919 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>ICH Probability Calculator</title>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 30px; }
-        label { margin-right: 10px; }
-        input { width: 80px; margin-right: 20px; }
-        #result { margin-top: 20px; font-size: 1.2em; color: darkred; }
-        .formula-box {
-            margin-top: 35px;
-            background: #f5f5f5;
-            padding: 18px 20px 8px 20px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            max-width: 700px;
+<html lang="en"> <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>iGFAP Check</title>
+  <style>
+    :root {
+      --primary-color: #007bff;
+      --primary-hover: #0056b3;
+      --secondary-color: #dc3545;
+      --secondary-hover: #b52b3a;
+      --background-color: #f8f9fa;
+      --text-color: #333;
+      --warning-text-color: #856404;
+      --warning-bg-color: #fff3cd;
+      --warning-border-color: #ffeeba;
+      --loading-spinner-color: var(--primary-color);
+    }
+
+    body.dark-mode {
+      --primary-color: #3399ff;
+      --primary-hover: #287ac7;
+      --secondary-color: #e06666;
+      --secondary-hover: #cc5252;
+      --background-color: #333;
+      --text-color: #f8f9fa;
+      --warning-text-color: #ffeeba;
+      --warning-bg-color: #533f03;
+      --warning-border-color: #856404;
+      --loading-spinner-color: var(--primary-color);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box; /* Global box-sizing */
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--background-color);
+      color: var(--text-color);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 70px auto 20px auto;
+      padding: 20px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: background-color 0.3s ease;
+    }
+
+    body.dark-mode .container {
+      background-color: #444;
+    }
+
+    .input-group, .checkbox-group {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+    }
+    .checkbox-group input[type="checkbox"] {
+      margin-right: 8px;
+    }
+
+    .input-group input[type="number"],
+    .input-group input[type="password"] {
+      width: 100%; /* Simplified due to box-sizing: border-box */
+      padding: 12px;
+      font-size: 18px;
+      border: 2px solid var(--primary-color);
+      border-radius: 5px;
+      background-color: var(--background-color); /* Match body bg for inputs */
+      color: var(--text-color); /* Match body text for inputs */
+    }
+    body.dark-mode .input-group input[type="number"],
+    body.dark-mode .input-group input[type="password"] {
+        background-color: #555;
+        color: var(--text-color);
+        border-color: var(--primary-color);
+    }
+
+    .input-group input::placeholder {
+        color: #aaa; /* Default placeholder color */
+    }
+
+    body.dark-mode .input-group input::placeholder {
+        color: #888; /* Dark mode placeholder color */
+    }
+
+
+    button {
+      padding: 12px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+      width: 100%;
+      font-weight: bold;
+      position: relative; /* For loading spinner */
+    }
+    button.loading::after {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+        border: 4px solid transparent;
+        border-top-color: var(--loading-spinner-color);
+        border-right-color: var(--loading-spinner-color);
+        border-radius: 50%;
+        animation: button-loading-spinner 1s ease infinite;
+    }
+    button.loading span { /* Hide button text when loading */
+        visibility: hidden;
+    }
+
+    @keyframes button-loading-spinner {
+        from {
+            transform: rotate(0turn);
         }
-    </style>
+        to {
+            transform: rotate(1turn);
+        }
+    }
+
+
+    .primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    .primary:hover {
+      background-color: var(--primary-hover);
+    }
+     body.dark-mode .primary {
+        --loading-spinner-color: #fff; /* White spinner on dark primary buttons */
+    }
+
+
+    .secondary {
+      background-color: var(--secondary-color);
+      color: white;
+    }
+    .secondary:hover {
+      background-color: var(--secondary-hover);
+    }
+    body.dark-mode .secondary {
+        --loading-spinner-color: #fff; /* White spinner on dark secondary buttons */
+    }
+
+
+    .result {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
+      border: 1px solid transparent; /* Base border */
+    }
+
+    .result.warning {
+      color: var(--warning-text-color);
+      background-color: var(--warning-bg-color);
+      border-color: var(--warning-border-color);
+    }
+
+    .low-risk { color: #28a745; }
+    .medium-risk { color: #daa520; } /* Goldenrod, good for light/dark */
+    .red-risk { color: #dc3545; }
+
+    body.dark-mode .low-risk { color: #34d399; } /* Lighter green for dark mode */
+    body.dark-mode .medium-risk { color: #f59e0b; } /* Lighter amber for dark mode */
+    body.dark-mode .red-risk { color: #f87171; } /* Lighter red for dark mode */
+
+
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: var(--primary-color);
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+    }
+    .app-header h1 {
+        font-size: 1.5em;
+        margin: 0;
+    }
+    .header-right {
+        display: flex;
+        align-items: center;
+        gap: 10px; /* Space between buttons */
+    }
+    .header-right button { /* Style header buttons specifically */
+        width: auto; /* Override full width for header buttons */
+        padding: 8px 12px;
+        margin-top: 0; /* No top margin for header buttons */
+    }
+
+
+    .language-switcher img {
+      width: 24px;
+      height: 16px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      vertical-align: middle;
+    }
+    .language-switcher button {
+        background: none;
+        border: none;
+        padding: 5px;
+    }
+
+    .modal {
+      display: none; /* Initially hidden */
+      position: fixed;
+      z-index: 9999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.6);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      align-items: center; /* For centering modal content */
+      justify-content: center; /* For centering modal content */
+    }
+    .modal.show {
+      display: flex; /* Use flex to enable centering */
+      opacity: 1;
+    }
+
+    .modal-content {
+      background-color: #fff;
+      /* margin: 20% auto; Removed for flex centering */
+      padding: 20px;
+      width: 80%;
+      max-width: 400px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    body.dark-mode .modal-content {
+      background-color: #444;
+    }
+
+    #accessError, #prerequisiteError {
+      color: var(--secondary-color); /* Use theme color for errors */
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    body.dark-mode #accessError, body.dark-mode #prerequisiteError {
+        color: var(--secondary-color);
+    }
+
+
+    .hidden {
+      display: none !important; /* Utility class to hide sections */
+    }
+  </style>
 </head>
 <body>
+  <header class="app-header">
+    <div class="header-left">
+      <h1 id="appTitle">iGFAP Check</h1>
+    </div>
+    <div class="header-right">
+      <div class="language-switcher">
+        <button onclick="switchLanguage('en')" aria-label="Switch to English">
+          <img src="https://flagcdn.com/gb.svg" alt="English">
+        </button>
+        <button onclick="switchLanguage('de')" aria-label="Switch to German">
+          <img src="https://flagcdn.com/de.svg" alt="Deutsch">
+        </button>
+      </div>
+      <button id="darkModeToggle" aria-label="Toggle dark mode"><span>🌙</span></button>
+      <button class="home-button" id="homeButton" onclick="navigateToModuleSelection()"><span>🏠 Home</span></button>
+    </div>
+  </header>
 
-<h3>ICH Probability Calculator</h3>
+  <section id="codeEntrySection" class="container">
+    <p id="codePrompt">🔑 Please enter your access code:</p>
+    <div class="input-group">
+      <input type="password" id="accessCodeInput" placeholder="Enter code">
+    </div>
+    <button class="primary" id="accessCodeButton"><span>Submit</span></button>
+    <p id="accessError" class="hidden"></p>
+  </section>
 
-<label for="age">Age:</label>
-<input type="number" id="age" value="75" min="1" max="120">
-<label for="bp">Systolic BP:</label>
-<input type="number" id="bp" value="180" min="50" max="300">
-<label for="gfap">GFAP (pg/mL):</label>
-<input type="number" id="gfap" value="1200" min="1" max="10000">
+  <section id="moduleSelectionSection" class="container hidden">
+    <h2 id="moduleSelectionTitle">Check probability for:</h2>
+    <button class="primary" id="comaModuleButton"><span>Coma Module</span></button>
+    <button class="primary" id="strokeModuleButton"><span>Stroke Module</span></button>
+  </section>
 
-<button onclick="calculateAndShow()">Calculate</button>
+  <section id="comaModuleSection" class="container hidden">
+    <h2 id="comaModuleTitle">Intracranial hemorrhage in comatose patients (GCS 3-8)</h2>
+    <div class="input-group">
+      <label for="gfapComaInput" id="gfapComaLabel">GFAP Value (pg/mL)</label>
+      <input type="number" id="gfapComaInput" min="29" max="10001" placeholder="GFAP Value (pg/mL)">
+    </div>
+    <button class="primary" id="calculateComaButton"><span>Calculate Probability</span></button>
+    <button class="secondary" id="comaBackButton" onclick="navigateToModuleSelection()"><span>⬅️ Back</span></button>
+    <div class="result hidden" id="comaResult" aria-live="polite"></div>
+  </section>
 
-<div id="result"></div>
+  <section id="strokePrerequisiteSection" class="container hidden">
+    <h2 id="strokePrerequisiteTitle">Prerequisites for Stroke Risk Calculation</h2>
+    <div class="checkbox-group">
+      <input type="checkbox" id="prerequisite1">
+      <label for="prerequisite1" id="prerequisite1Label">Confirmed time window < 6 hours</label>
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="prerequisite2">
+      <label for="prerequisite2" id="prerequisite2Label">No neurological deficits before the event</label>
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="prerequisite3">
+      <label for="prerequisite3" id="prerequisite3Label">No identifiable head trauma (severe fall)</label>
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="prerequisite4">
+      <label for="prerequisite4" id="prerequisite4Label">FAST ED Score >= 3 points</label>
+    </div>
+    <button class="primary" id="proceedButton"><span>Proceed to Calculation</span></button>
+    <button class="secondary" id="strokePrerequisiteBackButton" onclick="navigateToModuleSelection()"><span>⬅️ Back</span></button>
+    <p id="prerequisiteError" class="hidden"></p>
+  </section>
 
-<hr>
-<h3>ICH Probability vs GFAP (Dynamic Curve)</h3>
-<div id="plot"></div>
+  <section id="strokeModuleSection" class="container hidden">
+    <h2 id="strokeModuleTitle">Intracerebral hemorrhage in patients with stroke symptoms</h2>
+    <div class="input-group">
+      <label for="ageInput" id="ageLabel">Patient Age (Years)</label>
+      <input type="number" id="ageInput" min="18" max="120" placeholder="Patient Age (Years)">
+    </div>
+    <div class="input-group">
+      <label for="gfapStrokeInput" id="gfapStrokeLabel">GFAP Value (pg/mL)</label>
+      <input type="number" id="gfapStrokeInput" min="29" max="10001" placeholder="GFAP Value (pg/mL)">
+    </div>
+    <div class="input-group">
+      <label for="sbpInput" id="sbpLabel">Systolic BP (mmHg)</label>
+      <input type="number" id="sbpInput" min="50" max="250" placeholder="Systolic BP (mmHg)">
+    </div>
+    <button class="primary" id="calculateStrokeButton"><span>Calculate Probability</span></button>
+    <button class="secondary" id="strokeModuleBackButton" onclick="navigateToModuleSelection()"><span>⬅️ Back</span></button>
+    <div class="result hidden" id="strokeResult" aria-live="polite"></div>
+  </section>
 
-<div class="formula-box">
-    <h4>Logistic Regression Formula Used:</h4>
-    <b>logit(p) = –9.4520 &nbsp; – &nbsp; 0.0504 × Age &nbsp; + &nbsp; 0.0168 × Systolic BP &nbsp; + &nbsp; 4.8941 × log<sub>10</sub>(GFAP)</b>
-    <br>
-    <span style="font-size:0.96em;">
-        Probability of ICH = <b>1 / [1 + exp(–logit(p))]</b>
-    </span>
-</div>
+  <footer style="text-align:center; margin-top:20px; padding-bottom: 20px;">
+    <p>© <span id="currentYear"></span> iGFAP. All rights reserved.</p>
+  </footer>
 
-<script>
-// Logistic regression function using log10(GFAP)
-function calculateICHProbability(age, systolicBP, gfap) {
-    if (gfap <= 0) return 0;
-    const intercept = -9.4520;
-    const coef_age = -0.0504;
-    const coef_bp = 0.0168;
-    const coef_loggfap = 4.8941;
-    const logGFAP = Math.log10(gfap);
-    const logit = intercept + coef_age * age + coef_bp * systolicBP + coef_loggfap * logGFAP;
-    return 1 / (1 + Math.exp(-logit));
-}
+  <div id="disclaimerModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="disclaimerModalTitleText">
+    <div class="modal-content">
+      <p id="disclaimerModalTitleText" class="disclaimer-text">The calculations are for research purposes only, do not make clinical decisions based on it.</p>
+      <button class="primary" id="disclaimerConfirmButton"><span>Confirm</span></button>
+    </div>
+  </div>
 
-// Show calculated probability
-function calculateAndShow() {
-    const age = parseFloat(document.getElementById('age').value);
-    const bp = parseFloat(document.getElementById('bp').value);
-    const gfap = parseFloat(document.getElementById('gfap').value);
-    const prob = calculateICHProbability(age, bp, gfap);
-    document.getElementById('result').innerHTML =
-        `Probability of ICH: <b>${(prob * 100).toFixed(2)}%</b>`;
-    drawPlot(age, bp);
-}
+  <script>
+    let currentLang = 'en';
+    let pendingResult = null;
 
-// Draw dynamic plot for the current age/bp
-function drawPlot(age, bp) {
-    const gfap_values = [];
-    const ich_probabilities = [];
-    for (let gfap = 1; gfap <= 5000; gfap += 50) {
-        gfap_values.push(gfap);
-        ich_probabilities.push(calculateICHProbability(age, bp, gfap));
+    // IMPORTANT: Replace these with your actual Google Cloud Function URLs after deployment
+    const ACCESS_CODE_VALIDATOR_URL = 'https://europe-west3-igfap-452720.cloudfunctions.net/validateAccessCode';
+    const COMA_CALCULATOR_URL = 'https://europe-west3-igfap-452720.cloudfunctions.net/calculateComaRisk'; 
+    const STROKE_CALCULATOR_URL = 'https://europe-west3-igfap-452720.cloudfunctions.net/calculateStrokeRisk'; // <<<<<<<< UPDATED
+
+
+    const translations = {
+      en: {
+        appTitle: "iGFAP Check",
+        codePrompt: "🔑 Please enter your access code:",
+        accessCodeButton: "Submit",
+        homeButton: "🏠 Home",
+        moduleSelectionTitle: "Check probability for:",
+        comaModuleButton: "Intracranial hemorrhage in comatose patients (GCS 3-8)",
+        strokeModuleButton: "Intracerebral hemorrhage in Patients with stroke symptoms",
+        comaModuleTitle: "Intracranial hemorrhage in comatose patients (GCS 3-8)",
+        strokeModuleTitle: "Intracerebral hemorrhage in patients with stroke symptoms",
+        strokePrerequisiteTitle: "Prerequisites for Stroke Risk Calculation",
+        accessError: "Incorrect code or server error. Please try again.", // Generic error
+        prerequisiteError: "All prerequisites must be met to proceed.",
+        calculateButton: "Calculate Probability",
+        proceedButton: "Proceed to Calculation",
+        backButton: "⬅️ Back",
+        rangeErrorGFAP: "Please enter a GFAP value between 29 and 10001 pg/mL.",
+        invalidInput: "Please enter a valid value!",
+        lowRisk: "Low Risk", // Key: lowRisk, Value: "Low Risk"
+        mediumRisk: "Medium Risk", // Key: mediumRisk, Value: "Medium Risk"
+        highRisk: "High Risk", // Key: highRisk, Value: "High Risk"
+        disclaimer: "The calculations are for research purposes only, do not make clinical decisions based on it.",
+        confirmButton: "Confirm",
+        probability: "Probability",
+        riskLevel: "Risk Level",
+        gfapLabel: "GFAP Value (pg/mL)",
+        ageLabel: "Patient Age (Years)",
+        sbpLabel: "Systolic BP (mmHg)",
+        sbpError: "Valid SBP range: 50-250 mmHg.",
+        invalidAge: "Please enter valid age (18-120).",
+        invalidGFAP: "Invalid GFAP value. Must be between 29 and 10001.",
+        prerequisite1: "Confirmed time window < 6 hours",
+        prerequisite2: "No neurological deficits before the event",
+        prerequisite3: "No identifiable head trauma (severe fall)",
+        prerequisite4: "FAST ED Score >= 3 points",
+        serverError: "A server error occurred. Please try again later.",
+        // Placeholders
+        gfapPlaceholder: "GFAP Value (pg/mL)",
+        agePlaceholder: "Patient Age (Years)",
+        sbpPlaceholder: "Systolic BP (mmHg)",
+        accessCodePlaceholder: "Enter code",
+        darkModeToggleLabelOn: "Switch to Light Mode",
+        darkModeToggleLabelOff: "Switch to Dark Mode",
+      },
+      de: {
+        appTitle: "iGFAP Check",
+        codePrompt: "🔑 Bitte geben Sie Ihren Zugangscode ein:",
+        accessCodeButton: "Senden",
+        homeButton: "🏠 Startseite",
+        moduleSelectionTitle: "Wahrscheinlichkeit prüfen für:",
+        comaModuleButton: "Intrakranielle Blutungen bei komatösen Patienten (GCS 3-8)",
+        strokeModuleButton: "Intrazerebrale Blutungen bei Patienten mit Schlaganfallsymptomen",
+        comaModuleTitle: "Intrakranielle Blutungen bei komatösen Patienten (GCS 3-8)",
+        strokeModuleTitle: "Intrazerebrale Blutungen bei Patienten mit Schlaganfallsymptomen",
+        strokePrerequisiteTitle: "Voraussetzungen für die Schlaganfallrisikoberechnung",
+        accessError: "Falscher Code oder Serverfehler. Bitte versuchen Sie es erneut.", 
+        prerequisiteError: "Alle Voraussetzungen müssen erfüllt sein, um fortzufahren.",
+        calculateButton: "Wahrscheinlichkeit berechnen",
+        proceedButton: "Zur Berechnung fortfahren",
+        backButton: "⬅️ Zurück",
+        rangeErrorGFAP: "Bitte geben Sie einen GFAP-Wert zwischen 29 und 10001 pg/mL ein.",
+        invalidInput: "Bitte geben Sie einen gültigen Wert ein!",
+        lowRisk: "Geringes Risiko", // Key: lowRisk, Value: "Geringes Risiko"
+        mediumRisk: "Mittleres Risiko", // Key: mediumRisk, Value: "Mittleres Risiko"
+        highRisk: "Hohes Risiko", // Key: highRisk, Value: "Hohes Risiko"
+        disclaimer: "Die Berechnungen dienen nur Forschungszwecken, treffen Sie keine klinischen Entscheidungen basierend darauf.",
+        confirmButton: "Bestätigen",
+        probability: "Wahrscheinlichkeit",
+        riskLevel: "Risikostufe",
+        gfapLabel: "GFAP-Wert (pg/mL)",
+        ageLabel: "Patientenalter (Jahre)",
+        sbpLabel: "Systolischer RR (mmHg)",
+        sbpError: "Gültiger RR-Bereich: 50-250 mmHg.",
+        invalidAge: "Bitte gültiges Alter eingeben (18-120).",
+        invalidGFAP: "Ungültiger GFAP-Wert. Muss zwischen 29 und 10001 liegen.",
+        prerequisite1: "Gesichertes Zeitfenster < 6 Stunden",
+        prerequisite2: "Keine neurologischen Defizite vor dem Ereignis",
+        prerequisite3: "Kein erkennbares Schädel-Hirn-Trauma (schwerer Sturz)",
+        prerequisite4: "FAST ED Score >= 3 Punkte",
+        serverError: "Ein Serverfehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
+        // Placeholders
+        gfapPlaceholder: "GFAP-Wert (pg/mL)",
+        agePlaceholder: "Patientenalter (Jahre)",
+        sbpPlaceholder: "Systolischer RR (mmHg)",
+        accessCodePlaceholder: "Code eingeben",
+        darkModeToggleLabelOn: "Heller Modus aktivieren",
+        darkModeToggleLabelOff: "Dunkler Modus aktivieren",
+      }
+    };
+
+    const ALL_SECTIONS = ['codeEntrySection', 'moduleSelectionSection', 'comaModuleSection', 'strokePrerequisiteSection', 'strokeModuleSection'];
+
+    function showSection(sectionIdToShow) {
+      ALL_SECTIONS.forEach(id => {
+        const section = document.getElementById(id);
+        if (id === sectionIdToShow) {
+          section.classList.remove('hidden');
+        } else {
+          section.classList.add('hidden');
+        }
+      });
     }
-    Plotly.newPlot('plot', [{
-        x: gfap_values,
-        y: ich_probabilities,
-        type: 'scatter',
-        mode: 'lines',
-        line: {color: 'red'},
-        name: 'ICH Probability'
-    }], {
-        title: `Probability of ICH vs GFAP (Age ${age}, BP ${bp})`,
-        xaxis: { title: 'GFAP (pg/mL)', range: [0, 5000] },
-        yaxis: { title: 'Probability of ICH', range: [0, 1] },
-        margin: { t: 50 }
+    
+    function updateTextContent(elementId, translationKey) {
+        const element = document.getElementById(elementId);
+        if (element && element.querySelector('span')) { 
+            element.querySelector('span').textContent = translations[currentLang][translationKey];
+        } else if (element) {
+            element.textContent = translations[currentLang][translationKey];
+        }
+    }
+
+    function updatePlaceholder(elementId, translationKey) {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.placeholder = translations[currentLang][translationKey];
+        }
+    }
+
+    function setButtonLoading(buttonElement, isLoading) {
+        if (isLoading) {
+            buttonElement.classList.add('loading');
+            buttonElement.disabled = true;
+        } else {
+            buttonElement.classList.remove('loading');
+            buttonElement.disabled = false;
+        }
+    }
+
+
+    function switchLanguage(lang) {
+      currentLang = lang;
+      document.documentElement.lang = lang; 
+      localStorage.setItem('language', lang); 
+      const texts = translations[lang];
+
+      updateTextContent('appTitle', 'appTitle');
+      updateTextContent('codePrompt', 'codePrompt');
+      updateTextContent('accessCodeButton', 'accessCodeButton');
+      updateTextContent('homeButton', 'homeButton');
+      
+      updateTextContent('moduleSelectionTitle', 'moduleSelectionTitle');
+      updateTextContent('comaModuleButton', 'comaModuleButton');
+      updateTextContent('strokeModuleButton', 'strokeModuleButton');
+
+      updateTextContent('comaModuleTitle', 'comaModuleTitle');
+      updateTextContent('gfapComaLabel', 'gfapLabel');
+      updateTextContent('calculateComaButton', 'calculateButton');
+      updateTextContent('comaBackButton', 'backButton');
+      
+      updateTextContent('strokePrerequisiteTitle', 'strokePrerequisiteTitle');
+      updateTextContent('prerequisite1Label', 'prerequisite1');
+      updateTextContent('prerequisite2Label', 'prerequisite2');
+      updateTextContent('prerequisite3Label', 'prerequisite3');
+      updateTextContent('prerequisite4Label', 'prerequisite4');
+      updateTextContent('proceedButton', 'proceedButton');
+      updateTextContent('strokePrerequisiteBackButton', 'backButton');
+
+      updateTextContent('strokeModuleTitle', 'strokeModuleTitle');
+      updateTextContent('ageLabel', 'ageLabel');
+      updateTextContent('gfapStrokeLabel', 'gfapLabel');
+      updateTextContent('sbpLabel', 'sbpLabel');
+      updateTextContent('calculateStrokeButton', 'calculateButton');
+      updateTextContent('strokeModuleBackButton', 'backButton');
+      
+      updateTextContent('disclaimerModalTitleText', 'disclaimer');
+      updateTextContent('disclaimerConfirmButton', 'confirmButton');
+
+      updatePlaceholder('accessCodeInput', 'accessCodePlaceholder');
+      updatePlaceholder('gfapComaInput', 'gfapPlaceholder');
+      updatePlaceholder('ageInput', 'agePlaceholder');
+      updatePlaceholder('gfapStrokeInput', 'gfapPlaceholder');
+      updatePlaceholder('sbpInput', 'sbpPlaceholder');
+
+      const darkModeButton = document.getElementById('darkModeToggle'); 
+      if (document.body.classList.contains('dark-mode')) {
+        darkModeButton.setAttribute('aria-label', texts.darkModeToggleLabelOn);
+      } else {
+        darkModeButton.setAttribute('aria-label', texts.darkModeToggleLabelOff);
+      }
+
+      const accessErrorEl = document.getElementById('accessError');
+      if (!accessErrorEl.classList.contains('hidden')) {
+          if (accessErrorEl.dataset.isServerError === "true") {
+            accessErrorEl.textContent = texts.serverError;
+          } else {
+            accessErrorEl.textContent = texts.accessError;
+          }
+      }
+      if (!document.getElementById('prerequisiteError').classList.contains('hidden')) {
+          document.getElementById('prerequisiteError').textContent = texts.prerequisiteError;
+      }
+    }
+
+    function resetComaModuleInputs() {
+        document.getElementById('gfapComaInput').value = '';
+        const comaResult = document.getElementById('comaResult');
+        comaResult.classList.add('hidden');
+        comaResult.innerHTML = '';
+        comaResult.className = 'result hidden'; 
+    }
+
+    function resetStrokeModuleInputs() {
+        document.getElementById('ageInput').value = '';
+        document.getElementById('gfapStrokeInput').value = '';
+        document.getElementById('sbpInput').value = '';
+        const strokeResult = document.getElementById('strokeResult');
+        strokeResult.classList.add('hidden');
+        strokeResult.innerHTML = '';
+        strokeResult.className = 'result hidden'; 
+
+        ['prerequisite1', 'prerequisite2', 'prerequisite3', 'prerequisite4'].forEach(id => {
+            document.getElementById(id).checked = false;
+        });
+        document.getElementById('prerequisiteError').classList.add('hidden');
+    }
+
+    function navigateToModuleSelection() {
+      showSection('moduleSelectionSection');
+      resetComaModuleInputs();
+      resetStrokeModuleInputs();
+      document.getElementById('accessCodeInput').value = ''; 
+      document.getElementById('accessError').classList.add('hidden');
+      document.getElementById('prerequisiteError').classList.add('hidden');
+    }
+    
+    function navigateToCodeEntry() {
+        showSection('codeEntrySection');
+        resetComaModuleInputs();
+        resetStrokeModuleInputs();
+        document.getElementById('accessCodeInput').value = '';
+        document.getElementById('accessCodeInput').focus();
+        document.getElementById('accessError').classList.add('hidden');
+    }
+
+
+    async function validateAccessCode() {
+      const accessCodeInput = document.getElementById('accessCodeInput');
+      const accessCode = accessCodeInput.value.trim();
+      const accessErrorEl = document.getElementById('accessError');
+      const accessCodeButton = document.getElementById('accessCodeButton');
+
+      if (!accessCode) {
+        accessErrorEl.textContent = translations[currentLang].invalidInput; 
+        accessErrorEl.classList.remove('hidden');
+        accessErrorEl.dataset.isServerError = "false";
+        return;
+      }
+
+      setButtonLoading(accessCodeButton, true);
+      accessErrorEl.classList.add('hidden'); 
+
+      try {
+        const response = await fetch(ACCESS_CODE_VALIDATOR_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ accessCode: accessCode }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          navigateToModuleSelection();
+          accessErrorEl.classList.add('hidden');
+        } else {
+          accessErrorEl.textContent = data.message || translations[currentLang].accessError;
+          accessErrorEl.classList.remove('hidden');
+          accessErrorEl.dataset.isServerError = "false";
+        }
+      } catch (error) {
+        console.error("Error validating access code:", error);
+        accessErrorEl.textContent = translations[currentLang].serverError;
+        accessErrorEl.classList.remove('hidden');
+        accessErrorEl.dataset.isServerError = "true";
+      } finally {
+        setButtonLoading(accessCodeButton, false);
+      }
+    }
+
+    function startComaModule() {
+      showSection('comaModuleSection');
+      resetComaModuleInputs(); 
+      document.getElementById('gfapComaInput').focus(); 
+    }
+
+    function startStrokeModule() {
+      showSection('strokePrerequisiteSection');
+      resetStrokeModuleInputs(); 
+      document.getElementById('prerequisite1').focus(); 
+    }
+
+    function validatePrerequisites() {
+      const checks = [
+        document.getElementById('prerequisite1').checked,
+        document.getElementById('prerequisite2').checked,
+        document.getElementById('prerequisite3').checked,
+        document.getElementById('prerequisite4').checked
+      ];
+      const prerequisiteErrorEl = document.getElementById('prerequisiteError');
+      
+      if (checks.every(c => c)) {
+        showSection('strokeModuleSection');
+        document.getElementById('ageInput').focus(); 
+        prerequisiteErrorEl.classList.add('hidden');
+      } else {
+        prerequisiteErrorEl.textContent = translations[currentLang].prerequisiteError;
+        prerequisiteErrorEl.classList.remove('hidden');
+      }
+    }
+
+    function showDisclaimer() {
+      const modal = document.getElementById('disclaimerModal');
+      modal.style.display = 'flex'; 
+      setTimeout(() => {
+          modal.classList.add('show');
+          document.getElementById('disclaimerConfirmButton').focus(); 
+      }, 10); 
+    }
+
+    function closeDisclaimer() {
+      const modal = document.getElementById('disclaimerModal');
+      modal.classList.remove('show');
+      modal.addEventListener('transitionend', function handler() {
+        modal.style.display = 'none';
+        modal.removeEventListener('transitionend', handler); 
+        if (pendingResult && pendingResult.element.id === 'comaResult') {
+            document.getElementById('calculateComaButton').focus();
+        } else if (pendingResult && pendingResult.element.id === 'strokeResult') {
+            document.getElementById('calculateStrokeButton').focus();
+        }
+
+      }, { once: true }); 
+    }
+
+    async function calculateComaRisk() {
+      const gfapInput = document.getElementById('gfapComaInput');
+      const gfap = parseFloat(gfapInput.value);
+      const resultEl = document.getElementById('comaResult');
+      const calculateButton = document.getElementById('calculateComaButton');
+      
+      resultEl.classList.add('hidden'); 
+      resultEl.className = 'result hidden'; 
+
+      if (isNaN(gfap) || gfap < 29 || gfap > 10001) {
+        resultEl.textContent = translations[currentLang].rangeErrorGFAP;
+        resultEl.classList.add('warning');
+        resultEl.classList.remove('hidden');
+        gfapInput.focus(); 
+        return;
+      }
+      
+      setButtonLoading(calculateButton, true);
+      resultEl.classList.add('hidden'); 
+
+      try {
+        const response = await fetch(COMA_CALCULATOR_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ gfap: gfap }) 
+        });
+        const data = await response.json(); 
+
+        if (response.ok && data.success) {
+          showDisclaimer(); 
+          
+          const riskLevelTranslationKey = data.riskLevelText.charAt(0).toLowerCase() + data.riskLevelText.slice(1).replace(/\s+/g, '');
+
+          pendingResult = {
+            element: resultEl,
+            html: `<strong>${translations[currentLang].probability}:</strong> ${data.probability.toFixed(1)}%<br>
+                   <strong>${translations[currentLang].riskLevel}:</strong> <span class="${data.riskClass}">${translations[currentLang][riskLevelTranslationKey] || data.riskLevelText}</span>`, 
+            baseClass: 'result',
+            riskClass: data.riskClass 
+          };
+        } else {
+          resultEl.textContent = data.message || translations[currentLang].serverError;
+          resultEl.classList.add('warning');
+          resultEl.classList.remove('hidden');
+        }
+      } catch (error) {
+        console.error("Error calculating coma risk via Cloud Function:", error);
+        resultEl.textContent = translations[currentLang].serverError;
+        resultEl.classList.add('warning');
+        resultEl.classList.remove('hidden');
+      } finally {
+        setButtonLoading(calculateButton, false);
+      }
+    }
+
+    async function calculateStrokeRisk() {
+      const ageInput = document.getElementById('ageInput');
+      const gfapStrokeInput = document.getElementById('gfapStrokeInput');
+      const sbpInput = document.getElementById('sbpInput');
+      const resultEl = document.getElementById('strokeResult');
+      const calculateButton = document.getElementById('calculateStrokeButton');
+
+      const age = parseInt(ageInput.value);
+      const gfap = parseFloat(gfapStrokeInput.value);
+      const sbp = parseFloat(sbpInput.value);
+
+      resultEl.classList.add('hidden');
+      resultEl.className = 'result hidden';
+
+      if (isNaN(age) || age < 18 || age > 120) {
+        resultEl.textContent = translations[currentLang].invalidAge;
+        resultEl.classList.add('warning');
+        resultEl.classList.remove('hidden');
+        ageInput.focus();
+        return;
+      }
+      if (isNaN(gfap) || gfap < 29 || gfap > 10001) {
+        resultEl.textContent = translations[currentLang].invalidGFAP;
+        resultEl.classList.add('warning');
+        resultEl.classList.remove('hidden');
+        gfapStrokeInput.focus();
+        return;
+      }
+      if (isNaN(sbp) || sbp < 50 || sbp > 250) {
+        resultEl.textContent = translations[currentLang].sbpError;
+        resultEl.classList.add('warning');
+        resultEl.classList.remove('hidden');
+        sbpInput.focus();
+        return;
+      }
+      
+      setButtonLoading(calculateButton, true);
+      resultEl.classList.add('hidden');
+
+      try {
+        const response = await fetch(STROKE_CALCULATOR_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ age: age, gfap: gfap, sbp: sbp })
+        });
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          showDisclaimer();
+          const riskLevelTranslationKey = data.riskLevelText.charAt(0).toLowerCase() + data.riskLevelText.slice(1).replace(/\s+/g, '');
+          pendingResult = {
+            element: resultEl,
+            html: `<strong>${translations[currentLang].probability}:</strong> ${data.probability.toFixed(1)}%<br>
+                   <strong>${translations[currentLang].riskLevel}:</strong> <span class="${data.riskClass}">${translations[currentLang][riskLevelTranslationKey] || data.riskLevelText}</span>`,
+            baseClass: 'result',
+            riskClass: data.riskClass
+          };
+        } else {
+          resultEl.textContent = data.message || translations[currentLang].serverError;
+          resultEl.classList.add('warning');
+          resultEl.classList.remove('hidden');
+        }
+      } catch (error) {
+        console.error("Error calculating stroke risk via Cloud Function:", error);
+        resultEl.textContent = translations[currentLang].serverError;
+        resultEl.classList.add('warning');
+        resultEl.classList.remove('hidden');
+      } finally {
+        setButtonLoading(calculateButton, false);
+      }
+    }
+
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('currentYear').textContent = new Date().getFullYear();
+      
+      showSection('codeEntrySection'); 
+      document.getElementById('accessCodeInput').focus();
+
+      const darkModeToggleSpan = document.getElementById('darkModeToggle').querySelector('span');
+      if (localStorage.getItem('darkMode') === 'enabled') {
+          document.body.classList.add('dark-mode');
+          if(darkModeToggleSpan) darkModeToggleSpan.textContent = '☀️';
+      } else {
+          if(darkModeToggleSpan) darkModeToggleSpan.textContent = '🌙';
+      }
+      const preferredLang = localStorage.getItem('language') || 'en';
+      switchLanguage(preferredLang); 
+
+
+      document.getElementById('accessCodeButton').addEventListener('click', validateAccessCode);
+      document.getElementById('accessCodeInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') validateAccessCode();
+      });
+      
+      document.getElementById('comaModuleButton').addEventListener('click', startComaModule);
+      document.getElementById('strokeModuleButton').addEventListener('click', startStrokeModule);
+      document.getElementById('proceedButton').addEventListener('click', validatePrerequisites);
+      
+      document.getElementById('calculateComaButton').addEventListener('click', calculateComaRisk);
+      document.getElementById('gfapComaInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') calculateComaRisk();
+      });
+      
+      document.getElementById('calculateStrokeButton').addEventListener('click', calculateStrokeRisk);
+      ['ageInput', 'gfapStrokeInput', 'sbpInput'].forEach(id => {
+        document.getElementById(id).addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') calculateStrokeRisk();
+        });
+      });
+
+
+      const darkModeButton = document.getElementById('darkModeToggle');
+      darkModeButton.addEventListener('click', function() {
+        document.body.classList.toggle('dark-mode');
+        const texts = translations[currentLang];
+        const iconSpan = darkModeButton.querySelector('span');
+
+        if (document.body.classList.contains('dark-mode')) {
+          if(iconSpan) iconSpan.textContent = '☀️';
+          darkModeButton.setAttribute('aria-label', texts.darkModeToggleLabelOn);
+          localStorage.setItem('darkMode', 'enabled');
+        } else {
+          if(iconSpan) iconSpan.textContent = '🌙';
+          darkModeButton.setAttribute('aria-label', texts.darkModeToggleLabelOff);
+          localStorage.setItem('darkMode', 'disabled');
+        }
+      });
+      
+      document.getElementById('disclaimerConfirmButton').addEventListener('click', function() {
+        closeDisclaimer();
+        if (pendingResult) {
+          pendingResult.element.innerHTML = pendingResult.html;
+          pendingResult.element.className = `${pendingResult.baseClass}`; 
+          pendingResult.element.classList.remove('hidden');
+          pendingResult = null;
+        }
+      });
     });
-}
-
-// Draw initial plot
-drawPlot(75, 180);
-</script>
-
+  </script>
 </body>
 </html>
