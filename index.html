@@ -3,6 +3,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>iGFAP Check</title>
+  <link rel="manifest" href="manifest.json">
   <style>
     :root {
       --primary-color: #007bff;
@@ -380,7 +381,7 @@
     // IMPORTANT: Replace these with your actual Google Cloud Function URLs after deployment
     const ACCESS_CODE_VALIDATOR_URL = 'https://europe-west3-igfap-452720.cloudfunctions.net/validateAccessCode';
     const COMA_CALCULATOR_URL = 'https://europe-west3-igfap-452720.cloudfunctions.net/calculateComaRisk'; 
-    const STROKE_CALCULATOR_URL = 'https://europe-west3-igfap-452720.cloudfunctions.net/calculateStrokeRisk'; // <<<<<<<< UPDATED
+    const STROKE_CALCULATOR_URL = 'https://europe-west3-igfap-452720.cloudfunctions.net/calculateStrokeRisk';
 
 
     const translations = {
@@ -402,9 +403,9 @@
         backButton: "⬅️ Back",
         rangeErrorGFAP: "Please enter a GFAP value between 29 and 10001 pg/mL.",
         invalidInput: "Please enter a valid value!",
-        lowRisk: "Low Risk", // Key: lowRisk, Value: "Low Risk"
-        mediumRisk: "Medium Risk", // Key: mediumRisk, Value: "Medium Risk"
-        highRisk: "High Risk", // Key: highRisk, Value: "High Risk"
+        lowRisk: "Low Risk", 
+        mediumRisk: "Medium Risk", 
+        highRisk: "High Risk", 
         disclaimer: "The calculations are for research purposes only, do not make clinical decisions based on it.",
         confirmButton: "Confirm",
         probability: "Probability",
@@ -420,7 +421,6 @@
         prerequisite3: "No identifiable head trauma (severe fall)",
         prerequisite4: "FAST ED Score >= 3 points",
         serverError: "A server error occurred. Please try again later.",
-        // Placeholders
         gfapPlaceholder: "GFAP Value (pg/mL)",
         agePlaceholder: "Patient Age (Years)",
         sbpPlaceholder: "Systolic BP (mmHg)",
@@ -446,9 +446,9 @@
         backButton: "⬅️ Zurück",
         rangeErrorGFAP: "Bitte geben Sie einen GFAP-Wert zwischen 29 und 10001 pg/mL ein.",
         invalidInput: "Bitte geben Sie einen gültigen Wert ein!",
-        lowRisk: "Geringes Risiko", // Key: lowRisk, Value: "Geringes Risiko"
-        mediumRisk: "Mittleres Risiko", // Key: mediumRisk, Value: "Mittleres Risiko"
-        highRisk: "Hohes Risiko", // Key: highRisk, Value: "Hohes Risiko"
+        lowRisk: "Geringes Risiko", 
+        mediumRisk: "Mittleres Risiko", 
+        highRisk: "Hohes Risiko", 
         disclaimer: "Die Berechnungen dienen nur Forschungszwecken, treffen Sie keine klinischen Entscheidungen basierend darauf.",
         confirmButton: "Bestätigen",
         probability: "Wahrscheinlichkeit",
@@ -464,7 +464,6 @@
         prerequisite3: "Kein erkennbares Schädel-Hirn-Trauma (schwerer Sturz)",
         prerequisite4: "FAST ED Score >= 3 Punkte",
         serverError: "Ein Serverfehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
-        // Placeholders
         gfapPlaceholder: "GFAP-Wert (pg/mL)",
         agePlaceholder: "Patientenalter (Jahre)",
         sbpPlaceholder: "Systolischer RR (mmHg)",
@@ -851,69 +850,11 @@
     document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('currentYear').textContent = new Date().getFullYear();
       
-      showSection('codeEntrySection'); 
-      document.getElementById('accessCodeInput').focus();
-
-      const darkModeToggleSpan = document.getElementById('darkModeToggle').querySelector('span');
-      if (localStorage.getItem('darkMode') === 'enabled') {
-          document.body.classList.add('dark-mode');
-          if(darkModeToggleSpan) darkModeToggleSpan.textContent = '☀️';
-      } else {
-          if(darkModeToggleSpan) darkModeToggleSpan.textContent = '🌙';
-      }
-      const preferredLang = localStorage.getItem('language') || 'en';
-      switchLanguage(preferredLang); 
-
-
-      document.getElementById('accessCodeButton').addEventListener('click', validateAccessCode);
-      document.getElementById('accessCodeInput').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') validateAccessCode();
-      });
-      
-      document.getElementById('comaModuleButton').addEventListener('click', startComaModule);
-      document.getElementById('strokeModuleButton').addEventListener('click', startStrokeModule);
-      document.getElementById('proceedButton').addEventListener('click', validatePrerequisites);
-      
-      document.getElementById('calculateComaButton').addEventListener('click', calculateComaRisk);
-      document.getElementById('gfapComaInput').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') calculateComaRisk();
-      });
-      
-      document.getElementById('calculateStrokeButton').addEventListener('click', calculateStrokeRisk);
-      ['ageInput', 'gfapStrokeInput', 'sbpInput'].forEach(id => {
-        document.getElementById(id).addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') calculateStrokeRisk();
-        });
-      });
-
-
-      const darkModeButton = document.getElementById('darkModeToggle');
-      darkModeButton.addEventListener('click', function() {
-        document.body.classList.toggle('dark-mode');
-        const texts = translations[currentLang];
-        const iconSpan = darkModeButton.querySelector('span');
-
-        if (document.body.classList.contains('dark-mode')) {
-          if(iconSpan) iconSpan.textContent = '☀️';
-          darkModeButton.setAttribute('aria-label', texts.darkModeToggleLabelOn);
-          localStorage.setItem('darkMode', 'enabled');
-        } else {
-          if(iconSpan) iconSpan.textContent = '🌙';
-          darkModeButton.setAttribute('aria-label', texts.darkModeToggleLabelOff);
-          localStorage.setItem('darkMode', 'disabled');
-        }
-      });
-      
-      document.getElementById('disclaimerConfirmButton').addEventListener('click', function() {
-        closeDisclaimer();
-        if (pendingResult) {
-          pendingResult.element.innerHTML = pendingResult.html;
-          pendingResult.element.className = `${pendingResult.baseClass}`; 
-          pendingResult.element.classList.remove('hidden');
-          pendingResult = null;
-        }
-      });
-    });
-  </script>
-</body>
-</html>
+      // Service Worker Registration
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js') // Assuming sw.js is in the same directory as index.html
+            .then(registration => {
+              console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            })
+            .catch(error =
