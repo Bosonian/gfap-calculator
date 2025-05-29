@@ -518,7 +518,7 @@
     </div>
     <div class="checkbox-group">
         <input type="checkbox" id="advVigilanzminderungInput">
-        <label for="advVigilanzminderungLabel">Reduced Vigilance</label>
+        <label for="advVigilanzminderungLabel">Altered Sensorium</label>
     </div>
     <div class="checkbox-group">
         <input type="checkbox" id="advAfibInput">
@@ -571,7 +571,7 @@
         homeButton: "🏠 Home",
         moduleSelectionTitle: "Check probability for:",
         comaModuleButton: "Intracranial hemorrhage in comatose patients (GCS 3-8)",
-        strokeModuleButton: "Stroke Module",
+        strokeModuleButton: "Intracerebral hemorrhage in patients with stroke symptoms",
         switchToAdvancedStrokeButton: "Use Advanced Model (14 Params - Experimental)", 
         advancedStrokeModuleTitle: "Advanced Stroke Model (Experimental - 14 Params)", 
         comaModuleTitle: "Intracranial hemorrhage in comatose patients (GCS 3-8)",
@@ -665,7 +665,7 @@
         advEyeDeviationFlippedLabel: "Eye Deviation (Symptom)", 
         advArmPareseFlippedLabel: "Arm Paresis (Symptom)",    
         advBeinPareseFlippedLabel: "Leg Paresis (Symptom)",     
-        advVigilanzminderungLabel: "Reduced Vigilance",
+        advVigilanzminderungLabel: "Altered Sensorium",
         advAfibLabel: "Known Atrial Fibrillation",
         advHeadacheLabel: "Headache",
         advNoakLabel: "On Anticoagulants (NOAK)",
@@ -678,7 +678,7 @@
         homeButton: "🏠 Startseite",
         moduleSelectionTitle: "Wahrscheinlichkeit prüfen für:",
         comaModuleButton: "Intrakranielle Blutung bei komatösen Patienten (GCS 3-8)",
-        strokeModuleButton: "Schlaganfall-Modul",
+        strokeModuleButton: "Intrazerebrale Blutungen bei Patienten mit Schlaganfallsymptomen",
         switchToAdvancedStrokeButton: "Erweitertes Modell verwenden (14 Parameter - Experimentell)",
         advancedStrokeModuleTitle: "Erweitertes Schlaganfall-Modell (Experimentell - 14 Parameter)",
         comaModuleTitle: "Intrakranielle Blutung bei komatösen Patienten (GCS 3-8)",
@@ -1049,6 +1049,38 @@
       return { riskLevel, riskClass };
     }
 
+    // NEW: Sync symptom checkboxes with score components
+    function syncSymptomsFromScores() {
+        // Eye Deviation
+        const fastEdEyeDeviation = document.getElementById('fastEdEyeDeviation');
+        const raceGazeDeviation = document.getElementById('raceGazeDeviation');
+        const eyeDeviationSymptom = document.getElementById('advEyeDeviationFlippedInput');
+
+        if (fastEdEyeDeviation && raceGazeDeviation && eyeDeviationSymptom) {
+            const eyeDevPresent = parseInt(fastEdEyeDeviation.value) > 0 || raceGazeDeviation.checked;
+            eyeDeviationSymptom.checked = eyeDevPresent;
+        }
+
+        // Arm Paresis
+        const fastEdArmWeakness = document.getElementById('fastEdArmWeakness');
+        const raceArmMotor = document.getElementById('raceArmMotor');
+        const armParesisSymptom = document.getElementById('advArmPareseFlippedInput');
+
+        if (fastEdArmWeakness && raceArmMotor && armParesisSymptom) {
+            const armParesisPresent = parseInt(fastEdArmWeakness.value) > 0 || parseInt(raceArmMotor.value) > 0;
+            armParesisSymptom.checked = armParesisPresent;
+        }
+
+        // Leg Paresis
+        const raceLegMotor = document.getElementById('raceLegMotor');
+        const legParesisSymptom = document.getElementById('advBeinPareseFlippedInput');
+
+        if (raceLegMotor && legParesisSymptom) {
+            const legParesisPresent = parseInt(raceLegMotor.value) > 0;
+            legParesisSymptom.checked = legParesisPresent;
+        }
+    }
+
     async function validateAccessCode() {
       const accessCodeInput = document.getElementById('accessCodeInput');
       const accessCode = accessCodeInput.value.trim();
@@ -1193,6 +1225,7 @@
             });
             scoreDisplay.textContent = currentScore;
             hiddenInput.value = currentScore;
+            syncSymptomsFromScores(); // NEW: Sync symptoms after update
         }
 
         componentConfig.forEach(comp => {
@@ -1501,6 +1534,9 @@
           'advRaceScoreInput',
           raceComponentConfig
       );
+
+      // Initial sync of symptoms
+      syncSymptomsFromScores();
 
       // Service Worker Registration
       if ('serviceWorker' in navigator) {
