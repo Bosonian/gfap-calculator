@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en"> <head>
+<html lang="en"> 
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>iGFAP Check - Mark 4</title>
@@ -562,7 +563,6 @@
     const STROKE_CALCULATOR_URL = 'https://europe-west3-igfap-452720.cloudfunctions.net/calculateStrokeRisk';
     const ADVANCED_STROKE_CALCULATOR_URL = 'https://europe-west3-igfap-452720.cloudfunctions.net/calculate-advanced-stroke-risk-rf';
 
-
     const translations = {
       en: {
         appTitle: "iGFAP Check",
@@ -590,9 +590,6 @@
         lowRisk: "Low Risk", 
         mediumRisk: "Medium Risk", 
         highRisk: "High Risk",
-        experimentalLowRisk: "Experimental - ICH Less Likely", 
-        experimentalMediumRisk: "Experimental - ICH Possible", 
-        experimentalHighRisk: "Experimental - ICH More Likely", 
         disclaimer: "The calculations are for research purposes only, do not make clinical decisions based on it.",
         confirmButton: "Confirm",
         probability: "Probability",
@@ -700,9 +697,6 @@
         lowRisk: "Geringes Risiko",
         mediumRisk: "Mittleres Risiko",
         highRisk: "Hohes Risiko",
-        experimentalLowRisk: "Experimentell - ICH unwahrscheinlich",
-        experimentalMediumRisk: "Experimentell - ICH möglich",
-        experimentalHighRisk: "Experimentell - ICH wahrscheinlich",
         disclaimer: "Die Berechnungen dienen nur Forschungszwecken. Treffen Sie keine klinischen Entscheidungen auf dieser Grundlage.",
         confirmButton: "Bestätigen",
         probability: "Wahrscheinlichkeit",
@@ -997,8 +991,13 @@
         if (errorEl) errorEl.classList.add('hidden');
     }
 
-
     function navigateToModuleSelection() {
+      // NEW: Check authentication state
+      if (sessionStorage.getItem('isAuthenticated') !== 'true') {
+        showSection('codeEntrySection');
+        return;
+      }
+      
       showSection('moduleSelectionSection');
       resetComaModuleInputs();
       resetStrokeModuleInputs();
@@ -1034,6 +1033,21 @@
         if(ageInput) ageInput.focus(); 
     }
 
+    // NEW: Unified risk stratification function
+    function updateRiskStratification(probability) {
+      let riskLevel, riskClass;
+      if (probability < 25) {
+        riskLevel = translations[currentLang].lowRisk;
+        riskClass = 'low-risk';
+      } else if (probability < 50) {
+        riskLevel = translations[currentLang].mediumRisk;
+        riskClass = 'medium-risk';
+      } else {
+        riskLevel = translations[currentLang].highRisk;
+        riskClass = 'red-risk';
+      }
+      return { riskLevel, riskClass };
+    }
 
     async function validateAccessCode() {
       const accessCodeInput = document.getElementById('accessCodeInput');
@@ -1057,6 +1071,8 @@
         });
         const data = await response.json();
         if (response.ok && data.success) {
+          // NEW: Store authentication state
+          sessionStorage.setItem('isAuthenticated', 'true');
           navigateToModuleSelection();
         } else {
           accessErrorEl.textContent = data.message || translations[currentLang].accessError;
@@ -1205,7 +1221,6 @@
         return calculateAndUpdate; 
     }
 
-
     async function calculateComaRisk() {
       const gfapInput = document.getElementById('gfapComaInput');
       const gfap = parseFloat(gfapInput?.value); 
@@ -1234,12 +1249,16 @@
         const data = await response.json(); 
         if (response.ok && data.success) {
           showDisclaimer(); 
-          const riskLevelKey = (data.riskLevelText || "").toLowerCase().replace(/\s+/g, '');
+          
+          // UPDATED: New risk stratification
+          const { riskLevel, riskClass } = updateRiskStratification(data.probability);
+          
           pendingResult = {
             element: resultEl,
             html: `<strong>${translations[currentLang].probability}:</strong> ${data.probability.toFixed(1)}%<br>
-                   <strong>${translations[currentLang].riskLevel}:</strong> <span class="${data.riskClass}">${translations[currentLang][riskLevelKey] || data.riskLevelText}</span>`, 
-            baseClass: 'result', riskClass: data.riskClass 
+                   <strong>${translations[currentLang].riskLevel}:</strong> ${riskLevel}`,
+            baseClass: 'result', 
+            riskClass: riskClass
           };
         } else {
           resultEl.textContent = data.message || translations[currentLang].serverError;
@@ -1291,12 +1310,16 @@
         const data = await response.json();
         if (response.ok && data.success) {
           showDisclaimer();
-          const riskLevelKey = (data.riskLevelText || "").toLowerCase().replace(/\s+/g, '');
+          
+          // UPDATED: New risk stratification
+          const { riskLevel, riskClass } = updateRiskStratification(data.probability);
+          
           pendingResult = {
             element: resultEl,
             html: `<strong>${translations[currentLang].probability}:</strong> ${data.probability.toFixed(1)}%<br>
-                   <strong>${translations[currentLang].riskLevel}:</strong> <span class="${data.riskClass}">${translations[currentLang][riskLevelKey] || data.riskLevelText}</span>`,
-            baseClass: 'result', riskClass: data.riskClass
+                   <strong>${translations[currentLang].riskLevel}:</strong> ${riskLevel}`,
+            baseClass: 'result', 
+            riskClass: riskClass
           };
         } else {
           resultEl.textContent = data.message || translations[currentLang].serverError;
@@ -1391,14 +1414,10 @@
 
             if (response.ok && data.success) {
                 showDisclaimer();
-                let riskLevelKey = (data.riskLevelText || "").toLowerCase().replace(/\s+/g, '').replace(/[()-]/g, '');
                 
-                if (!translations[currentLang][riskLevelKey]) {
-                    if (data.predicted_class_at_thresh_0_40 === 1) riskLevelKey = 'experimentalHighRisk';
-                    else if (data.probability > 10) riskLevelKey = 'experimentalMediumRisk'; 
-                    else riskLevelKey = 'experimentalLowRisk';
-                }
-                let riskLevelDisplay = translations[currentLang][riskLevelKey] || data.riskLevelText;
+                // UPDATED: New risk stratification
+                const { riskLevel, riskClass } = updateRiskStratification(data.probability);
+                let riskLevelDisplay = translations[currentLang][riskLevel] || riskLevel;
                 
                 let modelInfoHtml = '';
                 if (data.model_info) {
@@ -1408,10 +1427,10 @@
                 pendingResult = {
                     element: resultEl,
                     html: `<strong>${translations[currentLang].probability}:</strong> ${data.probability !== undefined ? data.probability.toFixed(1) : 'N/A'}%<br>
-                           <strong>${translations[currentLang].riskLevel}:</strong> <span class="${data.riskClass || 'medium-risk'}">${riskLevelDisplay}</span>
+                           <strong>${translations[currentLang].riskLevel}:</strong> <span class="${riskClass}">${riskLevelDisplay}</span>
                            ${modelInfoHtml}`,
                     baseClass: 'result',
-                    riskClass: data.riskClass || 'medium-risk'
+                    riskClass: riskClass
                 };
             } else {
                 errorEl.textContent = data.message || translations[currentLang].serverError;
@@ -1426,12 +1445,19 @@
         }
     }
 
-
     // Initialize app
     document.addEventListener('DOMContentLoaded', function() {
-      if(document.getElementById('currentYear')) document.getElementById('currentYear').textContent = new Date().getFullYear();
+      // NEW: Check authentication state on load
+      if (sessionStorage.getItem('isAuthenticated') === 'true') {
+        navigateToModuleSelection();
+      } else {
+        showSection('codeEntrySection');
+      }
+
+      if(document.getElementById('currentYear')) {
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+      }
       
-      showSection('codeEntrySection'); 
       const accessCodeInput = document.getElementById('accessCodeInput');
       if(accessCodeInput) accessCodeInput.focus();
 
@@ -1445,7 +1471,7 @@
       const preferredLang = localStorage.getItem('language') || 'en';
       switchLanguage(preferredLang); 
 
-      // MARK 4: Setup for Interactive Score Calculators
+      // Setup for Interactive Score Calculators
       const fastEdComponentConfig = [
           {id: 'fastEdFacialPalsy', type: 'checkbox', points: 1}, 
           {id: 'fastEdArmWeakness', type: 'select'}, 
@@ -1476,11 +1502,10 @@
           raceComponentConfig
       );
 
-
       // Service Worker Registration
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js') // Reverted to relative path for better compatibility
+          navigator.serviceWorker.register('./sw.js')
             .then((reg) => console.log('Service Worker registered with scope:', reg.scope))
             .catch((err) => console.error('Service Worker registration failed:', err));
         });
@@ -1510,7 +1535,6 @@
         const el = document.getElementById(id);
         if(el) el.addEventListener('keypress', e => { if (e.key === 'Enter') calculateAdvancedStrokeRisk(); });
       });
-
 
       const darkModeButton = document.getElementById('darkModeToggle');
       darkModeButton?.addEventListener('click', function() {
