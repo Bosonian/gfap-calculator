@@ -323,14 +323,14 @@
   <section id="moduleSelectionSection" class="container hidden">
     <h2 id="moduleSelectionTitle">Check probability for:</h2>
     <button class="primary" id="comaModuleButton"><span>Coma Module</span></button>
-    <button class="primary" id="strokeModuleButton"><span>Stroke Module</span></button>
+    <button class="primary" id="strokeModuleButton"><span>Intracerebral hemorrhage in patients with stroke symptoms</span></button>
   </section>
 
   <section id="comaModuleSection" class="container hidden">
     <h2 id="comaModuleTitle">Intracranial hemorrhage in comatose patients (GCS 3-8)</h2>
     <div class="input-group">
       <label for="gfapComaInput" id="gfapComaLabel">GFAP Value (pg/mL)</label>
-      <input type="number" id="gfapComaInput" min="29" max="10001" placeholder="GFAP Value (pg/mL)">
+      <input type="number" id="gfapComaInput" min="29" max="10001" placeholder="">
     </div>
     <button class="primary" id="calculateComaButton"><span>Calculate Probability</span></button>
     <button class="secondary" id="comaBackButton" onclick="navigateToModuleSelection()"><span>⬅️ Back</span></button>
@@ -364,15 +364,15 @@
     <h2 id="strokeModuleTitle">Intracerebral hemorrhage in patients with stroke symptoms (Standard)</h2>
     <div class="input-group">
       <label for="ageInput" id="ageLabel">Patient Age (Years)</label>
-      <input type="number" id="ageInput" min="18" max="120" placeholder="Patient Age (Years)">
+      <input type="number" id="ageInput" min="18" max="120" placeholder="">
     </div>
     <div class="input-group">
       <label for="gfapStrokeInput" id="gfapStrokeLabel">GFAP Value (pg/mL)</label>
-      <input type="number" id="gfapStrokeInput" min="29" max="10001" placeholder="GFAP Value (pg/mL)">
+      <input type="number" id="gfapStrokeInput" min="29" max="10001" placeholder="">
     </div>
     <div class="input-group">
       <label for="sbpInput" id="sbpLabel">Systolic BP (mmHg)</label>
-      <input type="number" id="sbpInput" min="50" max="250" placeholder="Systolic BP (mmHg)">
+      <input type="number" id="sbpInput" min="50" max="250" placeholder="">
     </div>
     <button class="primary" id="calculateStrokeButton"><span>Calculate Probability</span></button>
     <button class="experimental" id="switchToAdvancedStrokeButton" style="margin-top: 10px;">
@@ -518,7 +518,7 @@
     </div>
     <div class="checkbox-group">
         <input type="checkbox" id="advVigilanzminderungInput">
-        <label for="advVigilanzminderungLabel">Altered Sensorium</label>
+        <label for="advVigilanzminderungLabel" id="advVigilanzminderungLabel">Altered Sensorium</label>
     </div>
     <div class="checkbox-group">
         <input type="checkbox" id="advAfibInput">
@@ -570,7 +570,7 @@
         accessCodeButton: "Submit",
         homeButton: "🏠 Home",
         moduleSelectionTitle: "Check probability for:",
-        comaModuleButton: "Intracranial hemorrhage in comatose patients (GCS 3-8)",
+        comaModuleButton: "Coma Module",
         strokeModuleButton: "Intracerebral hemorrhage in patients with stroke symptoms",
         switchToAdvancedStrokeButton: "Use Advanced Model (14 Params - Experimental)", 
         advancedStrokeModuleTitle: "Advanced Stroke Model (Experimental - 14 Params)", 
@@ -677,7 +677,7 @@
         accessCodeButton: "Absenden",
         homeButton: "🏠 Startseite",
         moduleSelectionTitle: "Wahrscheinlichkeit prüfen für:",
-        comaModuleButton: "Intrakranielle Blutung bei komatösen Patienten (GCS 3-8)",
+        comaModuleButton: "Koma-Modul",
         strokeModuleButton: "Intrazerebrale Blutungen bei Patienten mit Schlaganfallsymptomen",
         switchToAdvancedStrokeButton: "Erweitertes Modell verwenden (14 Parameter - Experimentell)",
         advancedStrokeModuleTitle: "Erweitertes Schlaganfall-Modell (Experimentell - 14 Parameter)",
@@ -873,6 +873,12 @@
             
       updateTextContent('advAdditionalSymptomsLabel', 'advAdditionalSymptomsLabel');
       Object.keys(texts).filter(k => k.startsWith('adv') && (k.endsWith('Label') || k.endsWith('FlippedLabel'))).forEach(key => updateTextContent(key, key));
+      
+      // Update vigilanzminderung label separately for German
+      const vigilanzLabel = document.getElementById('advVigilanzminderungLabel');
+      if (vigilanzLabel) {
+        vigilanzLabel.textContent = texts['advVigilanzminderungLabel'];
+      }
 
       updateTextContent('calculateAdvancedStrokeButton', 'calculateAdvancedStrokeButton');
       updateTextContent('advancedStrokeModuleBackButton', 'backToStandardStrokeButton');
@@ -880,11 +886,8 @@
       updateTextContent('disclaimerModalTitleText', 'disclaimer');
       updateTextContent('disclaimerConfirmButton', 'confirmButton');
 
+      // Only update placeholders for code entry and advanced module
       updatePlaceholder('accessCodeInput', 'accessCodePlaceholder');
-      updatePlaceholder('gfapComaInput', 'gfapPlaceholder');
-      updatePlaceholder('ageInput', 'agePlaceholder');
-      updatePlaceholder('gfapStrokeInput', 'gfapPlaceholder');
-      updatePlaceholder('sbpInput', 'sbpPlaceholder');
       updatePlaceholder('advAgeInput', 'agePlaceholder');
       updatePlaceholder('advGfapInput', 'gfapPlaceholder');
       updatePlaceholder('advSbpInput', 'sbpPlaceholder');
@@ -1186,6 +1189,11 @@
             
             const focusButton = document.getElementById(focusButtonId);
             if (focusButton) focusButton.focus();
+            
+            // Apply risk class to result element for coma and stroke modules
+            if (pendingResult.element.id === 'comaResult' || pendingResult.element.id === 'strokeResult') {
+                pendingResult.element.classList.add(pendingResult.riskClass);
+            }
         }
       }, { once: true }); 
     }
@@ -1594,6 +1602,12 @@
           pendingResult.element.innerHTML = pendingResult.html;
           pendingResult.element.className = `${pendingResult.baseClass}`; 
           pendingResult.element.classList.remove('hidden');
+          
+          // Apply risk class to result element for coma and stroke modules
+          if (pendingResult.element.id === 'comaResult' || pendingResult.element.id === 'strokeResult') {
+              pendingResult.element.classList.add(pendingResult.riskClass);
+          }
+          
           pendingResult = null;
         }
       });
