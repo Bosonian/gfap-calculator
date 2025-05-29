@@ -2,7 +2,7 @@
 <html lang="en"> <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>iGFAP Check</title>
+  <title>iGFAP Check - Mark 4</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#007bff">
   <style>
@@ -11,6 +11,9 @@
       --primary-hover: #0056b3;
       --secondary-color: #dc3545;
       --secondary-hover: #b52b3a;
+      --experimental-color: #ffc107;
+      --experimental-text-color: #212529;
+      --experimental-hover: #e0a800;
       --background-color: #f8f9fa;
       --text-color: #333;
       --warning-text-color: #856404;
@@ -24,6 +27,9 @@
       --primary-hover: #287ac7;
       --secondary-color: #e06666;
       --secondary-hover: #cc5252;
+      --experimental-color: #ffca2c;
+      --experimental-text-color: #212529;
+      --experimental-hover: #f5b90a;
       --background-color: #333;
       --text-color: #f8f9fa;
       --warning-text-color: #ffeeba;
@@ -33,7 +39,7 @@
     }
 
     *, *::before, *::after {
-      box-sizing: border-box; /* Global box-sizing */
+      box-sizing: border-box;
     }
 
     body {
@@ -70,33 +76,39 @@
     }
     .checkbox-group input[type="checkbox"] {
       margin-right: 8px;
+      width: 1.3em; 
+      height: 1.3em;
+    }
+    .checkbox-group label {
+        cursor: pointer;
     }
 
     .input-group input[type="number"],
-    .input-group input[type="password"] {
-      width: 100%; /* Simplified due to box-sizing: border-box */
+    .input-group input[type="password"],
+    select.score-select { 
+      width: 100%; 
       padding: 12px;
       font-size: 18px;
       border: 2px solid var(--primary-color);
       border-radius: 5px;
-      background-color: var(--background-color); /* Match body bg for inputs */
-      color: var(--text-color); /* Match body text for inputs */
+      background-color: var(--background-color); 
+      color: var(--text-color); 
     }
     body.dark-mode .input-group input[type="number"],
-    body.dark-mode .input-group input[type="password"] {
+    body.dark-mode .input-group input[type="password"],
+    body.dark-mode select.score-select { 
         background-color: #555;
         color: var(--text-color);
         border-color: var(--primary-color);
     }
 
     .input-group input::placeholder {
-        color: #aaa; /* Default placeholder color */
+        color: #aaa; 
     }
 
     body.dark-mode .input-group input::placeholder {
-        color: #888; /* Dark mode placeholder color */
+        color: #888; 
     }
-
 
     button {
       padding: 12px;
@@ -108,7 +120,7 @@
       transition: background-color 0.3s ease;
       width: 100%;
       font-weight: bold;
-      position: relative; /* For loading spinner */
+      position: relative; 
     }
     button.loading::after {
         content: "";
@@ -126,43 +138,37 @@
         border-radius: 50%;
         animation: button-loading-spinner 1s ease infinite;
     }
-    button.loading span { /* Hide button text when loading */
+    button.loading span { 
         visibility: hidden;
     }
 
     @keyframes button-loading-spinner {
-        from {
-            transform: rotate(0turn);
-        }
-        to {
-            transform: rotate(1turn);
-        }
+        from { transform: rotate(0turn); }
+        to { transform: rotate(1turn); }
     }
-
 
     .primary {
       background-color: var(--primary-color);
       color: white;
     }
-    .primary:hover {
-      background-color: var(--primary-hover);
+    .primary:hover { background-color: var(--primary-hover); }
+     body.dark-mode .primary { --loading-spinner-color: #fff; }
+
+    .experimental { 
+      background-color: var(--experimental-color);
+      color: var(--experimental-text-color);
+      border: 1px solid #c69500; 
     }
-     body.dark-mode .primary {
-        --loading-spinner-color: #fff; /* White spinner on dark primary buttons */
-    }
+    .experimental:hover { background-color: var(--experimental-hover); }
+    body.dark-mode .experimental { --loading-spinner-color: var(--experimental-text-color); }
 
 
     .secondary {
       background-color: var(--secondary-color);
       color: white;
     }
-    .secondary:hover {
-      background-color: var(--secondary-hover);
-    }
-    body.dark-mode .secondary {
-        --loading-spinner-color: #fff; /* White spinner on dark secondary buttons */
-    }
-
+    .secondary:hover { background-color: var(--secondary-hover); }
+    body.dark-mode .secondary { --loading-spinner-color: #fff; }
 
     .result {
       margin-top: 1.5rem;
@@ -171,7 +177,7 @@
       font-size: 18px;
       font-weight: bold;
       text-align: center;
-      border: 1px solid transparent; /* Base border */
+      border: 1px solid transparent; 
     }
 
     .result.warning {
@@ -181,13 +187,12 @@
     }
 
     .low-risk { color: #28a745; }
-    .medium-risk { color: #daa520; } /* Goldenrod, good for light/dark */
+    .medium-risk { color: #daa520; } 
     .red-risk { color: #dc3545; }
 
-    body.dark-mode .low-risk { color: #34d399; } /* Lighter green for dark mode */
-    body.dark-mode .medium-risk { color: #f59e0b; } /* Lighter amber for dark mode */
-    body.dark-mode .red-risk { color: #f87171; } /* Lighter red for dark mode */
-
+    body.dark-mode .low-risk { color: #34d399; } 
+    body.dark-mode .medium-risk { color: #f59e0b; } 
+    body.dark-mode .red-risk { color: #f87171; } 
 
     .app-header {
       display: flex;
@@ -200,80 +205,89 @@
       top: 0;
       z-index: 999;
     }
-    .app-header h1 {
-        font-size: 1.5em;
-        margin: 0;
-    }
-    .header-right {
-        display: flex;
-        align-items: center;
-        gap: 10px; /* Space between buttons */
-    }
-    .header-right button { /* Style header buttons specifically */
-        width: auto; /* Override full width for header buttons */
-        padding: 8px 12px;
-        margin-top: 0; /* No top margin for header buttons */
-    }
+    .app-header h1 { font-size: 1.5em; margin: 0; }
+    .header-right { display: flex; align-items: center; gap: 10px; }
+    .header-right button { width: auto; padding: 8px 12px; margin-top: 0; }
 
+    .language-switcher img { width: 24px; height: 16px; border: 1px solid #ccc; border-radius: 3px; vertical-align: middle; }
+    .language-switcher button { background: none; border: none; padding: 5px; cursor: pointer;}
 
-    .language-switcher img {
-      width: 24px;
-      height: 16px;
-      border: 1px solid #ccc;
-      border-radius: 3px;
-      vertical-align: middle;
-    }
-    .language-switcher button {
-        background: none;
-        border: none;
-        padding: 5px;
-    }
+    .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); opacity: 0; transition: opacity 0.3s ease; align-items: center; justify-content: center; }
+    .modal.show { display: flex; opacity: 1; }
+    .modal-content { background-color: #fff; padding: 20px; width: 80%; max-width: 400px; border-radius: 10px; text-align: center; }
+    body.dark-mode .modal-content { background-color: #444; }
 
-    .modal {
-      display: none; /* Initially hidden */
-      position: fixed;
-      z-index: 9999;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.6);
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      align-items: center; /* For centering modal content */
-      justify-content: center; /* For centering modal content */
+    #accessError, #prerequisiteError, #advancedStrokeError { 
+      color: var(--secondary-color); margin-top: 10px; font-weight: bold;
     }
-    .modal.show {
-      display: flex; /* Use flex to enable centering */
-      opacity: 1;
-    }
-
-    .modal-content {
-      background-color: #fff;
-      /* margin: 20% auto; Removed for flex centering */
-      padding: 20px;
-      width: 80%;
-      max-width: 400px;
-      border-radius: 10px;
-      text-align: center;
-    }
-
-    body.dark-mode .modal-content {
-      background-color: #444;
-    }
-
-    #accessError, #prerequisiteError {
-      color: var(--secondary-color); /* Use theme color for errors */
-      margin-top: 10px;
-      font-weight: bold;
-    }
-    body.dark-mode #accessError, body.dark-mode #prerequisiteError {
+    body.dark-mode #accessError, body.dark-mode #prerequisiteError, body.dark-mode #advancedStrokeError {
         color: var(--secondary-color);
     }
 
+    .hidden { display: none !important; }
 
-    .hidden {
-      display: none !important; /* Utility class to hide sections */
+    /* Styles for interactive score calculators */
+    .score-calculator-group {
+        border: 1px solid #eee;
+        padding: 10px;
+        margin-bottom: 20px; 
+        border-radius: 5px;
+    }
+    body.dark-mode .score-calculator-group {
+        border-color: #555;
+    }
+    .score-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px; 
+    }
+    .score-header > label { 
+        font-weight: bold;
+        margin-right: 10px;
+        flex-grow: 1; 
+    }
+    .score-value-display {
+        font-weight: bold;
+        font-size: 1.1em;
+        color: var(--primary-color);
+        min-width: 25px; 
+        text-align: right;
+        margin-right: 10px;
+    }
+    .calculate-score-btn {
+        padding: 6px 10px !important; 
+        font-size: 0.9em !important;
+        width: auto !important; 
+        margin-top: 0 !important; 
+        background-color: #6c757d; 
+        color: white;
+        flex-shrink: 0; 
+    }
+    body.dark-mode .calculate-score-btn { background-color: #868e96; }
+    .calculate-score-btn:hover { background-color: #5a6268; }
+    body.dark-mode .calculate-score-btn:hover { background-color: #707880; }
+
+    .score-components {
+        padding-top: 10px;
+        border-top: 1px dashed #ccc;
+        margin-top: 10px;
+    }
+    body.dark-mode .score-components { border-top-color: #555; }
+    .score-components .checkbox-group,
+    .score-components .input-group {
+        margin-left: 0px; 
+        margin-bottom: 10px; 
+    }
+    .score-components .input-group label, 
+    .score-components .checkbox-group label { 
+        display: block;
+        margin-bottom: 4px;
+        font-size: 0.95em; 
+    }
+    select.score-select { 
+        font-size: 16px; 
+        padding: 10px;
     }
   </style>
 </head>
@@ -284,10 +298,10 @@
     </div>
     <div class="header-right">
       <div class="language-switcher">
-        <button onclick="switchLanguage('en')" aria-label="Switch to English">
+        <button onclick="switchLanguage('en')" aria-label="Switch to English" title="Switch to English">
           <img src="https://flagcdn.com/gb.svg" alt="English">
         </button>
-        <button onclick="switchLanguage('de')" aria-label="Switch to German">
+        <button onclick="switchLanguage('de')" aria-label="Switch to German" title="Switch to German">
           <img src="https://flagcdn.com/de.svg" alt="Deutsch">
         </button>
       </div>
@@ -346,7 +360,7 @@
   </section>
 
   <section id="strokeModuleSection" class="container hidden">
-    <h2 id="strokeModuleTitle">Intracerebral hemorrhage in patients with stroke symptoms</h2>
+    <h2 id="strokeModuleTitle">Intracerebral hemorrhage in patients with stroke symptoms (Standard)</h2>
     <div class="input-group">
       <label for="ageInput" id="ageLabel">Patient Age (Years)</label>
       <input type="number" id="ageInput" min="18" max="120" placeholder="Patient Age (Years)">
@@ -360,9 +374,173 @@
       <input type="number" id="sbpInput" min="50" max="250" placeholder="Systolic BP (mmHg)">
     </div>
     <button class="primary" id="calculateStrokeButton"><span>Calculate Probability</span></button>
+    <button class="experimental" id="switchToAdvancedStrokeButton" style="margin-top: 10px;">
+        <span>Use Advanced Model (14 Params - Experimental)</span>
+    </button>
     <button class="secondary" id="strokeModuleBackButton" onclick="navigateToModuleSelection()"><span>⬅️ Back</span></button>
     <div class="result hidden" id="strokeResult" aria-live="polite"></div>
   </section>
+
+  <section id="advancedStrokeModuleSection" class="container hidden">
+    <h2 id="advancedStrokeModuleTitle">Advanced Stroke Model (Experimental - 14 Params)</h2>
+
+    <div class="input-group">
+        <label for="advAgeInput" id="advAgeLabel">Patient Age (Years)</label>
+        <input type="number" id="advAgeInput" min="18" max="120" placeholder="e.g., 75">
+    </div>
+    <div class="input-group">
+        <label for="advGfapInput" id="advGfapLabel">GFAP Value (pg/mL)</label>
+        <input type="number" id="advGfapInput" min="0" max="50000" placeholder="e.g., 1500">
+    </div>
+    <div class="input-group">
+        <label for="advSbpInput" id="advSbpLabel">Systolic BP (mmHg)</label>
+        <input type="number" id="advSbpInput" min="50" max="300" placeholder="e.g., 160">
+    </div>
+    <div class="input-group">
+        <label for="advDbpInput" id="advDbpLabel">Diastolic BP (mmHg)</label>
+        <input type="number" id="advDbpInput" min="30" max="200" placeholder="e.g., 90">
+    </div>
+
+    <div class="input-group score-calculator-group">
+        <div class="score-header">
+            <label id="advFastEdDisplayLabel">FAST ED Score:</label>
+            <span id="advFastEdScoreDisplay" class="score-value-display">0</span>
+            <button type="button" class="calculate-score-btn" id="toggleFastEdBtn" aria-expanded="false" aria-controls="fastEdComponentsContainer">
+                <span id="toggleFastEdBtnText">Calculate/Edit</span>
+            </button>
+            <input type="hidden" id="advFastEdInput" name="advFastEdInput" value="0">
+        </div>
+        <div id="fastEdComponentsContainer" class="score-components hidden">
+            <p id="fastEdInfoText" style="font-size: 0.9em; margin-bottom: 5px;">Select present findings for FAST ED:</p>
+            <div class="checkbox-group">
+                <input type="checkbox" id="fastEdFacialPalsy" data-points="1">
+                <label for="fastEdFacialPalsy" id="fastEdFacialPalsyLabel">Facial Palsy (Partial/Complete)</label>
+            </div>
+            <div class="input-group">
+                <label for="fastEdArmWeakness" id="fastEdArmWeaknessLabel">Arm Weakness</label>
+                <select id="fastEdArmWeakness" class="score-select">
+                    <option value="0" id="fastEdArm0Label">0 - No drift</option>
+                    <option value="1" id="fastEdArm1Label">1 - Drifts down</option>
+                    <option value="2" id="fastEdArm2Label">2 - No effort / Falls</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="fastEdSpeechChanges" id="fastEdSpeechChangesLabel">Speech Changes</label>
+                <select id="fastEdSpeechChanges" class="score-select">
+                    <option value="0" id="fastEdSpeech0Label">0 - Normal</option>
+                    <option value="1" id="fastEdSpeech1Label">1 - Mild/Moderate</option>
+                    <option value="2" id="fastEdSpeech2Label">2 - Severe/Mute</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="fastEdEyeDeviation" id="fastEdEyeDeviationLabel">Eye Deviation</label>
+                <select id="fastEdEyeDeviation" class="score-select">
+                    <option value="0" id="fastEdEye0Label">0 - Absent</option>
+                    <option value="1" id="fastEdEye1Label">1 - Partial</option>
+                    <option value="2" id="fastEdEye2Label">2 - Forced Deviation</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="fastEdDenialNeglect" id="fastEdDenialNeglectLabel">Denial/Neglect</label>
+                <select id="fastEdDenialNeglect" class="score-select">
+                    <option value="0" id="fastEdDenial0Label">0 - Absent</option>
+                    <option value="1" id="fastEdDenial1Label">1 - Mild (e.g., Extinction)</option>
+                    <option value="2" id="fastEdDenial2Label">2 - Severe (e.g., Unawareness)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="input-group score-calculator-group">
+        <div class="score-header">
+            <label id="advRaceScoreDisplayLabel">RACE Score:</label>
+            <span id="advRaceScoreDisplay" class="score-value-display">0</span>
+            <button type="button" class="calculate-score-btn" id="toggleRaceBtn" aria-expanded="false" aria-controls="raceComponentsContainer">
+                <span id="toggleRaceBtnText">Calculate/Edit</span>
+            </button>
+            <input type="hidden" id="advRaceScoreInput" name="advRaceScoreInput" value="0">
+        </div>
+        <div id="raceComponentsContainer" class="score-components hidden">
+            <p id="raceInfoText" style="font-size: 0.9em; margin-bottom: 5px;">Select findings for each category:</p>
+            <div class="input-group">
+                <label for="raceFacialPalsy" id="raceFacialPalsyLabel">Facial Palsy</label>
+                <select id="raceFacialPalsy" class="score-select">
+                    <option value="0" id="raceFacial0Label">0 - Absent</option>
+                    <option value="1" id="raceFacial1Label">1 - Mild</option>
+                    <option value="2" id="raceFacial2Label">2 - Moderate/Severe</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="raceArmMotor" id="raceArmMotorLabel">Arm Motor Function</label>
+                <select id="raceArmMotor" class="score-select">
+                    <option value="0" id="raceArm0Label">0 - Holds >10s</option>
+                    <option value="1" id="raceArm1Label">1 - Holds <10s</option>
+                    <option value="2" id="raceArm2Label">2 - No effort</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="raceLegMotor" id="raceLegMotorLabel">Leg Motor Function</label>
+                <select id="raceLegMotor" class="score-select">
+                    <option value="0" id="raceLeg0Label">0 - Holds >5s</option>
+                    <option value="1" id="raceLeg1Label">1 - Holds <5s</option>
+                    <option value="2" id="raceLeg2Label">2 - No effort</option>
+                </select>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="raceGazeDeviation" data-points="1">
+                <label for="raceGazeDeviation" id="raceGazeDeviationLabel">Head/Gaze Deviation Present</label>
+            </div>
+            <div class="input-group">
+                <label for="raceAphasiaAgnosia" id="raceAphasiaAgnosiaLabel">Aphasia (Right Paresis) / Agnosia (Left Paresis)</label>
+                <p style="font-size:0.8em; margin:0 0 5px 0;" id="raceAphasiaInfo">(If Right weakness: test commands. If Left weakness: test awareness.)</p>
+                <select id="raceAphasiaAgnosia" class="score-select">
+                    <option value="0" id="raceAphasiaAgnosia0Label">0 - Normal / Neither</option>
+                    <option value="1" id="raceAphasiaAgnosia1Label">1 - Performs 1 task / One present</option>
+                    <option value="2" id="raceAphasiaAgnosia2Label">2 - Performs 0 tasks / Both or severe</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <p style="font-weight: bold; margin-top: 20px; margin-bottom: 5px;" id="advAdditionalSymptomsLabel">Additional Symptoms & History (Check if Present/Yes):</p>
+    <div class="checkbox-group">
+        <input type="checkbox" id="advEyeDeviationFlippedInput">
+        <label for="advEyeDeviationFlippedInput" id="advEyeDeviationFlippedLabel">Eye Deviation (Symptom)</label>
+    </div>
+    <div class="checkbox-group">
+        <input type="checkbox" id="advArmPareseFlippedInput">
+        <label for="advArmPareseFlippedInput" id="advArmPareseFlippedLabel">Arm Paresis (Symptom)</label>
+    </div>
+    <div class="checkbox-group">
+        <input type="checkbox" id="advBeinPareseFlippedInput">
+        <label for="advBeinPareseFlippedInput" id="advBeinPareseFlippedLabel">Leg Paresis (Symptom)</label>
+    </div>
+    <div class="checkbox-group">
+        <input type="checkbox" id="advVigilanzminderungInput">
+        <label for="advVigilanzminderungLabel">Reduced Vigilance</label>
+    </div>
+    <div class="checkbox-group">
+        <input type="checkbox" id="advAfibInput">
+        <label for="advAfibInput" id="advAfibLabel">Known Atrial Fibrillation</label>
+    </div>
+    <div class="checkbox-group">
+        <input type="checkbox" id="advHeadacheInput">
+        <label for="advHeadacheInput" id="advHeadacheLabel">Headache</label>
+    </div>
+    <div class="checkbox-group">
+        <input type="checkbox" id="advNoakInput">
+        <label for="advNoakInput" id="advNoakLabel">On Anticoagulants (NOAK)</label>
+    </div>
+    <div class="checkbox-group">
+        <input type="checkbox" id="advAntiplateletsInput">
+        <label for="advAntiplateletsInput" id="advAntiplateletsLabel">On Antiplatelets</label>
+    </div>
+
+    <button class="primary" id="calculateAdvancedStrokeButton"><span>Calculate Advanced Probability</span></button>
+    <button class="secondary" id="advancedStrokeModuleBackButton" onclick="navigateToStrokeModule()"><span>⬅️ Back to Standard Stroke</span></button>
+    <div class="result hidden" id="advancedStrokeResult" aria-live="polite"></div>
+    <p id="advancedStrokeError" class="hidden"></p> </section>
+
 
   <footer style="text-align:center; margin-top:20px; padding-bottom: 20px;">
     <p>© <span id="currentYear"></span> iGFAP. All rights reserved.</p>
@@ -379,10 +557,10 @@
     let currentLang = 'en';
     let pendingResult = null;
 
-    // IMPORTANT: Replace these with your actual Google Cloud Function URLs after deployment
     const ACCESS_CODE_VALIDATOR_URL = 'https://europe-west3-igfap-452720.cloudfunctions.net/validateAccessCode';
     const COMA_CALCULATOR_URL = 'https://europe-west3-igfap-452720.cloudfunctions.net/calculateComaRisk'; 
     const STROKE_CALCULATOR_URL = 'https://europe-west3-igfap-452720.cloudfunctions.net/calculateStrokeRisk';
+    const ADVANCED_STROKE_CALCULATOR_URL = 'https://europe-west3-igfap-452720.cloudfunctions.net/calculate-advanced-stroke-risk-rf';
 
 
     const translations = {
@@ -393,20 +571,28 @@
         homeButton: "🏠 Home",
         moduleSelectionTitle: "Check probability for:",
         comaModuleButton: "Intracranial hemorrhage in comatose patients (GCS 3-8)",
-        strokeModuleButton: "Intracerebral hemorrhage in Patients with stroke symptoms",
+        strokeModuleButton: "Stroke Module",
+        switchToAdvancedStrokeButton: "Use Advanced Model (14 Params - Experimental)", 
+        advancedStrokeModuleTitle: "Advanced Stroke Model (Experimental - 14 Params)", 
         comaModuleTitle: "Intracranial hemorrhage in comatose patients (GCS 3-8)",
-        strokeModuleTitle: "Intracerebral hemorrhage in patients with stroke symptoms",
+        strokeModuleTitle: "Intracerebral hemorrhage in patients with stroke symptoms (Standard)", 
         strokePrerequisiteTitle: "Prerequisites for Stroke Risk Calculation",
-        accessError: "Incorrect code or server error. Please try again.", // Generic error
+        accessError: "Incorrect code or server error. Please try again.", 
         prerequisiteError: "All prerequisites must be met to proceed.",
+        advancedStrokeError: "Please fill all fields with valid values and ensure scores are calculated.", 
         calculateButton: "Calculate Probability",
+        calculateAdvancedStrokeButton: "Calculate Advanced Probability", 
         proceedButton: "Proceed to Calculation",
         backButton: "⬅️ Back",
-        rangeErrorGFAP: "Please enter a GFAP value between 29 and 10001 pg/mL.",
+        backToStandardStrokeButton: "⬅️ Back to Standard Stroke", 
+        rangeErrorGFAP: "Please enter a GFAP value between 0 and 50000 pg/mL.", 
         invalidInput: "Please enter a valid value!",
         lowRisk: "Low Risk", 
         mediumRisk: "Medium Risk", 
-        highRisk: "High Risk", 
+        highRisk: "High Risk",
+        experimentalLowRisk: "Experimental - ICH Less Likely", 
+        experimentalMediumRisk: "Experimental - ICH Possible", 
+        experimentalHighRisk: "Experimental - ICH More Likely", 
         disclaimer: "The calculations are for research purposes only, do not make clinical decisions based on it.",
         confirmButton: "Confirm",
         probability: "Probability",
@@ -414,9 +600,13 @@
         gfapLabel: "GFAP Value (pg/mL)",
         ageLabel: "Patient Age (Years)",
         sbpLabel: "Systolic BP (mmHg)",
-        sbpError: "Valid SBP range: 50-250 mmHg.",
+        sbpError: "Valid SBP range: 50-300 mmHg.", 
+        dbpLabel: "Diastolic BP (mmHg)", 
+        dbpError: "Valid DBP range: 30-200 mmHg.", 
+        fastEdError: "Invalid FAST ED Score (0-9).", 
+        raceScoreError: "Invalid RACE Score (0-9).", 
         invalidAge: "Please enter valid age (18-120).",
-        invalidGFAP: "Invalid GFAP value. Must be between 29 and 10001.",
+        invalidGFAP: "Invalid GFAP value. Must be between 0 and 50000.", 
         prerequisite1: "Confirmed time window < 6 hours",
         prerequisite2: "No neurological deficits before the event",
         prerequisite3: "No identifiable head trauma (severe fall)",
@@ -425,85 +615,211 @@
         gfapPlaceholder: "GFAP Value (pg/mL)",
         agePlaceholder: "Patient Age (Years)",
         sbpPlaceholder: "Systolic BP (mmHg)",
+        dbpPlaceholder: "e.g., 90", 
         accessCodePlaceholder: "Enter code",
         darkModeToggleLabelOn: "Switch to Light Mode",
         darkModeToggleLabelOff: "Switch to Dark Mode",
+        advAgeLabel: "Patient Age (Years)",
+        advGfapLabel: "GFAP Value (pg/mL)",
+        advSbpLabel: "Systolic BP (mmHg)",
+        advDbpLabel: "Diastolic BP (mmHg)",
+        advFastEdDisplayLabel: "FAST ED Score:",
+        toggleFastEdBtnTextCalculate: "Calculate/Edit",
+        toggleFastEdBtnTextHide: "Hide Components",
+        fastEdInfoText: "Select present findings for FAST ED:",
+        fastEdFacialPalsyLabel: "Facial Palsy (Partial/Complete)",
+        fastEdArmWeaknessLabel: "Arm Weakness",
+        fastEdArm0Label: "0 - No drift",
+        fastEdArm1Label: "1 - Drifts down",
+        fastEdArm2Label: "2 - No effort / Falls",
+        fastEdSpeechChangesLabel: "Speech Changes",
+        fastEdSpeech0Label: "0 - Normal",
+        fastEdSpeech1Label: "1 - Mild/Moderate",
+        fastEdSpeech2Label: "2 - Severe/Mute",
+        fastEdEyeDeviationLabel: "Eye Deviation",
+        fastEdEye0Label: "0 - Absent",
+        fastEdEye1Label: "1 - Partial",
+        fastEdEye2Label: "2 - Forced Deviation",
+        fastEdDenialNeglectLabel: "Denial/Neglect",
+        fastEdDenial0Label: "0 - Absent",
+        fastEdDenial1Label: "1 - Mild (e.g., Extinction)",
+        fastEdDenial2Label: "2 - Severe (e.g., Unawareness)",
+        advRaceScoreDisplayLabel: "RACE Score:",
+        raceInfoText: "Select findings for RACE Score:",
+        raceFacialPalsyLabel: "Facial Palsy",
+        raceFacial0Label: "0 - Absent",
+        raceFacial1Label: "1 - Mild",
+        raceFacial2Label: "2 - Moderate/Severe",
+        raceArmMotorLabel: "Arm Motor Function",
+        raceArm0Label: "0 - Holds >10s",
+        raceArm1Label: "1 - Holds <10s",
+        raceArm2Label: "2 - No effort",
+        raceLegMotorLabel: "Leg Motor Function",
+        raceLeg0Label: "0 - Holds >5s",
+        raceLeg1Label: "1 - Holds <5s",
+        raceLeg2Label: "2 - No effort",
+        raceGazeDeviationLabel: "Head/Gaze Deviation Present",
+        raceAphasiaAgnosiaLabel: "Aphasia (Right Paresis) / Agnosia (Left Paresis)",
+        raceAphasiaInfo: "(If Right weakness: test commands. If Left weakness: test awareness.)",
+        raceAphasiaAgnosia0Label: "0 - Normal / Neither",
+        raceAphasiaAgnosia1Label: "1 - Performs 1 task / One present",
+        raceAphasiaAgnosia2Label: "2 - Performs 0 tasks / Both or severe",
+        advAdditionalSymptomsLabel: "Additional Symptoms & History (Check if Present/Yes):",
+        advEyeDeviationFlippedLabel: "Eye Deviation (Symptom)", 
+        advArmPareseFlippedLabel: "Arm Paresis (Symptom)",    
+        advBeinPareseFlippedLabel: "Leg Paresis (Symptom)",     
+        advVigilanzminderungLabel: "Reduced Vigilance",
+        advAfibLabel: "Known Atrial Fibrillation",
+        advHeadacheLabel: "Headache",
+        advNoakLabel: "On Anticoagulants (NOAK)",
+        advAntiplateletsLabel: "On Antiplatelets",
       },
       de: {
         appTitle: "iGFAP Check",
         codePrompt: "🔑 Bitte geben Sie Ihren Zugangscode ein:",
-        accessCodeButton: "Senden",
+        accessCodeButton: "Absenden",
         homeButton: "🏠 Startseite",
         moduleSelectionTitle: "Wahrscheinlichkeit prüfen für:",
-        comaModuleButton: "Intrakranielle Blutungen bei komatösen Patienten (GCS 3-8)",
-        strokeModuleButton: "Intrazerebrale Blutungen bei Patienten mit Schlaganfallsymptomen",
-        comaModuleTitle: "Intrakranielle Blutungen bei komatösen Patienten (GCS 3-8)",
-        strokeModuleTitle: "Intrazerebrale Blutungen bei Patienten mit Schlaganfallsymptomen",
+        comaModuleButton: "Intrakranielle Blutung bei komatösen Patienten (GCS 3-8)",
+        strokeModuleButton: "Schlaganfall-Modul",
+        switchToAdvancedStrokeButton: "Erweitertes Modell verwenden (14 Parameter - Experimentell)",
+        advancedStrokeModuleTitle: "Erweitertes Schlaganfall-Modell (Experimentell - 14 Parameter)",
+        comaModuleTitle: "Intrakranielle Blutung bei komatösen Patienten (GCS 3-8)",
+        strokeModuleTitle: "Intrazerebrale Blutung bei Patienten mit Schlaganfallsymptomen (Standard)",
         strokePrerequisiteTitle: "Voraussetzungen für die Schlaganfallrisikoberechnung",
-        accessError: "Falscher Code oder Serverfehler. Bitte versuchen Sie es erneut.", 
+        accessError: "Falscher Code oder Serverfehler. Bitte versuchen Sie es erneut.",
         prerequisiteError: "Alle Voraussetzungen müssen erfüllt sein, um fortzufahren.",
+        advancedStrokeError: "Bitte füllen Sie alle Felder mit gültigen Werten aus und stellen Sie sicher, dass die Scores berechnet wurden.",
         calculateButton: "Wahrscheinlichkeit berechnen",
+        calculateAdvancedStrokeButton: "Erweiterte Wahrscheinlichkeit berechnen",
         proceedButton: "Zur Berechnung fortfahren",
         backButton: "⬅️ Zurück",
-        rangeErrorGFAP: "Bitte geben Sie einen GFAP-Wert zwischen 29 und 10001 pg/mL ein.",
+        backToStandardStrokeButton: "⬅️ Zurück zum Standard-Schlaganfall",
+        rangeErrorGFAP: "Bitte geben Sie einen GFAP-Wert zwischen 0 und 50000 pg/mL ein.",
         invalidInput: "Bitte geben Sie einen gültigen Wert ein!",
-        lowRisk: "Geringes Risiko", 
-        mediumRisk: "Mittleres Risiko", 
-        highRisk: "Hohes Risiko", 
-        disclaimer: "Die Berechnungen dienen nur Forschungszwecken, treffen Sie keine klinischen Entscheidungen basierend darauf.",
+        lowRisk: "Geringes Risiko",
+        mediumRisk: "Mittleres Risiko",
+        highRisk: "Hohes Risiko",
+        experimentalLowRisk: "Experimentell - ICH unwahrscheinlich",
+        experimentalMediumRisk: "Experimentell - ICH möglich",
+        experimentalHighRisk: "Experimentell - ICH wahrscheinlich",
+        disclaimer: "Die Berechnungen dienen nur Forschungszwecken. Treffen Sie keine klinischen Entscheidungen auf dieser Grundlage.",
         confirmButton: "Bestätigen",
         probability: "Wahrscheinlichkeit",
         riskLevel: "Risikostufe",
         gfapLabel: "GFAP-Wert (pg/mL)",
         ageLabel: "Patientenalter (Jahre)",
-        sbpLabel: "Systolischer RR (mmHg)",
-        sbpError: "Gültiger RR-Bereich: 50-250 mmHg.",
-        invalidAge: "Bitte gültiges Alter eingeben (18-120).",
-        invalidGFAP: "Ungültiger GFAP-Wert. Muss zwischen 29 und 10001 liegen.",
-        prerequisite1: "Gesichertes Zeitfenster < 6 Stunden",
+        sbpLabel: "Systolischer Blutdruck (mmHg)",
+        sbpError: "Gültiger systolischer Blutdruckbereich: 50-300 mmHg.",
+        dbpLabel: "Diastolischer Blutdruck (mmHg)",
+        dbpError: "Gültiger diastolischer Blutdruckbereich: 30-200 mmHg.",
+        fastEdError: "Ungültiger FAST-ED-Score (0-9).",
+        raceScoreError: "Ungültiger RACE-Score (0-9).",
+        invalidAge: "Bitte geben Sie ein gültiges Alter ein (18-120).",
+        invalidGFAP: "Ungültiger GFAP-Wert. Muss zwischen 0 und 50000 liegen.",
+        prerequisite1: "Bestätigtes Zeitfenster < 6 Stunden",
         prerequisite2: "Keine neurologischen Defizite vor dem Ereignis",
         prerequisite3: "Kein erkennbares Schädel-Hirn-Trauma (schwerer Sturz)",
-        prerequisite4: "FAST ED Score >= 3 Punkte",
+        prerequisite4: "FAST-ED-Score >= 3 Punkte",
         serverError: "Ein Serverfehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
         gfapPlaceholder: "GFAP-Wert (pg/mL)",
         agePlaceholder: "Patientenalter (Jahre)",
-        sbpPlaceholder: "Systolischer RR (mmHg)",
+        sbpPlaceholder: "Systolischer Blutdruck (mmHg)",
+        dbpPlaceholder: "z.B. 90",
         accessCodePlaceholder: "Code eingeben",
-        darkModeToggleLabelOn: "Heller Modus aktivieren",
-        darkModeToggleLabelOff: "Dunkler Modus aktivieren",
+        darkModeToggleLabelOn: "Wechseln zu Hellmodus",
+        darkModeToggleLabelOff: "Wechseln zu Dunkelmodus",
+        advAgeLabel: "Patientenalter (Jahre)",
+        advGfapLabel: "GFAP-Wert (pg/mL)",
+        advSbpLabel: "Systolischer Blutdruck (mmHg)",
+        advDbpLabel: "Diastolischer Blutdruck (mmHg)",
+        advFastEdDisplayLabel: "FAST-ED-Score:",
+        toggleFastEdBtnTextCalculate: "Berechnen/Bearbeiten",
+        toggleFastEdBtnTextHide: "Komponenten ausblenden",
+        fastEdInfoText: "Wählen Sie vorhandene Befunde für FAST-ED:",
+        fastEdFacialPalsyLabel: "Fazialisparese (teilweise/komplett)",
+        fastEdArmWeaknessLabel: "Arm-Schwäche",
+        fastEdArm0Label: "0 - Kein Absinken",
+        fastEdArm1Label: "1 - Absinken",
+        fastEdArm2Label: "2 - Keine Bewegung / Fällt",
+        fastEdSpeechChangesLabel: "Sprachveränderungen",
+        fastEdSpeech0Label: "0 - Normal",
+        fastEdSpeech1Label: "1 - Leicht/mittelgradig",
+        fastEdSpeech2Label: "2 - Schwer/Stumm",
+        fastEdEyeDeviationLabel: "Blickdeviation",
+        fastEdEye0Label: "0 - Abwesend",
+        fastEdEye1Label: "1 - Teilweise",
+        fastEdEye2Label: "2 - Forcierte Deviation",
+        fastEdDenialNeglectLabel: "Verleugnung/Neglect",
+        fastEdDenial0Label: "0 - Abwesend",
+        fastEdDenial1Label: "1 - Leicht (z.B. Extinktion)",
+        fastEdDenial2Label: "2 - Schwer (z.B. Unbewusstheit)",
+        advRaceScoreDisplayLabel: "RACE-Score:",
+        raceInfoText: "Wählen Sie Befunde für den RACE-Score:",
+        raceFacialPalsyLabel: "Fazialisparese",
+        raceFacial0Label: "0 - Abwesend",
+        raceFacial1Label: "1 - Leicht",
+        raceFacial2Label: "2 - Mittelgradig/schwer",
+        raceArmMotorLabel: "Armmotorik",
+        raceArm0Label: "0 - Hält >10s",
+        raceArm1Label: "1 - Hält <10s",
+        raceArm2Label: "2 - Keine Bewegung",
+        raceLegMotorLabel: "Beinmotorik",
+        raceLeg0Label: "0 - Hält >5s",
+        raceLeg1Label: "1 - Hält <5s",
+        raceLeg2Label: "2 - Keine Bewegung",
+        raceGazeDeviationLabel: "Kopf-/Blickdeviation vorhanden",
+        raceAphasiaAgnosiaLabel: "Aphasie (rechtsseitige Parese) / Agnosie (linksseitige Parese)",
+        raceAphasiaInfo: "(Bei rechtsseitiger Schwäche: Befehle testen. Bei linksseitiger Schwäche: Bewusstheit testen.)",
+        raceAphasiaAgnosia0Label: "0 - Normal / Keines",
+        raceAphasiaAgnosia1Label: "1 - Führt eine Aufgabe aus / Eines vorhanden",
+        raceAphasiaAgnosia2Label: "2 - Führt keine Aufgabe aus / Beide oder schwer",
+        advAdditionalSymptomsLabel: "Zusätzliche Symptome & Anamnese (Ankreuzen, falls vorhanden/ja):",
+        advEyeDeviationFlippedLabel: "Blickdeviation (Symptom)",
+        advArmPareseFlippedLabel: "Armparese (Symptom)",
+        advBeinPareseFlippedLabel: "Beinparese (Symptom)",
+        advVigilanzminderungLabel: "Vigilanzminderung",
+        advAfibLabel: "Bekanntes Vorhofflimmern",
+        advHeadacheLabel: "Kopfschmerzen",
+        advNoakLabel: "Antikoagulanzien (NOAK)",
+        advAntiplateletsLabel: "Thrombozytenaggregationshemmer",
       }
     };
 
-    const ALL_SECTIONS = ['codeEntrySection', 'moduleSelectionSection', 'comaModuleSection', 'strokePrerequisiteSection', 'strokeModuleSection'];
+    const ALL_SECTIONS = ['codeEntrySection', 'moduleSelectionSection', 'comaModuleSection', 'strokePrerequisiteSection', 'strokeModuleSection', 'advancedStrokeModuleSection']; 
 
     function showSection(sectionIdToShow) {
       ALL_SECTIONS.forEach(id => {
         const section = document.getElementById(id);
-        if (id === sectionIdToShow) {
-          section.classList.remove('hidden');
-        } else {
-          section.classList.add('hidden');
+        if (section) { 
+            if (id === sectionIdToShow) {
+                section.classList.remove('hidden');
+            } else {
+                section.classList.add('hidden');
+            }
         }
       });
     }
     
     function updateTextContent(elementId, translationKey) {
         const element = document.getElementById(elementId);
-        if (element && element.querySelector('span')) { 
-            element.querySelector('span').textContent = translations[currentLang][translationKey];
-        } else if (element) {
-            element.textContent = translations[currentLang][translationKey];
+        if (element && translations[currentLang] && translations[currentLang][translationKey] !== undefined) {
+            const target = element.querySelector('span') || element; 
+            target.textContent = translations[currentLang][translationKey];
+        } else if (element && translations[currentLang] && translations[currentLang][translationKey] === undefined) { 
+            console.warn(`Translation key '${translationKey}' not found for lang '${currentLang}' for elementId '${elementId}'`);
         }
     }
 
     function updatePlaceholder(elementId, translationKey) {
         const element = document.getElementById(elementId);
-        if (element) {
+        if (element && translations[currentLang] && translations[currentLang][translationKey] !== undefined) {
             element.placeholder = translations[currentLang][translationKey];
         }
     }
 
     function setButtonLoading(buttonElement, isLoading) {
+        if (!buttonElement) return;
         if (isLoading) {
             buttonElement.classList.add('loading');
             buttonElement.disabled = true;
@@ -513,12 +829,11 @@
         }
     }
 
-
     function switchLanguage(lang) {
       currentLang = lang;
       document.documentElement.lang = lang; 
       localStorage.setItem('language', lang); 
-      const texts = translations[lang];
+      const texts = translations[lang] || translations.en; 
 
       updateTextContent('appTitle', 'appTitle');
       updateTextContent('codePrompt', 'codePrompt');
@@ -528,7 +843,7 @@
       updateTextContent('moduleSelectionTitle', 'moduleSelectionTitle');
       updateTextContent('comaModuleButton', 'comaModuleButton');
       updateTextContent('strokeModuleButton', 'strokeModuleButton');
-
+      
       updateTextContent('comaModuleTitle', 'comaModuleTitle');
       updateTextContent('gfapComaLabel', 'gfapLabel');
       updateTextContent('calculateComaButton', 'calculateButton');
@@ -547,7 +862,26 @@
       updateTextContent('gfapStrokeLabel', 'gfapLabel');
       updateTextContent('sbpLabel', 'sbpLabel');
       updateTextContent('calculateStrokeButton', 'calculateButton');
+      updateTextContent('switchToAdvancedStrokeButton', 'switchToAdvancedStrokeButton'); 
       updateTextContent('strokeModuleBackButton', 'backButton');
+
+      updateTextContent('advancedStrokeModuleTitle', 'advancedStrokeModuleTitle');
+      updateTextContent('advAgeLabel', 'advAgeLabel');
+      updateTextContent('advGfapLabel', 'advGfapLabel');
+      updateTextContent('advSbpLabel', 'advSbpLabel');
+      updateTextContent('advDbpLabel', 'advDbpLabel');
+      
+      const fastEdContainer = document.getElementById('fastEdComponentsContainer');
+      const fastEdBtnTextEl = document.getElementById('toggleFastEdBtnText');
+      if(fastEdBtnTextEl) fastEdBtnTextEl.textContent = texts[fastEdContainer && fastEdContainer.classList.contains('hidden') ? 'toggleFastEdBtnTextCalculate' : 'toggleFastEdBtnTextHide'];
+      
+      Object.keys(texts).filter(k => k.startsWith('fastEd') || k.startsWith('advRace') || k.startsWith('race')).forEach(key => updateTextContent(key, key));
+            
+      updateTextContent('advAdditionalSymptomsLabel', 'advAdditionalSymptomsLabel');
+      Object.keys(texts).filter(k => k.startsWith('adv') && (k.endsWith('Label') || k.endsWith('FlippedLabel'))).forEach(key => updateTextContent(key, key));
+
+      updateTextContent('calculateAdvancedStrokeButton', 'calculateAdvancedStrokeButton');
+      updateTextContent('advancedStrokeModuleBackButton', 'backToStandardStrokeButton');
       
       updateTextContent('disclaimerModalTitleText', 'disclaimer');
       updateTextContent('disclaimerConfirmButton', 'confirmButton');
@@ -557,66 +891,147 @@
       updatePlaceholder('ageInput', 'agePlaceholder');
       updatePlaceholder('gfapStrokeInput', 'gfapPlaceholder');
       updatePlaceholder('sbpInput', 'sbpPlaceholder');
+      updatePlaceholder('advAgeInput', 'agePlaceholder');
+      updatePlaceholder('advGfapInput', 'gfapPlaceholder');
+      updatePlaceholder('advSbpInput', 'sbpPlaceholder');
+      updatePlaceholder('advDbpInput', 'dbpPlaceholder');
 
       const darkModeButton = document.getElementById('darkModeToggle'); 
-      if (document.body.classList.contains('dark-mode')) {
-        darkModeButton.setAttribute('aria-label', texts.darkModeToggleLabelOn);
-      } else {
-        darkModeButton.setAttribute('aria-label', texts.darkModeToggleLabelOff);
+      if (darkModeButton) {
+        darkModeButton.setAttribute('aria-label', document.body.classList.contains('dark-mode') ? texts.darkModeToggleLabelOn : texts.darkModeToggleLabelOff);
       }
-
-      const accessErrorEl = document.getElementById('accessError');
-      if (!accessErrorEl.classList.contains('hidden')) {
-          if (accessErrorEl.dataset.isServerError === "true") {
-            accessErrorEl.textContent = texts.serverError;
-          } else {
-            accessErrorEl.textContent = texts.accessError;
+      
+      ['accessError', 'prerequisiteError', 'advancedStrokeError'].forEach(errId => {
+          const errEl = document.getElementById(errId);
+          if (errEl && !errEl.classList.contains('hidden')) {
+              let key = errId; 
+              if (errId === 'accessError' && errEl.dataset.isServerError === "true") {
+                  key = 'serverError';
+              }
+              errEl.textContent = texts[key] || "An error occurred.";
           }
-      }
-      if (!document.getElementById('prerequisiteError').classList.contains('hidden')) {
-          document.getElementById('prerequisiteError').textContent = texts.prerequisiteError;
-      }
+      });
     }
 
     function resetComaModuleInputs() {
-        document.getElementById('gfapComaInput').value = '';
+        const gfapInput = document.getElementById('gfapComaInput');
+        if(gfapInput) gfapInput.value = '';
         const comaResult = document.getElementById('comaResult');
-        comaResult.classList.add('hidden');
-        comaResult.innerHTML = '';
-        comaResult.className = 'result hidden'; 
+        if(comaResult) {
+            comaResult.classList.add('hidden');
+            comaResult.innerHTML = '';
+            comaResult.className = 'result hidden'; 
+        }
     }
 
-    function resetStrokeModuleInputs() {
-        document.getElementById('ageInput').value = '';
-        document.getElementById('gfapStrokeInput').value = '';
-        document.getElementById('sbpInput').value = '';
-        const strokeResult = document.getElementById('strokeResult');
-        strokeResult.classList.add('hidden');
-        strokeResult.innerHTML = '';
-        strokeResult.className = 'result hidden'; 
-
-        ['prerequisite1', 'prerequisite2', 'prerequisite3', 'prerequisite4'].forEach(id => {
-            document.getElementById(id).checked = false;
+    function resetStrokeModuleInputs() { 
+        ['ageInput', 'gfapStrokeInput', 'sbpInput'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
         });
-        document.getElementById('prerequisiteError').classList.add('hidden');
+        const strokeResult = document.getElementById('strokeResult');
+        if(strokeResult) {
+            strokeResult.classList.add('hidden');
+            strokeResult.innerHTML = '';
+            strokeResult.className = 'result hidden'; 
+        }
+        ['prerequisite1', 'prerequisite2', 'prerequisite3', 'prerequisite4'].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.checked = false;
+        });
+        const prereqError = document.getElementById('prerequisiteError');
+        if(prereqError) prereqError.classList.add('hidden');
     }
+
+    function resetAdvancedStrokeModuleInputs() {
+        const fieldsToClear = ['advAgeInput', 'advGfapInput', 'advSbpInput', 'advDbpInput'];
+        fieldsToClear.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+
+        const checkboxesToClear = [
+            'advEyeDeviationFlippedInput', 'advArmPareseFlippedInput', 'advBeinPareseFlippedInput', 
+            'advVigilanzminderungInput', 'advAfibInput', 'advHeadacheInput', 
+            'advNoakInput', 'advAntiplateletsInput',
+            'fastEdFacialPalsy', 
+            'raceGazeDeviation'  
+        ];
+        checkboxesToClear.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.checked = false;
+        });
+
+        const selectsToReset = { 
+            'fastEdArmWeakness': "0", 'fastEdSpeechChanges': "0", 'fastEdEyeDeviation': "0", 'fastEdDenialNeglect': "0",
+            'raceFacialPalsy': "0", 'raceArmMotor': "0", 'raceLegMotor': "0", 'raceAphasiaAgnosia': "0"
+        };
+        for (const id in selectsToReset) {
+            const el = document.getElementById(id);
+            if (el) el.value = selectsToReset[id];
+        }
+
+        if (typeof updateFastEdScore === "function") updateFastEdScore();
+        if (typeof updateRaceScore === "function") updateRaceScore();
+
+        ['fastEdComponentsContainer', 'raceComponentsContainer'].forEach(containerId => {
+            const container = document.getElementById(containerId);
+            if (container) container.classList.add('hidden');
+        });
+        ['toggleFastEdBtn', 'toggleRaceBtn'].forEach(btnId => {
+            const btn = document.getElementById(btnId);
+            if (btn) btn.setAttribute('aria-expanded', 'false');
+            const btnTextEl = document.getElementById(btnId + "Text");
+            if (btnTextEl && translations[currentLang]) {
+                 btnTextEl.textContent = translations[currentLang].toggleFastEdBtnTextCalculate || "Calculate/Edit";
+            }
+        });
+        
+        const resultEl = document.getElementById('advancedStrokeResult');
+        if (resultEl) {
+            resultEl.classList.add('hidden');
+            resultEl.innerHTML = '';
+            resultEl.className = 'result hidden';
+        }
+        const errorEl = document.getElementById('advancedStrokeError');
+        if (errorEl) errorEl.classList.add('hidden');
+    }
+
 
     function navigateToModuleSelection() {
       showSection('moduleSelectionSection');
       resetComaModuleInputs();
       resetStrokeModuleInputs();
-      document.getElementById('accessCodeInput').value = ''; 
-      document.getElementById('accessError').classList.add('hidden');
-      document.getElementById('prerequisiteError').classList.add('hidden');
+      if (typeof resetAdvancedStrokeModuleInputs === "function") resetAdvancedStrokeModuleInputs(); 
+      const accessCodeInput = document.getElementById('accessCodeInput');
+      if(accessCodeInput) accessCodeInput.value = ''; 
+      const accessErrorEl = document.getElementById('accessError');
+      if(accessErrorEl) accessErrorEl.classList.add('hidden');
+      const prereqErrorEl = document.getElementById('prerequisiteError');
+      if(prereqErrorEl) prereqErrorEl.classList.add('hidden');
+      const advErrorEl = document.getElementById('advancedStrokeError');
+      if(advErrorEl) advErrorEl.classList.add('hidden');
     }
     
-    function navigateToCodeEntry() {
+    function navigateToCodeEntry() { 
         showSection('codeEntrySection');
         resetComaModuleInputs();
         resetStrokeModuleInputs();
-        document.getElementById('accessCodeInput').value = '';
-        document.getElementById('accessCodeInput').focus();
-        document.getElementById('accessError').classList.add('hidden');
+        if (typeof resetAdvancedStrokeModuleInputs === "function") resetAdvancedStrokeModuleInputs();
+        const accessCodeInput = document.getElementById('accessCodeInput');
+        if(accessCodeInput) {
+            accessCodeInput.value = '';
+            accessCodeInput.focus();
+        }
+        const accessErrorEl = document.getElementById('accessError');
+        if(accessErrorEl) accessErrorEl.classList.add('hidden');
+    }
+
+    function navigateToStrokeModule() { 
+        showSection('strokeModuleSection');
+        if (typeof resetAdvancedStrokeModuleInputs === "function") resetAdvancedStrokeModuleInputs();
+        const ageInput = document.getElementById('ageInput');
+        if(ageInput) ageInput.focus(); 
     }
 
 
@@ -632,28 +1047,21 @@
         accessErrorEl.dataset.isServerError = "false";
         return;
       }
-
       setButtonLoading(accessCodeButton, true);
       accessErrorEl.classList.add('hidden'); 
-
       try {
         const response = await fetch(ACCESS_CODE_VALIDATOR_URL, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ accessCode: accessCode }),
         });
-
         const data = await response.json();
-
         if (response.ok && data.success) {
           navigateToModuleSelection();
-          accessErrorEl.classList.add('hidden');
         } else {
           accessErrorEl.textContent = data.message || translations[currentLang].accessError;
           accessErrorEl.classList.remove('hidden');
-          accessErrorEl.dataset.isServerError = "false";
+          accessErrorEl.dataset.isServerError = String(response.status >= 500);
         }
       } catch (error) {
         console.error("Error validating access code:", error);
@@ -668,78 +1076,155 @@
     function startComaModule() {
       showSection('comaModuleSection');
       resetComaModuleInputs(); 
-      document.getElementById('gfapComaInput').focus(); 
+      const gfapInput = document.getElementById('gfapComaInput');
+      if(gfapInput) gfapInput.focus(); 
     }
 
-    function startStrokeModule() {
+    function startStandardStrokeModule() { 
       showSection('strokePrerequisiteSection');
       resetStrokeModuleInputs(); 
-      document.getElementById('prerequisite1').focus(); 
+      const prereq1 = document.getElementById('prerequisite1');
+      if(prereq1) prereq1.focus(); 
+    }
+    
+    function startAdvancedStrokeModuleFromStandard() { 
+        showSection('advancedStrokeModuleSection');
+        resetAdvancedStrokeModuleInputs(); 
+        const advAgeInput = document.getElementById('advAgeInput');
+        if(advAgeInput) advAgeInput.focus();
     }
 
     function validatePrerequisites() {
-      const checks = [
-        document.getElementById('prerequisite1').checked,
-        document.getElementById('prerequisite2').checked,
-        document.getElementById('prerequisite3').checked,
-        document.getElementById('prerequisite4').checked
-      ];
+      const checksMet = ['prerequisite1', 'prerequisite2', 'prerequisite3', 'prerequisite4']
+                        .every(id => document.getElementById(id)?.checked);
       const prerequisiteErrorEl = document.getElementById('prerequisiteError');
       
-      if (checks.every(c => c)) {
-        showSection('strokeModuleSection');
-        document.getElementById('ageInput').focus(); 
-        prerequisiteErrorEl.classList.add('hidden');
+      if (checksMet) {
+        showSection('strokeModuleSection'); 
+        const ageInput = document.getElementById('ageInput');
+        if(ageInput) ageInput.focus(); 
+        if(prerequisiteErrorEl) prerequisiteErrorEl.classList.add('hidden');
       } else {
-        prerequisiteErrorEl.textContent = translations[currentLang].prerequisiteError;
-        prerequisiteErrorEl.classList.remove('hidden');
+        if(prerequisiteErrorEl) {
+            prerequisiteErrorEl.textContent = translations[currentLang].prerequisiteError;
+            prerequisiteErrorEl.classList.remove('hidden');
+        }
       }
     }
 
     function showDisclaimer() {
       const modal = document.getElementById('disclaimerModal');
+      if (!modal) return;
       modal.style.display = 'flex'; 
       setTimeout(() => {
           modal.classList.add('show');
-          document.getElementById('disclaimerConfirmButton').focus(); 
+        const confirmBtn = document.getElementById('disclaimerConfirmButton');
+          if(confirmBtn) confirmBtn.focus(); 
       }, 10); 
     }
 
     function closeDisclaimer() {
       const modal = document.getElementById('disclaimerModal');
+      if (!modal) return;
       modal.classList.remove('show');
       modal.addEventListener('transitionend', function handler() {
         modal.style.display = 'none';
         modal.removeEventListener('transitionend', handler); 
-        if (pendingResult && pendingResult.element.id === 'comaResult') {
-            document.getElementById('calculateComaButton').focus();
-        } else if (pendingResult && pendingResult.element.id === 'strokeResult') {
-            document.getElementById('calculateStrokeButton').focus();
+        if (pendingResult) {
+            let focusButtonId = null;
+            if (pendingResult.element.id === 'comaResult') focusButtonId = 'calculateComaButton';
+            else if (pendingResult.element.id === 'strokeResult') focusButtonId = 'calculateStrokeButton';
+            else if (pendingResult.element.id === 'advancedStrokeResult') focusButtonId = 'calculateAdvancedStrokeButton';
+            
+            const focusButton = document.getElementById(focusButtonId);
+            if (focusButton) focusButton.focus();
         }
-
       }, { once: true }); 
     }
 
+    let updateFastEdScore, updateRaceScore; 
+
+    function setupInteractiveScore(
+        toggleBtnId, 
+        componentsContainerId, 
+        scoreDisplayId, 
+        hiddenInputId, 
+        componentConfig 
+    ) {
+        const toggleBtn = document.getElementById(toggleBtnId);
+        const componentsDiv = document.getElementById(componentsContainerId);
+        const scoreDisplay = document.getElementById(scoreDisplayId);
+        const hiddenInput = document.getElementById(hiddenInputId);
+        const toggleBtnTextEl = document.getElementById(toggleBtnId + "Text");
+
+        if (!toggleBtn || !componentsDiv || !scoreDisplay || !hiddenInput || !toggleBtnTextEl) {
+            return () => {}; 
+        }
+
+        function calculateAndUpdate() {
+            let currentScore = 0;
+            componentConfig.forEach(comp => {
+                const element = document.getElementById(comp.id);
+                if (element) {
+                    if (comp.type === 'checkbox') {
+                        if (element.checked) {
+                            currentScore += parseInt(comp.points || element.dataset.points || 0);
+                        }
+                    } else if (comp.type === 'select') {
+                        currentScore += parseInt(element.value);
+                    }
+                }
+            });
+            scoreDisplay.textContent = currentScore;
+            hiddenInput.value = currentScore;
+        }
+
+        componentConfig.forEach(comp => {
+            const element = document.getElementById(comp.id);
+            if (element) {
+                element.addEventListener('change', calculateAndUpdate);
+            }
+        });
+
+        toggleBtn.addEventListener('click', () => {
+            const isHiddenAfterToggle = componentsDiv.classList.toggle('hidden');
+            toggleBtn.setAttribute('aria-expanded', String(!isHiddenAfterToggle));
+            
+            let calculateKey = 'toggleFastEdBtnTextCalculate'; // Generic, can be specified
+            let hideKey = 'toggleFastEdBtnTextHide';
+            
+            toggleBtnTextEl.textContent = translations[currentLang][isHiddenAfterToggle ? calculateKey : hideKey];
+            
+             if (!isHiddenAfterToggle && componentConfig.length > 0) {
+                const firstComponent = document.getElementById(componentConfig[0].id);
+                if(firstComponent) firstComponent.focus();
+            }
+        });
+        
+        calculateAndUpdate(); 
+        return calculateAndUpdate; 
+    }
+
+
     async function calculateComaRisk() {
       const gfapInput = document.getElementById('gfapComaInput');
-      const gfap = parseFloat(gfapInput.value);
+      const gfap = parseFloat(gfapInput?.value); 
       const resultEl = document.getElementById('comaResult');
       const calculateButton = document.getElementById('calculateComaButton');
       
+      if(!resultEl) return;
       resultEl.classList.add('hidden'); 
       resultEl.className = 'result hidden'; 
 
-      if (isNaN(gfap) || gfap < 29 || gfap > 10001) {
-        resultEl.textContent = translations[currentLang].rangeErrorGFAP;
+      if (isNaN(gfap) || gfap < 29 || gfap > 10001) { 
+        resultEl.textContent = translations[currentLang].rangeErrorGFAP.replace('0 and 50000', '29 and 10001'); 
         resultEl.classList.add('warning');
         resultEl.classList.remove('hidden');
-        gfapInput.focus(); 
+        if(gfapInput) gfapInput.focus(); 
         return;
       }
       
       setButtonLoading(calculateButton, true);
-      resultEl.classList.add('hidden'); 
-
       try {
         const response = await fetch(COMA_CALCULATOR_URL, {
           method: 'POST',
@@ -747,73 +1232,56 @@
           body: JSON.stringify({ gfap: gfap }) 
         });
         const data = await response.json(); 
-
         if (response.ok && data.success) {
           showDisclaimer(); 
-          
-          const riskLevelTranslationKey = data.riskLevelText.charAt(0).toLowerCase() + data.riskLevelText.slice(1).replace(/\s+/g, '');
-
+          const riskLevelKey = (data.riskLevelText || "").toLowerCase().replace(/\s+/g, '');
           pendingResult = {
             element: resultEl,
             html: `<strong>${translations[currentLang].probability}:</strong> ${data.probability.toFixed(1)}%<br>
-                   <strong>${translations[currentLang].riskLevel}:</strong> <span class="${data.riskClass}">${translations[currentLang][riskLevelTranslationKey] || data.riskLevelText}</span>`, 
-            baseClass: 'result',
-            riskClass: data.riskClass 
+                   <strong>${translations[currentLang].riskLevel}:</strong> <span class="${data.riskClass}">${translations[currentLang][riskLevelKey] || data.riskLevelText}</span>`, 
+            baseClass: 'result', riskClass: data.riskClass 
           };
         } else {
           resultEl.textContent = data.message || translations[currentLang].serverError;
-          resultEl.classList.add('warning');
-          resultEl.classList.remove('hidden');
+          resultEl.classList.add('warning'); resultEl.classList.remove('hidden');
         }
       } catch (error) {
-        console.error("Error calculating coma risk via Cloud Function:", error);
+        console.error("Error calculating coma risk:", error);
         resultEl.textContent = translations[currentLang].serverError;
-        resultEl.classList.add('warning');
-        resultEl.classList.remove('hidden');
+        resultEl.classList.add('warning'); resultEl.classList.remove('hidden');
       } finally {
         setButtonLoading(calculateButton, false);
       }
     }
 
-    async function calculateStrokeRisk() {
+    async function calculateStrokeRisk() { 
       const ageInput = document.getElementById('ageInput');
       const gfapStrokeInput = document.getElementById('gfapStrokeInput');
       const sbpInput = document.getElementById('sbpInput');
       const resultEl = document.getElementById('strokeResult');
       const calculateButton = document.getElementById('calculateStrokeButton');
 
-      const age = parseInt(ageInput.value);
-      const gfap = parseFloat(gfapStrokeInput.value);
-      const sbp = parseFloat(sbpInput.value);
+      if(!resultEl) return;
+      const age = parseInt(ageInput?.value);
+      const gfap = parseFloat(gfapStrokeInput?.value);
+      const sbp = parseFloat(sbpInput?.value);
 
-      resultEl.classList.add('hidden');
-      resultEl.className = 'result hidden';
+      resultEl.classList.add('hidden'); resultEl.className = 'result hidden';
 
       if (isNaN(age) || age < 18 || age > 120) {
         resultEl.textContent = translations[currentLang].invalidAge;
-        resultEl.classList.add('warning');
-        resultEl.classList.remove('hidden');
-        ageInput.focus();
-        return;
+        resultEl.classList.add('warning'); resultEl.classList.remove('hidden'); if(ageInput) ageInput.focus(); return;
       }
-      if (isNaN(gfap) || gfap < 29 || gfap > 10001) {
-        resultEl.textContent = translations[currentLang].invalidGFAP;
-        resultEl.classList.add('warning');
-        resultEl.classList.remove('hidden');
-        gfapStrokeInput.focus();
-        return;
+      if (isNaN(gfap) || gfap < 29 || gfap > 10001) { 
+        resultEl.textContent = translations[currentLang].invalidGFAP.replace('0 and 50000', '29 and 10001');
+        resultEl.classList.add('warning'); resultEl.classList.remove('hidden'); if(gfapStrokeInput) gfapStrokeInput.focus(); return;
       }
-      if (isNaN(sbp) || sbp < 50 || sbp > 250) {
-        resultEl.textContent = translations[currentLang].sbpError;
-        resultEl.classList.add('warning');
-        resultEl.classList.remove('hidden');
-        sbpInput.focus();
-        return;
+      if (isNaN(sbp) || sbp < 50 || sbp > 250) { 
+        resultEl.textContent = translations[currentLang].sbpError.replace('50-300', '50-250');
+        resultEl.classList.add('warning'); resultEl.classList.remove('hidden'); if(sbpInput) sbpInput.focus(); return;
       }
       
       setButtonLoading(calculateButton, true);
-      resultEl.classList.add('hidden');
-
       try {
         const response = await fetch(STROKE_CALCULATOR_URL, {
           method: 'POST',
@@ -821,40 +1289,153 @@
           body: JSON.stringify({ age: age, gfap: gfap, sbp: sbp })
         });
         const data = await response.json();
-
         if (response.ok && data.success) {
           showDisclaimer();
-          const riskLevelTranslationKey = data.riskLevelText.charAt(0).toLowerCase() + data.riskLevelText.slice(1).replace(/\s+/g, '');
+          const riskLevelKey = (data.riskLevelText || "").toLowerCase().replace(/\s+/g, '');
           pendingResult = {
             element: resultEl,
             html: `<strong>${translations[currentLang].probability}:</strong> ${data.probability.toFixed(1)}%<br>
-                   <strong>${translations[currentLang].riskLevel}:</strong> <span class="${data.riskClass}">${translations[currentLang][riskLevelTranslationKey] || data.riskLevelText}</span>`,
-            baseClass: 'result',
-            riskClass: data.riskClass
+                   <strong>${translations[currentLang].riskLevel}:</strong> <span class="${data.riskClass}">${translations[currentLang][riskLevelKey] || data.riskLevelText}</span>`,
+            baseClass: 'result', riskClass: data.riskClass
           };
         } else {
           resultEl.textContent = data.message || translations[currentLang].serverError;
-          resultEl.classList.add('warning');
-          resultEl.classList.remove('hidden');
+          resultEl.classList.add('warning'); resultEl.classList.remove('hidden');
         }
       } catch (error) {
-        console.error("Error calculating stroke risk via Cloud Function:", error);
+        console.error("Error calculating stroke risk:", error);
         resultEl.textContent = translations[currentLang].serverError;
-        resultEl.classList.add('warning');
-        resultEl.classList.remove('hidden');
+        resultEl.classList.add('warning'); resultEl.classList.remove('hidden');
       } finally {
         setButtonLoading(calculateButton, false);
       }
     }
 
+    async function calculateAdvancedStrokeRisk() {
+        const resultEl = document.getElementById('advancedStrokeResult');
+        const errorEl = document.getElementById('advancedStrokeError');
+        const calculateButton = document.getElementById('calculateAdvancedStrokeButton');
+        
+        if(!resultEl || !errorEl || !calculateButton) {
+            console.error("Advanced stroke module elements not found.");
+            return;
+        }
+
+        resultEl.classList.add('hidden');
+        resultEl.className = 'result hidden';
+        errorEl.classList.add('hidden');
+
+        const age = parseInt(document.getElementById('advAgeInput')?.value);
+        const gfap = parseFloat(document.getElementById('advGfapInput')?.value);
+        const sbp = parseFloat(document.getElementById('advSbpInput')?.value);
+        const dbp = parseFloat(document.getElementById('advDbpInput')?.value);
+        const fastEd = parseInt(document.getElementById('advFastEdInput')?.value); 
+        const raceScore = parseInt(document.getElementById('advRaceScoreInput')?.value);
+
+        const eyeDeviation = document.getElementById('advEyeDeviationFlippedInput')?.checked ? 1 : 0;
+        const armParese = document.getElementById('advArmPareseFlippedInput')?.checked ? 1 : 0;
+        const beinParese = document.getElementById('advBeinPareseFlippedInput')?.checked ? 1 : 0;
+        const vigilanzminderung = document.getElementById('advVigilanzminderungInput')?.checked ? 1 : 0;
+        const afib = document.getElementById('advAfibInput')?.checked ? 1 : 0;
+        const headache = document.getElementById('advHeadacheInput')?.checked ? 1 : 0;
+        const noak = document.getElementById('advNoakInput')?.checked ? 1 : 0;
+        const antiplatelets = document.getElementById('advAntiplateletsInput')?.checked ? 1 : 0;
+
+        let errorMessages = [];
+        if (isNaN(age) || age < 18 || age > 120) errorMessages.push(translations[currentLang].invalidAge);
+        if (isNaN(gfap) || gfap < 0 || gfap > 50000) errorMessages.push(translations[currentLang].invalidGFAP);
+        if (isNaN(sbp) || sbp < 50 || sbp > 300) errorMessages.push(translations[currentLang].sbpError);
+        if (isNaN(dbp) || dbp < 30 || dbp > 200) errorMessages.push(translations[currentLang].dbpError);
+        
+        const fastEdEl = document.getElementById('advFastEdInput');
+        if (fastEdEl && (isNaN(parseInt(fastEdEl.value)) || parseInt(fastEdEl.value) < 0 || parseInt(fastEdEl.value) > 9) ) {
+             errorMessages.push(translations[currentLang].fastEdError);
+        }
+        const raceScoreEl = document.getElementById('advRaceScoreInput');
+        if (raceScoreEl && (isNaN(parseInt(raceScoreEl.value)) || parseInt(raceScoreEl.value) < 0 || parseInt(raceScoreEl.value) > 9) ) {
+             errorMessages.push(translations[currentLang].raceScoreError);
+        }
+
+        if (errorMessages.length > 0) {
+            errorEl.innerHTML = errorMessages.join('<br>'); 
+            errorEl.classList.remove('hidden');
+            return;
+        }
+        
+        setButtonLoading(calculateButton, true);
+
+        const inputFeatures = {
+            'Age (years)': age,
+            'FAST ED Score': fastEd,
+            'RACE Score': raceScore,
+            'Eye Deviation Flipped(1ja/0Nein)': eyeDeviation,
+            'Armparese Flipped(1ja/0Nein)': armParese,
+            'Beinparese Flipped(Ja1/0Nein)': beinParese,
+            'Vigilanzminderung (1Ja/0Nein)': vigilanzminderung,
+            'Atrial Fibrillation bekannt(Ja1/Nein0)': afib,
+            'Headache(Ja1/Nein0)': headache,
+            'Systolic BP': sbp,
+            'Diastolic BP': dbp,
+            'Antcoagulated-NOAK(Ja1/Nein0)': noak,
+            'Antiplatelets(ja1/Nein0)': antiplatelets,
+            'GFAP value': gfap
+        };
+
+        try {
+            const response = await fetch(ADVANCED_STROKE_CALCULATOR_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(inputFeatures)
+            });
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                showDisclaimer();
+                let riskLevelKey = (data.riskLevelText || "").toLowerCase().replace(/\s+/g, '').replace(/[()-]/g, '');
+                
+                if (!translations[currentLang][riskLevelKey]) {
+                    if (data.predicted_class_at_thresh_0_40 === 1) riskLevelKey = 'experimentalHighRisk';
+                    else if (data.probability > 10) riskLevelKey = 'experimentalMediumRisk'; 
+                    else riskLevelKey = 'experimentalLowRisk';
+                }
+                let riskLevelDisplay = translations[currentLang][riskLevelKey] || data.riskLevelText;
+                
+                let modelInfoHtml = '';
+                if (data.model_info) {
+                    modelInfoHtml = `<br><small style="font-size:0.8em; color:grey;">(Model: ${data.model_info.description || ''}<br>Test Set Perf (Thresh ${data.model_info.threshold_used_for_class || 'N/A'}): Sens=${data.model_info.test_set_sensitivity || 'N/A'}, Spec=${data.model_info.test_set_specificity || 'N/A'}, FP=${data.model_info.test_set_false_positives === undefined ? 'N/A' : data.model_info.test_set_false_positives}, FN=${data.model_info.test_set_false_negatives === undefined ? 'N/A' : data.model_info.test_set_false_negatives})</small>`;
+                }
+
+                pendingResult = {
+                    element: resultEl,
+                    html: `<strong>${translations[currentLang].probability}:</strong> ${data.probability !== undefined ? data.probability.toFixed(1) : 'N/A'}%<br>
+                           <strong>${translations[currentLang].riskLevel}:</strong> <span class="${data.riskClass || 'medium-risk'}">${riskLevelDisplay}</span>
+                           ${modelInfoHtml}`,
+                    baseClass: 'result',
+                    riskClass: data.riskClass || 'medium-risk'
+                };
+            } else {
+                errorEl.textContent = data.message || translations[currentLang].serverError;
+                errorEl.classList.remove('hidden');
+            }
+        } catch (error) {
+            console.error("Error calculating advanced stroke risk:", error);
+            errorEl.textContent = translations[currentLang].serverError;
+            errorEl.classList.remove('hidden');
+        } finally {
+            setButtonLoading(calculateButton, false);
+        }
+    }
+
+
     // Initialize app
     document.addEventListener('DOMContentLoaded', function() {
-      document.getElementById('currentYear').textContent = new Date().getFullYear();
+      if(document.getElementById('currentYear')) document.getElementById('currentYear').textContent = new Date().getFullYear();
       
       showSection('codeEntrySection'); 
-      document.getElementById('accessCodeInput').focus();
+      const accessCodeInput = document.getElementById('accessCodeInput');
+      if(accessCodeInput) accessCodeInput.focus();
 
-      const darkModeToggleSpan = document.getElementById('darkModeToggle').querySelector('span');
+      const darkModeToggleSpan = document.getElementById('darkModeToggle')?.querySelector('span');
       if (localStorage.getItem('darkMode') === 'enabled') {
           document.body.classList.add('dark-mode');
           if(darkModeToggleSpan) darkModeToggleSpan.textContent = '☀️';
@@ -864,49 +1445,78 @@
       const preferredLang = localStorage.getItem('language') || 'en';
       switchLanguage(preferredLang); 
 
+      // MARK 4: Setup for Interactive Score Calculators
+      const fastEdComponentConfig = [
+          {id: 'fastEdFacialPalsy', type: 'checkbox', points: 1}, 
+          {id: 'fastEdArmWeakness', type: 'select'}, 
+          {id: 'fastEdSpeechChanges', type: 'select'},
+          {id: 'fastEdEyeDeviation', type: 'select'},
+          {id: 'fastEdDenialNeglect', type: 'select'}
+      ];
+      updateFastEdScore = setupInteractiveScore( 
+          'toggleFastEdBtn', 
+          'fastEdComponentsContainer', 
+          'advFastEdScoreDisplay', 
+          'advFastEdInput', 
+          fastEdComponentConfig
+      );
+
+      const raceComponentConfig = [
+          {id: 'raceFacialPalsy', type: 'select'},
+          {id: 'raceArmMotor', type: 'select'},
+          {id: 'raceLegMotor', type: 'select'},
+          {id: 'raceGazeDeviation', type: 'checkbox', points: 1}, 
+          {id: 'raceAphasiaAgnosia', type: 'select'}
+      ];
+      updateRaceScore = setupInteractiveScore( 
+          'toggleRaceBtn',
+          'raceComponentsContainer',
+          'advRaceScoreDisplay',
+          'advRaceScoreInput',
+          raceComponentConfig
+      );
+
 
       // Service Worker Registration
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js') // Assuming sw.js is in the same directory as index.html
-            .then((registration) => {
-              console.log('Service Worker registered with scope:', registration.scope);
-            })
-            .catch((error) => {
-              console.error('Service Worker registration failed:', error);
-            });
+          navigator.serviceWorker.register('./sw.js') // Reverted to relative path for better compatibility
+            .then((reg) => console.log('Service Worker registered with scope:', reg.scope))
+            .catch((err) => console.error('Service Worker registration failed:', err));
         });
       }
 
-
-      document.getElementById('accessCodeButton').addEventListener('click', validateAccessCode);
-      document.getElementById('accessCodeInput').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') validateAccessCode();
-      });
+      // Event Listeners
+      document.getElementById('accessCodeButton')?.addEventListener('click', validateAccessCode);
+      document.getElementById('accessCodeInput')?.addEventListener('keypress', e => { if (e.key === 'Enter') validateAccessCode(); });
       
-      document.getElementById('comaModuleButton').addEventListener('click', startComaModule);
-      document.getElementById('strokeModuleButton').addEventListener('click', startStrokeModule);
-      document.getElementById('proceedButton').addEventListener('click', validatePrerequisites);
+      document.getElementById('comaModuleButton')?.addEventListener('click', startComaModule);
+      document.getElementById('strokeModuleButton')?.addEventListener('click', startStandardStrokeModule); 
+      document.getElementById('switchToAdvancedStrokeButton')?.addEventListener('click', startAdvancedStrokeModuleFromStandard); 
       
-      document.getElementById('calculateComaButton').addEventListener('click', calculateComaRisk);
-      document.getElementById('gfapComaInput').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') calculateComaRisk();
-      });
+      document.getElementById('proceedButton')?.addEventListener('click', validatePrerequisites);
       
-      document.getElementById('calculateStrokeButton').addEventListener('click', calculateStrokeRisk);
+      document.getElementById('calculateComaButton')?.addEventListener('click', calculateComaRisk);
+      document.getElementById('gfapComaInput')?.addEventListener('keypress', e => { if (e.key === 'Enter') calculateComaRisk(); });
+      
+      document.getElementById('calculateStrokeButton')?.addEventListener('click', calculateStrokeRisk);
       ['ageInput', 'gfapStrokeInput', 'sbpInput'].forEach(id => {
-        document.getElementById(id).addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') calculateStrokeRisk();
-        });
+        const el = document.getElementById(id);
+        if(el) el.addEventListener('keypress', e => { if (e.key === 'Enter') calculateStrokeRisk(); });
+      });
+
+      document.getElementById('calculateAdvancedStrokeButton')?.addEventListener('click', calculateAdvancedStrokeRisk);
+      ['advAgeInput', 'advGfapInput', 'advSbpInput', 'advDbpInput'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.addEventListener('keypress', e => { if (e.key === 'Enter') calculateAdvancedStrokeRisk(); });
       });
 
 
       const darkModeButton = document.getElementById('darkModeToggle');
-      darkModeButton.addEventListener('click', function() {
+      darkModeButton?.addEventListener('click', function() {
         document.body.classList.toggle('dark-mode');
         const texts = translations[currentLang];
         const iconSpan = darkModeButton.querySelector('span');
-
         if (document.body.classList.contains('dark-mode')) {
           if(iconSpan) iconSpan.textContent = '☀️';
           darkModeButton.setAttribute('aria-label', texts.darkModeToggleLabelOn);
@@ -918,7 +1528,7 @@
         }
       });
       
-      document.getElementById('disclaimerConfirmButton').addEventListener('click', function() {
+      document.getElementById('disclaimerConfirmButton')?.addEventListener('click', function() {
         closeDisclaimer();
         if (pendingResult) {
           pendingResult.element.innerHTML = pendingResult.html;
