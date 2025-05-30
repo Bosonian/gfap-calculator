@@ -111,6 +111,11 @@
         color: #888; 
     }
 
+    /* Added input-error class */
+    .input-error {
+      border: 2px solid var(--secondary-color) !important;
+    }
+
     button {
       padding: 12px;
       margin-top: 15px;
@@ -570,7 +575,7 @@
         accessCodeButton: "Submit",
         homeButton: "🏠 Home",
         moduleSelectionTitle: "Check probability for:",
-        comaModuleButton: "Coma Module",
+        comaModuleButton: "Intracranial hemorrhage in comatose patients (GCS 3-8)",
         strokeModuleButton: "Intracerebral hemorrhage in patients with stroke symptoms",
         switchToAdvancedStrokeButton: "Use Advanced Model (14 Params - Experimental)", 
         advancedStrokeModuleTitle: "Advanced Stroke Model (Experimental - 14 Params)", 
@@ -677,7 +682,7 @@
         accessCodeButton: "Absenden",
         homeButton: "🏠 Startseite",
         moduleSelectionTitle: "Wahrscheinlichkeit prüfen für:",
-        comaModuleButton: "Koma-Modul",
+        comaModuleButton: "Intrakranielle Blutungen bei komatösen Patienten (GCS 3-8)",
         strokeModuleButton: "Intrazerebrale Blutungen bei Patienten mit Schlaganfallsymptomen",
         switchToAdvancedStrokeButton: "Erweitertes Modell verwenden (14 Parameter - Experimentell)",
         advancedStrokeModuleTitle: "Erweitertes Schlaganfall-Modell (Experimentell - 14 Parameter)",
@@ -1389,6 +1394,11 @@
         resultEl.className = 'result hidden';
         errorEl.classList.add('hidden');
 
+        // Reset previous errors
+        document.querySelectorAll('.input-error').forEach(el => {
+            el.classList.remove('input-error');
+        });
+
         const age = parseInt(document.getElementById('advAgeInput')?.value);
         const gfap = parseFloat(document.getElementById('advGfapInput')?.value);
         const sbp = parseFloat(document.getElementById('advSbpInput')?.value);
@@ -1405,20 +1415,24 @@
         const noak = document.getElementById('advNoakInput')?.checked ? 1 : 0;
         const antiplatelets = document.getElementById('advAntiplateletsInput')?.checked ? 1 : 0;
 
+        // Define validation rules
+        const fieldsToValidate = [
+            {id: 'advAgeInput', condition: isNaN(age) || age < 18 || age > 120, error: translations[currentLang].invalidAge},
+            {id: 'advGfapInput', condition: isNaN(gfap) || gfap < 0 || gfap > 50000, error: translations[currentLang].invalidGFAP},
+            {id: 'advSbpInput', condition: isNaN(sbp) || sbp < 50 || sbp > 300, error: translations[currentLang].sbpError},
+            {id: 'advDbpInput', condition: isNaN(dbp) || dbp < 30 || dbp > 200, error: translations[currentLang].dbpError},
+            {id: 'advFastEdInput', condition: isNaN(fastEd) || fastEd < 0 || fastEd > 9, error: translations[currentLang].fastEdError},
+            {id: 'advRaceScoreInput', condition: isNaN(raceScore) || raceScore < 0 || raceScore > 9, error: translations[currentLang].raceScoreError}
+        ];
+
         let errorMessages = [];
-        if (isNaN(age) || age < 18 || age > 120) errorMessages.push(translations[currentLang].invalidAge);
-        if (isNaN(gfap) || gfap < 0 || gfap > 50000) errorMessages.push(translations[currentLang].invalidGFAP);
-        if (isNaN(sbp) || sbp < 50 || sbp > 300) errorMessages.push(translations[currentLang].sbpError);
-        if (isNaN(dbp) || dbp < 30 || dbp > 200) errorMessages.push(translations[currentLang].dbpError);
-        
-        const fastEdEl = document.getElementById('advFastEdInput');
-        if (fastEdEl && (isNaN(parseInt(fastEdEl.value)) || parseInt(fastEdEl.value) < 0 || parseInt(fastEdEl.value) > 9) ) {
-             errorMessages.push(translations[currentLang].fastEdError);
-        }
-        const raceScoreEl = document.getElementById('advRaceScoreInput');
-        if (raceScoreEl && (isNaN(parseInt(raceScoreEl.value)) || parseInt(raceScoreEl.value) < 0 || parseInt(raceScoreEl.value) > 9) ) {
-             errorMessages.push(translations[currentLang].raceScoreError);
-        }
+        fieldsToValidate.forEach(field => {
+            if (field.condition) {
+                errorMessages.push(field.error);
+                const inputEl = document.getElementById(field.id);
+                if (inputEl) inputEl.classList.add('input-error');
+            }
+        });
 
         if (errorMessages.length > 0) {
             errorEl.innerHTML = errorMessages.join('<br>'); 
@@ -1460,16 +1474,11 @@
                 const { riskLevel, riskClass } = updateRiskStratification(data.probability);
                 let riskLevelDisplay = translations[currentLang][riskLevel] || riskLevel;
                 
-                let modelInfoHtml = '';
-                if (data.model_info) {
-                    modelInfoHtml = `<br><small style="font-size:0.8em; color:grey;">(Model: ${data.model_info.description || ''}<br>Test Set Perf (Thresh ${data.model_info.threshold_used_for_class || 'N/A'}): Sens=${data.model_info.test_set_sensitivity || 'N/A'}, Spec=${data.model_info.test_set_specificity || 'N/A'}, FP=${data.model_info.test_set_false_positives === undefined ? 'N/A' : data.model_info.test_set_false_positives}, FN=${data.model_info.test_set_false_negatives === undefined ? 'N/A' : data.model_info.test_set_false_negatives})</small>`;
-                }
-
+                // Removed model performance metrics
                 pendingResult = {
                     element: resultEl,
                     html: `<strong>${translations[currentLang].probability}:</strong> ${data.probability !== undefined ? data.probability.toFixed(1) : 'N/A'}%<br>
-                           <strong>${translations[currentLang].riskLevel}:</strong> <span class="${riskClass}">${riskLevelDisplay}</span>
-                           ${modelInfoHtml}`,
+                           <strong>${translations[currentLang].riskLevel}:</strong> <span class="${riskClass}">${riskLevelDisplay}</span>`,
                     baseClass: 'result',
                     riskClass: riskClass
                 };
