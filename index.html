@@ -1,12 +1,19 @@
 <!DOCTYPE html>
-<html lang="en"> 
+<!-- Document type declaration -->
+<html lang="en">
 <head>
+  <!-- Character encoding -->
   <meta charset="UTF-8">
+  <!-- Responsive viewport settings -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Page title -->
   <title>iGFAP Check - Mark 4</title>
+  <!-- PWA manifest link -->
   <link rel="manifest" href="manifest.json">
+  <!-- Theme color for browsers and mobile -->
   <meta name="theme-color" content="#007bff">
   <style>
+    /* Root-level CSS variables for theming */
     :root {
       --primary-color: #007bff;
       --primary-hover: #0056b3;
@@ -23,6 +30,7 @@
       --loading-spinner-color: var(--primary-color);
     }
 
+    /* Dark mode overrides for CSS variables */
     body.dark-mode {
       --primary-color: #3399ff;
       --primary-hover: #287ac7;
@@ -39,10 +47,12 @@
       --loading-spinner-color: var(--primary-color);
     }
 
+    /* Box-sizing reset for all elements */
     *, *::before, *::after {
       box-sizing: border-box;
     }
 
+    /* Base body styling */
     body {
       font-family: 'Arial', sans-serif;
       margin: 0;
@@ -52,6 +62,7 @@
       transition: background-color 0.3s ease, color 0.3s ease;
     }
 
+    /* Container styling for central panels */
     .container {
       max-width: 500px;
       margin: 70px auto 20px auto;
@@ -61,61 +72,66 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
       transition: background-color 0.3s ease;
     }
-
+    /* Dark mode container background */
     body.dark-mode .container {
       background-color: #444;
     }
 
+    /* Spacing for input groups and checkbox groups */
     .input-group, .checkbox-group {
       margin-bottom: 15px;
       text-align: left;
     }
 
+    /* Layout for checkbox groups */
     .checkbox-group {
       display: flex;
       align-items: center;
     }
     .checkbox-group input[type="checkbox"] {
       margin-right: 8px;
-      width: 1.3em; 
+      width: 1.3em;
       height: 1.3em;
     }
     .checkbox-group label {
-        cursor: pointer;
+      cursor: pointer;
     }
 
+    /* Styling for number/password inputs and select elements */
     .input-group input[type="number"],
     .input-group input[type="password"],
-    select.score-select { 
-      width: 100%; 
+    select.score-select {
+      width: 100%;
       padding: 12px;
       font-size: 18px;
       border: 2px solid var(--primary-color);
       border-radius: 5px;
-      background-color: var(--background-color); 
-      color: var(--text-color); 
+      background-color: var(--background-color);
+      color: var(--text-color);
     }
+    /* Dark mode override for inputs and selects */
     body.dark-mode .input-group input[type="number"],
     body.dark-mode .input-group input[type="password"],
-    body.dark-mode select.score-select { 
-        background-color: #555;
-        color: var(--text-color);
-        border-color: var(--primary-color);
+    body.dark-mode select.score-select {
+      background-color: #555;
+      color: var(--text-color);
+      border-color: var(--primary-color);
     }
 
+    /* Placeholder text color */
     .input-group input::placeholder {
-        color: #aaa; 
+      color: #aaa;
     }
-
     body.dark-mode .input-group input::placeholder {
-        color: #888; 
+      color: #888;
     }
 
-    /* Added input-error class */
+    /* Class for invalid input highlighting */
     .input-error {
       border: 2px solid var(--secondary-color) !important;
     }
 
+    /* Base button styling */
     button {
       padding: 12px;
       margin-top: 15px;
@@ -126,49 +142,53 @@
       transition: background-color 0.3s ease;
       width: 100%;
       font-weight: bold;
-      position: relative; 
+      position: relative;
     }
+    /* Spinner animation for loading buttons */
     button.loading::after {
-        content: "";
-        position: absolute;
-        width: 16px;
-        height: 16px;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        margin: auto;
-        border: 4px solid transparent;
-        border-top-color: var(--loading-spinner-color);
-        border-right-color: var(--loading-spinner-color);
-        border-radius: 50%;
-        animation: button-loading-spinner 1s ease infinite;
+      content: "";
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      margin: auto;
+      border: 4px solid transparent;
+      border-top-color: var(--loading-spinner-color);
+      border-right-color: var(--loading-spinner-color);
+      border-radius: 50%;
+      animation: button-loading-spinner 1s ease infinite;
     }
-    button.loading span { 
-        visibility: hidden;
+    button.loading span {
+      visibility: hidden;
     }
 
+    /* Keyframes for loading spinner rotation */
     @keyframes button-loading-spinner {
-        from { transform: rotate(0turn); }
-        to { transform: rotate(1turn); }
+      from { transform: rotate(0turn); }
+      to { transform: rotate(1turn); }
     }
 
+    /* Primary button appearance */
     .primary {
       background-color: var(--primary-color);
       color: white;
     }
     .primary:hover { background-color: var(--primary-hover); }
-     body.dark-mode .primary { --loading-spinner-color: #fff; }
+    body.dark-mode .primary { --loading-spinner-color: #fff; }
 
-    .experimental { 
+    /* Experimental button styling (used for toggling advanced models) */
+    .experimental {
       background-color: var(--experimental-color);
       color: var(--experimental-text-color);
-      border: 1px solid #c69500; 
+      border: 1px solid #c69500;
     }
     .experimental:hover { background-color: var(--experimental-hover); }
     body.dark-mode .experimental { --loading-spinner-color: var(--experimental-text-color); }
 
-
+    /* Secondary button styling */
     .secondary {
       background-color: var(--secondary-color);
       color: white;
@@ -176,6 +196,7 @@
     .secondary:hover { background-color: var(--secondary-hover); }
     body.dark-mode .secondary { --loading-spinner-color: #fff; }
 
+    /* Result box styling */
     .result {
       margin-top: 1.5rem;
       padding: 1rem;
@@ -183,23 +204,24 @@
       font-size: 18px;
       font-weight: bold;
       text-align: center;
-      border: 1px solid transparent; 
+      border: 1px solid transparent;
     }
-
+    /* Warning result styling */
     .result.warning {
       color: var(--warning-text-color);
       background-color: var(--warning-bg-color);
       border-color: var(--warning-border-color);
     }
 
+    /* Risk-level color coding */
     .low-risk { color: #28a745; }
-    .medium-risk { color: #daa520; } 
+    .medium-risk { color: #daa520; }
     .red-risk { color: #dc3545; }
+    body.dark-mode .low-risk { color: #34d399; }
+    body.dark-mode .medium-risk { color: #f59e0b; }
+    body.dark-mode .red-risk { color: #f87171; }
 
-    body.dark-mode .low-risk { color: #34d399; } 
-    body.dark-mode .medium-risk { color: #f59e0b; } 
-    body.dark-mode .red-risk { color: #f87171; } 
-
+    /* Header styling (app bar) */
     .app-header {
       display: flex;
       justify-content: space-between;
@@ -215,94 +237,141 @@
     .header-right { display: flex; align-items: center; gap: 10px; }
     .header-right button { width: auto; padding: 8px 12px; margin-top: 0; }
 
-    .language-switcher img { width: 24px; height: 16px; border: 1px solid #ccc; border-radius: 3px; vertical-align: middle; }
-    .language-switcher button { background: none; border: none; padding: 5px; cursor: pointer;}
-
-    .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); opacity: 0; transition: opacity 0.3s ease; align-items: center; justify-content: center; }
-    .modal.show { display: flex; opacity: 1; }
-    .modal-content { background-color: #fff; padding: 20px; width: 80%; max-width: 400px; border-radius: 10px; text-align: center; }
-    body.dark-mode .modal-content { background-color: #444; }
-
-    #accessError, #prerequisiteError, #advancedStrokeError { 
-      color: var(--secondary-color); margin-top: 10px; font-weight: bold;
+    /* Language switcher icons */
+    .language-switcher img {
+      width: 24px;
+      height: 16px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      vertical-align: middle;
     }
-    body.dark-mode #accessError, body.dark-mode #prerequisiteError, body.dark-mode #advancedStrokeError {
-        color: var(--secondary-color);
+    .language-switcher button {
+      background: none;
+      border: none;
+      padding: 5px;
+      cursor: pointer;
     }
 
+    /* Modal overlay styling (for disclaimer) */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.6);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal.show {
+      display: flex;
+      opacity: 1;
+    }
+    .modal-content {
+      background-color: #fff;
+      padding: 20px;
+      width: 80%;
+      max-width: 400px;
+      border-radius: 10px;
+      text-align: center;
+    }
+    body.dark-mode .modal-content {
+      background-color: #444;
+    }
+
+    /* Error message styling */
+    #accessError, #prerequisiteError, #advancedStrokeError {
+      color: var(--secondary-color);
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    body.dark-mode #accessError,
+    body.dark-mode #prerequisiteError,
+    body.dark-mode #advancedStrokeError {
+      color: var(--secondary-color);
+    }
+
+    /* Utility class to hide elements */
     .hidden { display: none !important; }
 
-    /* Styles for interactive score calculators */
+    /* Styles for interactive score calculator containers */
     .score-calculator-group {
-        border: 1px solid #eee;
-        padding: 10px;
-        margin-bottom: 20px; 
-        border-radius: 5px;
+      border: 1px solid #eee;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 5px;
     }
     body.dark-mode .score-calculator-group {
-        border-color: #555;
+      border-color: #555;
     }
     .score-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 8px; 
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
     }
-    .score-header > label { 
-        font-weight: bold;
-        margin-right: 10px;
-        flex-grow: 1; 
+    .score-header > label {
+      font-weight: bold;
+      margin-right: 10px;
+      flex-grow: 1;
     }
     .score-value-display {
-        font-weight: bold;
-        font-size: 1.1em;
-        color: var(--primary-color);
-        min-width: 25px; 
-        text-align: right;
-        margin-right: 10px;
+      font-weight: bold;
+      font-size: 1.1em;
+      color: var(--primary-color);
+      min-width: 25px;
+      text-align: right;
+      margin-right: 10px;
     }
     .calculate-score-btn {
-        padding: 6px 10px !important; 
-        font-size: 0.9em !important;
-        width: auto !important; 
-        margin-top: 0 !important; 
-        background-color: #6c757d; 
-        color: white;
-        flex-shrink: 0; 
+      padding: 6px 10px !important;
+      font-size: 0.9em !important;
+      width: auto !important;
+      margin-top: 0 !important;
+      background-color: #6c757d;
+      color: white;
+      flex-shrink: 0;
     }
     body.dark-mode .calculate-score-btn { background-color: #868e96; }
     .calculate-score-btn:hover { background-color: #5a6268; }
     body.dark-mode .calculate-score-btn:hover { background-color: #707880; }
 
+    /* Score components layout */
     .score-components {
-        padding-top: 10px;
-        border-top: 1px dashed #ccc;
-        margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed #ccc;
+      margin-top: 10px;
     }
     body.dark-mode .score-components { border-top-color: #555; }
     .score-components .checkbox-group,
     .score-components .input-group {
-        margin-left: 0px; 
-        margin-bottom: 10px; 
+      margin-left: 0px;
+      margin-bottom: 10px;
     }
-    .score-components .input-group label, 
-    .score-components .checkbox-group label { 
-        display: block;
-        margin-bottom: 4px;
-        font-size: 0.95em; 
+    .score-components .input-group label,
+    .score-components .checkbox-group label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.95em;
     }
-    select.score-select { 
-        font-size: 16px; 
-        padding: 10px;
+    select.score-select {
+      font-size: 16px;
+      padding: 10px;
     }
   </style>
 </head>
 <body>
+  <!-- App header with title, language switcher, dark mode toggle, and home button -->
   <header class="app-header">
     <div class="header-left">
       <h1 id="appTitle">iGFAP Check</h1>
     </div>
     <div class="header-right">
+      <!-- Language switcher buttons -->
       <div class="language-switcher">
         <button onclick="switchLanguage('en')" aria-label="Switch to English" title="Switch to English">
           <img src="https://flagcdn.com/gb.svg" alt="English">
@@ -311,11 +380,14 @@
           <img src="https://flagcdn.com/de.svg" alt="Deutsch">
         </button>
       </div>
+      <!-- Dark mode toggle button -->
       <button id="darkModeToggle" aria-label="Toggle dark mode"><span>🌙</span></button>
+      <!-- Home button to navigate back to module selection -->
       <button class="home-button" id="homeButton" onclick="navigateToModuleSelection()"><span>🏠 Home</span></button>
     </div>
   </header>
 
+  <!-- Section for entering access code -->
   <section id="codeEntrySection" class="container">
     <p id="codePrompt">🔑 Please enter your access code:</p>
     <div class="input-group">
@@ -325,233 +397,285 @@
     <p id="accessError" class="hidden"></p>
   </section>
 
+  <!-- Section for module selection (hidden by default) -->
   <section id="moduleSelectionSection" class="container hidden">
     <h2 id="moduleSelectionTitle">Check probability for:</h2>
     <button class="primary" id="comaModuleButton"><span>Coma Module</span></button>
     <button class="primary" id="strokeModuleButton"><span>Intracerebral hemorrhage in patients with stroke symptoms</span></button>
   </section>
 
+  <!-- Section for Coma Module (hidden by default) -->
   <section id="comaModuleSection" class="container hidden">
     <h2 id="comaModuleTitle">Intracranial hemorrhage in comatose patients (GCS 3-8)</h2>
+    <!-- GFAP input for coma risk calculation -->
     <div class="input-group">
       <label for="gfapComaInput" id="gfapComaLabel">GFAP Value (pg/mL)</label>
       <input type="number" id="gfapComaInput" min="29" max="10001" placeholder="">
     </div>
+    <!-- Button to calculate coma risk -->
     <button class="primary" id="calculateComaButton"><span>Calculate Probability</span></button>
+    <!-- Back button to module selection -->
     <button class="secondary" id="comaBackButton" onclick="navigateToModuleSelection()"><span>⬅️ Back</span></button>
+    <!-- Placeholder for displaying coma result -->
     <div class="result hidden" id="comaResult" aria-live="polite"></div>
   </section>
 
+  <!-- Section for Stroke Prerequisites (hidden by default) -->
   <section id="strokePrerequisiteSection" class="container hidden">
     <h2 id="strokePrerequisiteTitle">Prerequisites for Stroke Risk Calculation</h2>
+    <!-- Checkbox for time window prerequisite -->
     <div class="checkbox-group">
       <input type="checkbox" id="prerequisite1">
       <label for="prerequisite1" id="prerequisite1Label">Confirmed time window < 6 hours</label>
     </div>
+    <!-- Checkbox for no prior neurological deficits -->
     <div class="checkbox-group">
       <input type="checkbox" id="prerequisite2">
       <label for="prerequisite2" id="prerequisite2Label">No neurological deficits before the event</label>
     </div>
+    <!-- Checkbox for no head trauma -->
     <div class="checkbox-group">
       <input type="checkbox" id="prerequisite3">
       <label for="prerequisite3" id="prerequisite3Label">No identifiable head trauma (severe fall)</label>
     </div>
+    <!-- Checkbox for FAST ED score prerequisite -->
     <div class="checkbox-group">
       <input type="checkbox" id="prerequisite4">
       <label for="prerequisite4" id="prerequisite4Label">FAST ED Score >= 3 points</label>
     </div>
+    <!-- Button to proceed to stroke calculation -->
     <button class="primary" id="proceedButton"><span>Proceed to Calculation</span></button>
+    <!-- Back button to module selection -->
     <button class="secondary" id="strokePrerequisiteBackButton" onclick="navigateToModuleSelection()"><span>⬅️ Back</span></button>
+    <!-- Placeholder for prerequisite error messages -->
     <p id="prerequisiteError" class="hidden"></p>
   </section>
 
+  <!-- Section for Standard Stroke Module (hidden by default) -->
   <section id="strokeModuleSection" class="container hidden">
     <h2 id="strokeModuleTitle">Intracerebral hemorrhage in patients with stroke symptoms (Standard)</h2>
+    <!-- Input for patient age -->
     <div class="input-group">
       <label for="ageInput" id="ageLabel">Patient Age (Years)</label>
       <input type="number" id="ageInput" min="18" max="120" placeholder="">
     </div>
+    <!-- Input for GFAP value -->
     <div class="input-group">
       <label for="gfapStrokeInput" id="gfapStrokeLabel">GFAP Value (pg/mL)</label>
       <input type="number" id="gfapStrokeInput" min="29" max="10001" placeholder="">
     </div>
+    <!-- Input for systolic blood pressure -->
     <div class="input-group">
       <label for="sbpInput" id="sbpLabel">Systolic BP (mmHg)</label>
       <input type="number" id="sbpInput" min="50" max="250" placeholder="">
     </div>
+    <!-- Button to calculate stroke risk -->
     <button class="primary" id="calculateStrokeButton"><span>Calculate Probability</span></button>
+    <!-- Button to switch to Advanced Stroke Module -->
     <button class="experimental" id="switchToAdvancedStrokeButton" style="margin-top: 10px;">
-        <span>Use Advanced Model (14 Params - Experimental)</span>
+      <span>Use Advanced Model (14 Params - Experimental)</span>
     </button>
+    <!-- Back button to module selection -->
     <button class="secondary" id="strokeModuleBackButton" onclick="navigateToModuleSelection()"><span>⬅️ Back</span></button>
+    <!-- Placeholder for displaying stroke result -->
     <div class="result hidden" id="strokeResult" aria-live="polite"></div>
   </section>
 
+  <!-- Section for Advanced Stroke Module (hidden by default) -->
   <section id="advancedStrokeModuleSection" class="container hidden">
     <h2 id="advancedStrokeModuleTitle">Advanced Stroke Model (Experimental - 14 Params)</h2>
 
+    <!-- Input for patient age (advanced) -->
     <div class="input-group">
-        <label for="advAgeInput" id="advAgeLabel">Patient Age (Years)</label>
-        <input type="number" id="advAgeInput" min="18" max="120" placeholder="e.g., 75">
+      <label for="advAgeInput" id="advAgeLabel">Patient Age (Years)</label>
+      <input type="number" id="advAgeInput" min="18" max="120" placeholder="e.g., 75">
     </div>
+    <!-- Input for GFAP value (advanced) -->
     <div class="input-group">
-        <label for="advGfapInput" id="advGfapLabel">GFAP Value (pg/mL)</label>
-        <input type="number" id="advGfapInput" min="0" max="50000" placeholder="e.g., 1500">
+      <label for="advGfapInput" id="advGfapLabel">GFAP Value (pg/mL)</label>
+      <input type="number" id="advGfapInput" min="0" max="50000" placeholder="e.g., 1500">
     </div>
+    <!-- Input for systolic BP (advanced) -->
     <div class="input-group">
-        <label for="advSbpInput" id="advSbpLabel">Systolic BP (mmHg)</label>
-        <input type="number" id="advSbpInput" min="50" max="300" placeholder="e.g., 160">
+      <label for="advSbpInput" id="advSbpLabel">Systolic BP (mmHg)</label>
+      <input type="number" id="advSbpInput" min="50" max="300" placeholder="e.g., 160">
     </div>
+    <!-- Input for diastolic BP (advanced) -->
     <div class="input-group">
-        <label for="advDbpInput" id="advDbpLabel">Diastolic BP (mmHg)</label>
-        <input type="number" id="advDbpInput" min="30" max="200" placeholder="e.g., 90">
+      <label for="advDbpInput" id="advDbpLabel">Diastolic BP (mmHg)</label>
+      <input type="number" id="advDbpInput" min="30" max="200" placeholder="e.g., 90">
     </div>
 
+    <!-- FAST ED score calculator group -->
     <div class="input-group score-calculator-group">
-        <div class="score-header">
-            <label id="advFastEdDisplayLabel">FAST ED Score:</label>
-            <span id="advFastEdScoreDisplay" class="score-value-display">0</span>
-            <button type="button" class="calculate-score-btn" id="toggleFastEdBtn" aria-expanded="false" aria-controls="fastEdComponentsContainer">
-                <span id="toggleFastEdBtnText">Calculate/Edit</span>
-            </button>
-            <input type="hidden" id="advFastEdInput" name="advFastEdInput" value="0">
+      <div class="score-header">
+        <label id="advFastEdDisplayLabel">FAST ED Score:</label>
+        <span id="advFastEdScoreDisplay" class="score-value-display">0</span>
+        <!-- Button to toggle FAST ED components -->
+        <button type="button" class="calculate-score-btn" id="toggleFastEdBtn" aria-expanded="false" aria-controls="fastEdComponentsContainer">
+          <span id="toggleFastEdBtnText">Calculate/Edit</span>
+        </button>
+        <!-- Hidden input to store FAST ED score value -->
+        <input type="hidden" id="advFastEdInput" name="advFastEdInput" value="0">
+      </div>
+      <!-- Container for FAST ED checkboxes and selects -->
+      <div id="fastEdComponentsContainer" class="score-components hidden">
+        <p id="fastEdInfoText" style="font-size: 0.9em; margin-bottom: 5px;">Select present findings for FAST ED:</p>
+        <!-- FAST ED: Facial Palsy checkbox -->
+        <div class="checkbox-group">
+          <input type="checkbox" id="fastEdFacialPalsy" data-points="1">
+          <label for="fastEdFacialPalsy" id="fastEdFacialPalsyLabel">Facial Palsy (Partial/Complete)</label>
         </div>
-        <div id="fastEdComponentsContainer" class="score-components hidden">
-            <p id="fastEdInfoText" style="font-size: 0.9em; margin-bottom: 5px;">Select present findings for FAST ED:</p>
-            <div class="checkbox-group">
-                <input type="checkbox" id="fastEdFacialPalsy" data-points="1">
-                <label for="fastEdFacialPalsy" id="fastEdFacialPalsyLabel">Facial Palsy (Partial/Complete)</label>
-            </div>
-            <div class="input-group">
-                <label for="fastEdArmWeakness" id="fastEdArmWeaknessLabel">Arm Weakness</label>
-                <select id="fastEdArmWeakness" class="score-select">
-                    <option value="0" id="fastEdArm0Label">0 - No drift</option>
-                    <option value="1" id="fastEdArm1Label">1 - Drifts down</option>
-                    <option value="2" id="fastEdArm2Label">2 - No effort / Falls</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label for="fastEdSpeechChanges" id="fastEdSpeechChangesLabel">Speech Changes</label>
-                <select id="fastEdSpeechChanges" class="score-select">
-                    <option value="0" id="fastEdSpeech0Label">0 - Normal</option>
-                    <option value="1" id="fastEdSpeech1Label">1 - Mild/Moderate</option>
-                    <option value="2" id="fastEdSpeech2Label">2 - Severe/Mute</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label for="fastEdEyeDeviation" id="fastEdEyeDeviationLabel">Eye Deviation</label>
-                <select id="fastEdEyeDeviation" class="score-select">
-                    <option value="0" id="fastEdEye0Label">0 - Absent</option>
-                    <option value="1" id="fastEdEye1Label">1 - Partial</option>
-                    <option value="2" id="fastEdEye2Label">2 - Forced Deviation</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label for="fastEdDenialNeglect" id="fastEdDenialNeglectLabel">Denial/Neglect</label>
-                <select id="fastEdDenialNeglect" class="score-select">
-                    <option value="0" id="fastEdDenial0Label">0 - Absent</option>
-                    <option value="1" id="fastEdDenial1Label">1 - Mild (e.g., Extinction)</option>
-                    <option value="2" id="fastEdDenial2Label">2 - Severe (e.g., Unawareness)</option>
-                </select>
-            </div>
+        <!-- FAST ED: Arm Weakness select -->
+        <div class="input-group">
+          <label for="fastEdArmWeakness" id="fastEdArmWeaknessLabel">Arm Weakness</label>
+          <select id="fastEdArmWeakness" class="score-select">
+            <option value="0" id="fastEdArm0Label">0 - No drift</option>
+            <option value="1" id="fastEdArm1Label">1 - Drifts down</option>
+            <option value="2" id="fastEdArm2Label">2 - No effort / Falls</option>
+          </select>
         </div>
+        <!-- FAST ED: Speech Changes select -->
+        <div class="input-group">
+          <label for="fastEdSpeechChanges" id="fastEdSpeechChangesLabel">Speech Changes</label>
+          <select id="fastEdSpeechChanges" class="score-select">
+            <option value="0" id="fastEdSpeech0Label">0 - Normal</option>
+            <option value="1" id="fastEdSpeech1Label">1 - Mild/Moderate</option>
+            <option value="2" id="fastEdSpeech2Label">2 - Severe/Mute</option>
+          </select>
+        </div>
+        <!-- FAST ED: Eye Deviation select -->
+        <div class="input-group">
+          <label for="fastEdEyeDeviation" id="fastEdEyeDeviationLabel">Eye Deviation</label>
+          <select id="fastEdEyeDeviation" class="score-select">
+            <option value="0" id="fastEdEye0Label">0 - Absent</option>
+            <option value="1" id="fastEdEye1Label">1 - Partial</option>
+            <option value="2" id="fastEdEye2Label">2 - Forced Deviation</option>
+          </select>
+        </div>
+        <!-- FAST ED: Denial/Neglect select -->
+        <div class="input-group">
+          <label for="fastEdDenialNeglect" id="fastEdDenialNeglectLabel">Denial/Neglect</label>
+          <select id="fastEdDenialNeglect" class="score-select">
+            <option value="0" id="fastEdDenial0Label">0 - Absent</option>
+            <option value="1" id="fastEdDenial1Label">1 - Mild (e.g., Extinction)</option>
+            <option value="2" id="fastEdDenial2Label">2 - Severe (e.g., Unawareness)</option>
+          </select>
+        </div>
+      </div>
     </div>
 
+    <!-- RACE score calculator group -->
     <div class="input-group score-calculator-group">
-        <div class="score-header">
-            <label id="advRaceScoreDisplayLabel">RACE Score:</label>
-            <span id="advRaceScoreDisplay" class="score-value-display">0</span>
-            <button type="button" class="calculate-score-btn" id="toggleRaceBtn" aria-expanded="false" aria-controls="raceComponentsContainer">
-                <span id="toggleRaceBtnText">Calculate/Edit</span>
-            </button>
-            <input type="hidden" id="advRaceScoreInput" name="advRaceScoreInput" value="0">
+      <div class="score-header">
+        <label id="advRaceScoreDisplayLabel">RACE Score:</label>
+        <span id="advRaceScoreDisplay" class="score-value-display">0</span>
+        <!-- Button to toggle RACE components -->
+        <button type="button" class="calculate-score-btn" id="toggleRaceBtn" aria-expanded="false" aria-controls="raceComponentsContainer">
+          <span id="toggleRaceBtnText">Calculate/Edit</span>
+        </button>
+        <!-- Hidden input to store RACE score value -->
+        <input type="hidden" id="advRaceScoreInput" name="advRaceScoreInput" value="0">
+      </div>
+      <!-- Container for RACE checkboxes and selects -->
+      <div id="raceComponentsContainer" class="score-components hidden">
+        <p id="raceInfoText" style="font-size: 0.9em; margin-bottom: 5px;">Select findings for each category:</p>
+        <!-- RACE: Facial Palsy select -->
+        <div class="input-group">
+          <label for="raceFacialPalsy" id="raceFacialPalsyLabel">Facial Palsy</label>
+          <select id="raceFacialPalsy" class="score-select">
+            <option value="0" id="raceFacial0Label">0 - Absent</option>
+            <option value="1" id="raceFacial1Label">1 - Mild</option>
+            <option value="2" id="raceFacial2Label">2 - Moderate/Severe</option>
+          </select>
         </div>
-        <div id="raceComponentsContainer" class="score-components hidden">
-            <p id="raceInfoText" style="font-size: 0.9em; margin-bottom: 5px;">Select findings for each category:</p>
-            <div class="input-group">
-                <label for="raceFacialPalsy" id="raceFacialPalsyLabel">Facial Palsy</label>
-                <select id="raceFacialPalsy" class="score-select">
-                    <option value="0" id="raceFacial0Label">0 - Absent</option>
-                    <option value="1" id="raceFacial1Label">1 - Mild</option>
-                    <option value="2" id="raceFacial2Label">2 - Moderate/Severe</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label for="raceArmMotor" id="raceArmMotorLabel">Arm Motor Function</label>
-                <select id="raceArmMotor" class="score-select">
-                    <option value="0" id="raceArm0Label">0 - Holds >10s</option>
-                    <option value="1" id="raceArm1Label">1 - Holds <10s</option>
-                    <option value="2" id="raceArm2Label">2 - No effort</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label for="raceLegMotor" id="raceLegMotorLabel">Leg Motor Function</label>
-                <select id="raceLegMotor" class="score-select">
-                    <option value="0" id="raceLeg0Label">0 - Holds >5s</option>
-                    <option value="1" id="raceLeg1Label">1 - Holds <5s</option>
-                    <option value="2" id="raceLeg2Label">2 - No effort</option>
-                </select>
-            </div>
-            <div class="checkbox-group">
-                <input type="checkbox" id="raceGazeDeviation" data-points="1">
-                <label for="raceGazeDeviation" id="raceGazeDeviationLabel">Head/Gaze Deviation Present</label>
-            </div>
-            <div class="input-group">
-                <label for="raceAphasiaAgnosia" id="raceAphasiaAgnosiaLabel">Aphasia (Right Paresis) / Agnosia (Left Paresis)</label>
-                <p style="font-size:0.8em; margin:0 0 5px 0;" id="raceAphasiaInfo">(If Right weakness: test commands. If Left weakness: test awareness.)</p>
-                <select id="raceAphasiaAgnosia" class="score-select">
-                    <option value="0" id="raceAphasiaAgnosia0Label">0 - Normal / Neither</option>
-                    <option value="1" id="raceAphasiaAgnosia1Label">1 - Performs 1 task / One present</option>
-                    <option value="2" id="raceAphasiaAgnosia2Label">2 - Performs 0 tasks / Both or severe</option>
-                </select>
-            </div>
+        <!-- RACE: Arm Motor Function select -->
+        <div class="input-group">
+          <label for="raceArmMotor" id="raceArmMotorLabel">Arm Motor Function</label>
+          <select id="raceArmMotor" class="score-select">
+            <option value="0" id="raceArm0Label">0 - Holds >10s</option>
+            <option value="1" id="raceArm1Label">1 - Holds <10s</option>
+            <option value="2" id="raceArm2Label">2 - No effort</option>
+          </select>
         </div>
+        <!-- RACE: Leg Motor Function select -->
+        <div class="input-group">
+          <label for="raceLegMotor" id="raceLegMotorLabel">Leg Motor Function</label>
+          <select id="raceLegMotor" class="score-select">
+            <option value="0" id="raceLeg0Label">0 - Holds >5s</option>
+            <option value="1" id="raceLeg1Label">1 - Holds <5s</option>
+            <option value="2" id="raceLeg2Label">2 - No effort</option>
+          </select>
+        </div>
+        <!-- RACE: Head/Gaze Deviation checkbox -->
+        <div class="checkbox-group">
+          <input type="checkbox" id="raceGazeDeviation" data-points="1">
+          <label for="raceGazeDeviation" id="raceGazeDeviationLabel">Head/Gaze Deviation Present</label>
+        </div>
+        <!-- RACE: Aphasia/Agnosia select with info -->
+        <div class="input-group">
+          <label for="raceAphasiaAgnosia" id="raceAphasiaAgnosiaLabel">Aphasia (Right Paresis) / Agnosia (Left Paresis)</label>
+          <p style="font-size:0.8em; margin:0 0 5px 0;" id="raceAphasiaInfo">(If Right weakness: test commands. If Left weakness: test awareness.)</p>
+          <select id="raceAphasiaAgnosia" class="score-select">
+            <option value="0" id="raceAphasiaAgnosia0Label">0 - Normal / Neither</option>
+            <option value="1" id="raceAphasiaAgnosia1Label">1 - Performs 1 task / One present</option>
+            <option value="2" id="raceAphasiaAgnosia2Label">2 - Performs 0 tasks / Both or severe</option>
+          </select>
+        </div>
+      </div>
     </div>
-    
+
+    <!-- Additional symptoms & history checkboxes -->
     <p style="font-weight: bold; margin-top: 20px; margin-bottom: 5px;" id="advAdditionalSymptomsLabel">Additional Symptoms & History (Check if Present/Yes):</p>
     <div class="checkbox-group">
-        <input type="checkbox" id="advEyeDeviationFlippedInput">
-        <label for="advEyeDeviationFlippedInput" id="advEyeDeviationFlippedLabel">Eye Deviation (Symptom)</label>
+      <input type="checkbox" id="advEyeDeviationFlippedInput">
+      <label for="advEyeDeviationFlippedInput" id="advEyeDeviationFlippedLabel">Eye Deviation (Symptom)</label>
     </div>
     <div class="checkbox-group">
-        <input type="checkbox" id="advArmPareseFlippedInput">
-        <label for="advArmPareseFlippedInput" id="advArmPareseFlippedLabel">Arm Paresis (Symptom)</label>
+      <input type="checkbox" id="advArmPareseFlippedInput">
+      <label for="advArmPareseFlippedInput" id="advArmPareseFlippedLabel">Arm Paresis (Symptom)</label>
     </div>
     <div class="checkbox-group">
-        <input type="checkbox" id="advBeinPareseFlippedInput">
-        <label for="advBeinPareseFlippedInput" id="advBeinPareseFlippedLabel">Leg Paresis (Symptom)</label>
+      <input type="checkbox" id="advBeinPareseFlippedInput">
+      <label for="advBeinPareseFlippedInput" id="advBeinPareseFlippedLabel">Leg Paresis (Symptom)</label>
     </div>
     <div class="checkbox-group">
-        <input type="checkbox" id="advVigilanzminderungInput">
-        <label for="advVigilanzminderungLabel" id="advVigilanzminderungLabel">Altered Sensorium</label>
+      <input type="checkbox" id="advVigilanzminderungInput">
+      <label for="advVigilanzminderungLabel" id="advVigilanzminderungLabel">Altered Sensorium</label>
     </div>
     <div class="checkbox-group">
-        <input type="checkbox" id="advAfibInput">
-        <label for="advAfibInput" id="advAfibLabel">Known Atrial Fibrillation</label>
+      <input type="checkbox" id="advAfibInput">
+      <label for="advAfibInput" id="advAfibLabel">Known Atrial Fibrillation</label>
     </div>
     <div class="checkbox-group">
-        <input type="checkbox" id="advHeadacheInput">
-        <label for="advHeadacheInput" id="advHeadacheLabel">Headache</label>
+      <input type="checkbox" id="advHeadacheInput">
+      <label for="advHeadacheInput" id="advHeadacheLabel">Headache</label>
     </div>
     <div class="checkbox-group">
-        <input type="checkbox" id="advNoakInput">
-        <label for="advNoakInput" id="advNoakLabel">On Anticoagulants (NOAK)</label>
+      <input type="checkbox" id="advNoakInput">
+      <label for="advNoakInput" id="advNoakLabel">On Anticoagulants (NOAK)</label>
     </div>
     <div class="checkbox-group">
-        <input type="checkbox" id="advAntiplateletsInput">
-        <label for="advAntiplateletsInput" id="advAntiplateletsLabel">On Antiplatelets</label>
+      <input type="checkbox" id="advAntiplateletsInput">
+      <label for="advAntiplateletsInput" id="advAntiplateletsLabel">On Antiplatelets</label>
     </div>
 
+    <!-- Button to calculate advanced stroke risk -->
     <button class="primary" id="calculateAdvancedStrokeButton"><span>Calculate Advanced Probability</span></button>
+    <!-- Back button to standard stroke module -->
     <button class="secondary" id="advancedStrokeModuleBackButton" onclick="navigateToStrokeModule()"><span>⬅️ Back to Standard Stroke</span></button>
+    <!-- Placeholder for displaying advanced stroke result -->
     <div class="result hidden" id="advancedStrokeResult" aria-live="polite"></div>
-    <p id="advancedStrokeError" class="hidden"></p> </section>
+    <!-- Placeholder for advanced stroke error messages -->
+    <p id="advancedStrokeError" class="hidden"></p>
+  </section>
 
-
+  <!-- Footer with current year -->
   <footer style="text-align:center; margin-top:20px; padding-bottom: 20px;">
     <p>© <span id="currentYear"></span> iGFAP. All rights reserved.</p>
   </footer>
 
+  <!-- Disclaimer modal (hidden by default) -->
   <div id="disclaimerModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="disclaimerModalTitleText">
     <div class="modal-content">
       <p id="disclaimerModalTitleText" class="disclaimer-text">The calculations are for research purposes only, do not make clinical decisions based on it.</p>
@@ -560,14 +684,18 @@
   </div>
 
   <script>
+    // Current language setting (default English)
     let currentLang = 'en';
+    // Placeholder for pending result data (used for showing after disclaimer)
     let pendingResult = null;
 
+    // API endpoints for backend calls
     const ACCESS_CODE_VALIDATOR_URL = 'https://europe-west3-igfap-452720.cloudfunctions.net/validateAccessCode';
-    const COMA_CALCULATOR_URL = 'https://europe-west3-igfap-452720.cloudfunctions.net/calculateComaRisk'; 
+    const COMA_CALCULATOR_URL = 'https://europe-west3-igfap-452720.cloudfunctions.net/calculateComaRisk';
     const STROKE_CALCULATOR_URL = 'https://europe-west3-igfap-452720.cloudfunctions.net/calculateStrokeRisk';
     const ADVANCED_STROKE_CALCULATOR_URL = 'https://europe-west3-igfap-452720.cloudfunctions.net/calculate-advanced-stroke-risk-rf';
 
+    // Translation dictionaries for English and German
     const translations = {
       en: {
         appTitle: "iGFAP Check",
@@ -577,23 +705,23 @@
         moduleSelectionTitle: "Check probability for:",
         comaModuleButton: "Intracranial hemorrhage in comatose patients (GCS 3-8)",
         strokeModuleButton: "Intracerebral hemorrhage in patients with stroke symptoms",
-        switchToAdvancedStrokeButton: "Use Advanced Model (14 Params - Experimental)", 
-        advancedStrokeModuleTitle: "Advanced Stroke Model (Experimental - 14 Params)", 
+        switchToAdvancedStrokeButton: "Use Advanced Model (14 Params - Experimental)",
+        advancedStrokeModuleTitle: "Advanced Stroke Model (Experimental - 14 Params)",
         comaModuleTitle: "Intracranial hemorrhage in comatose patients (GCS 3-8)",
-        strokeModuleTitle: "Intracerebral hemorrhage in patients with stroke symptoms (Standard)", 
+        strokeModuleTitle: "Intracerebral hemorrhage in patients with stroke symptoms (Standard)",
         strokePrerequisiteTitle: "Prerequisites for Stroke Risk Calculation",
-        accessError: "Incorrect code or server error. Please try again.", 
+        accessError: "Incorrect code or server error. Please try again.",
         prerequisiteError: "All prerequisites must be met to proceed.",
-        advancedStrokeError: "Please fill all fields with valid values and ensure scores are calculated.", 
+        advancedStrokeError: "Please fill all fields with valid values and ensure scores are calculated.",
         calculateButton: "Calculate Probability",
-        calculateAdvancedStrokeButton: "Calculate Advanced Probability", 
+        calculateAdvancedStrokeButton: "Calculate Advanced Probability",
         proceedButton: "Proceed to Calculation",
         backButton: "⬅️ Back",
-        backToStandardStrokeButton: "⬅️ Back to Standard Stroke", 
-        rangeErrorGFAP: "Please enter a GFAP value between 0 and 50000 pg/mL.", 
+        backToStandardStrokeButton: "⬅️ Back to Standard Stroke",
+        rangeErrorGFAP: "Please enter a GFAP value between 0 and 50000 pg/mL.",
         invalidInput: "Please enter a valid value!",
-        lowRisk: "Low Risk", 
-        mediumRisk: "Medium Risk", 
+        lowRisk: "Low Risk",
+        mediumRisk: "Medium Risk",
         highRisk: "High Risk",
         disclaimer: "The calculations are for research purposes only, do not make clinical decisions based on it.",
         confirmButton: "Confirm",
@@ -602,13 +730,13 @@
         gfapLabel: "GFAP Value (pg/mL)",
         ageLabel: "Patient Age (Years)",
         sbpLabel: "Systolic BP (mmHg)",
-        sbpError: "Valid SBP range: 50-300 mmHg.", 
-        dbpLabel: "Diastolic BP (mmHg)", 
-        dbpError: "Valid DBP range: 30-200 mmHg.", 
-        fastEdError: "Invalid FAST ED Score (0-9).", 
-        raceScoreError: "Invalid RACE Score (0-9).", 
+        sbpError: "Valid SBP range: 50-300 mmHg.",
+        dbpLabel: "Diastolic BP (mmHg)",
+        dbpError: "Valid DBP range: 30-200 mmHg.",
+        fastEdError: "Invalid FAST ED Score (0-9).",
+        raceScoreError: "Invalid RACE Score (0-9).",
         invalidAge: "Please enter valid age (18-120).",
-        invalidGFAP: "Invalid GFAP value. Must be between 0 and 50000.", 
+        invalidGFAP: "Invalid GFAP value. Must be between 0 and 50000.",
         prerequisite1: "Confirmed time window < 6 hours",
         prerequisite2: "No neurological deficits before the event",
         prerequisite3: "No identifiable head trauma (severe fall)",
@@ -617,7 +745,7 @@
         gfapPlaceholder: "GFAP Value (pg/mL)",
         agePlaceholder: "Patient Age (Years)",
         sbpPlaceholder: "Systolic BP (mmHg)",
-        dbpPlaceholder: "e.g., 90", 
+        dbpPlaceholder: "e.g., 90",
         accessCodePlaceholder: "Enter code",
         darkModeToggleLabelOn: "Switch to Light Mode",
         darkModeToggleLabelOff: "Switch to Dark Mode",
@@ -667,9 +795,9 @@
         raceAphasiaAgnosia1Label: "1 - Performs 1 task / One present",
         raceAphasiaAgnosia2Label: "2 - Performs 0 tasks / Both or severe",
         advAdditionalSymptomsLabel: "Additional Symptoms & History (Check if Present/Yes):",
-        advEyeDeviationFlippedLabel: "Eye Deviation (Symptom)", 
-        advArmPareseFlippedLabel: "Arm Paresis (Symptom)",    
-        advBeinPareseFlippedLabel: "Leg Paresis (Symptom)",     
+        advEyeDeviationFlippedLabel: "Eye Deviation (Symptom)",
+        advArmPareseFlippedLabel: "Arm Paresis (Symptom)",
+        advBeinPareseFlippedLabel: "Leg Paresis (Symptom)",
         advVigilanzminderungLabel: "Altered Sensorium",
         advAfibLabel: "Known Atrial Fibrillation",
         advHeadacheLabel: "Headache",
@@ -785,69 +913,109 @@
       }
     };
 
-    const ALL_SECTIONS = ['codeEntrySection', 'moduleSelectionSection', 'comaModuleSection', 'strokePrerequisiteSection', 'strokeModuleSection', 'advancedStrokeModuleSection']; 
+    // List of all section IDs for show/hide functionality
+    const ALL_SECTIONS = [
+      'codeEntrySection',
+      'moduleSelectionSection',
+      'comaModuleSection',
+      'strokePrerequisiteSection',
+      'strokeModuleSection',
+      'advancedStrokeModuleSection'
+    ];
 
+    /**
+     * Show only the specified section by removing 'hidden' from that ID
+     * and adding 'hidden' to all others.
+     */
     function showSection(sectionIdToShow) {
       ALL_SECTIONS.forEach(id => {
         const section = document.getElementById(id);
-        if (section) { 
-            if (id === sectionIdToShow) {
-                section.classList.remove('hidden');
-            } else {
-                section.classList.add('hidden');
-            }
+        if (section) {
+          if (id === sectionIdToShow) {
+            section.classList.remove('hidden');
+          } else {
+            section.classList.add('hidden');
+          }
         }
       });
     }
-    
+
+    /**
+     * Update text content of an element (or its inner <span>) using translations.
+     */
     function updateTextContent(elementId, translationKey) {
-        const element = document.getElementById(elementId);
-        if (element && translations[currentLang] && translations[currentLang][translationKey] !== undefined) {
-            const target = element.querySelector('span') || element; 
-            target.textContent = translations[currentLang][translationKey];
-        } else if (element && translations[currentLang] && translations[currentLang][translationKey] === undefined) { 
-            console.warn(`Translation key '${translationKey}' not found for lang '${currentLang}' for elementId '${elementId}'`);
-        }
+      const element = document.getElementById(elementId);
+      if (
+        element &&
+        translations[currentLang] &&
+        translations[currentLang][translationKey] !== undefined
+      ) {
+        const target = element.querySelector('span') || element;
+        target.textContent = translations[currentLang][translationKey];
+      } else if (
+        element &&
+        translations[currentLang] &&
+        translations[currentLang][translationKey] === undefined
+      ) {
+        console.warn(
+          `Translation key '${translationKey}' not found for lang '${currentLang}' for elementId '${elementId}'`
+        );
+      }
     }
 
+    /**
+     * Update placeholder text of an input element using translations.
+     */
     function updatePlaceholder(elementId, translationKey) {
-        const element = document.getElementById(elementId);
-        if (element && translations[currentLang] && translations[currentLang][translationKey] !== undefined) {
-            element.placeholder = translations[currentLang][translationKey];
-        }
+      const element = document.getElementById(elementId);
+      if (
+        element &&
+        translations[currentLang] &&
+        translations[currentLang][translationKey] !== undefined
+      ) {
+        element.placeholder = translations[currentLang][translationKey];
+      }
     }
 
+    /**
+     * Toggle button between loading and normal state.
+     */
     function setButtonLoading(buttonElement, isLoading) {
-        if (!buttonElement) return;
-        if (isLoading) {
-            buttonElement.classList.add('loading');
-            buttonElement.disabled = true;
-        } else {
-            buttonElement.classList.remove('loading');
-            buttonElement.disabled = false;
-        }
+      if (!buttonElement) return;
+      if (isLoading) {
+        buttonElement.classList.add('loading');
+        buttonElement.disabled = true;
+      } else {
+        buttonElement.classList.remove('loading');
+        buttonElement.disabled = false;
+      }
     }
 
+    /**
+     * Switch UI language between English and German.
+     * Updates text content, placeholders, and aria-labels accordingly.
+     */
     function switchLanguage(lang) {
       currentLang = lang;
-      document.documentElement.lang = lang; 
-      localStorage.setItem('language', lang); 
-      const texts = translations[lang] || translations.en; 
+      document.documentElement.lang = lang;
+      localStorage.setItem('language', lang);
+      const texts = translations[lang] || translations.en;
 
+      // Update static text elements
       updateTextContent('appTitle', 'appTitle');
       updateTextContent('codePrompt', 'codePrompt');
       updateTextContent('accessCodeButton', 'accessCodeButton');
       updateTextContent('homeButton', 'homeButton');
-      
+
       updateTextContent('moduleSelectionTitle', 'moduleSelectionTitle');
       updateTextContent('comaModuleButton', 'comaModuleButton');
       updateTextContent('strokeModuleButton', 'strokeModuleButton');
-      
+
       updateTextContent('comaModuleTitle', 'comaModuleTitle');
       updateTextContent('gfapComaLabel', 'gfapLabel');
       updateTextContent('calculateComaButton', 'calculateButton');
       updateTextContent('comaBackButton', 'backButton');
-      
+
       updateTextContent('strokePrerequisiteTitle', 'strokePrerequisiteTitle');
       updateTextContent('prerequisite1Label', 'prerequisite1');
       updateTextContent('prerequisite2Label', 'prerequisite2');
@@ -861,7 +1029,7 @@
       updateTextContent('gfapStrokeLabel', 'gfapLabel');
       updateTextContent('sbpLabel', 'sbpLabel');
       updateTextContent('calculateStrokeButton', 'calculateButton');
-      updateTextContent('switchToAdvancedStrokeButton', 'switchToAdvancedStrokeButton'); 
+      updateTextContent('switchToAdvancedStrokeButton', 'switchToAdvancedStrokeButton');
       updateTextContent('strokeModuleBackButton', 'backButton');
 
       updateTextContent('advancedStrokeModuleTitle', 'advancedStrokeModuleTitle');
@@ -869,17 +1037,31 @@
       updateTextContent('advGfapLabel', 'advGfapLabel');
       updateTextContent('advSbpLabel', 'advSbpLabel');
       updateTextContent('advDbpLabel', 'advDbpLabel');
-      
+
+      // Toggle text on FAST ED toggle button
       const fastEdContainer = document.getElementById('fastEdComponentsContainer');
       const fastEdBtnTextEl = document.getElementById('toggleFastEdBtnText');
-      if(fastEdBtnTextEl) fastEdBtnTextEl.textContent = texts[fastEdContainer && fastEdContainer.classList.contains('hidden') ? 'toggleFastEdBtnTextCalculate' : 'toggleFastEdBtnTextHide'];
-      
-      Object.keys(texts).filter(k => k.startsWith('fastEd') || k.startsWith('advRace') || k.startsWith('race')).forEach(key => updateTextContent(key, key));
-            
+      if (
+        fastEdBtnTextEl
+      )
+        fastEdBtnTextEl.textContent =
+          texts[
+            fastEdContainer && fastEdContainer.classList.contains('hidden')
+              ? 'toggleFastEdBtnTextCalculate'
+              : 'toggleFastEdBtnTextHide'
+          ];
+
+      // Update all FAST ED / RACE related labels
+      Object.keys(texts)
+        .filter((k) => k.startsWith('fastEd') || k.startsWith('advRace') || k.startsWith('race'))
+        .forEach((key) => updateTextContent(key, key));
+
       updateTextContent('advAdditionalSymptomsLabel', 'advAdditionalSymptomsLabel');
-      Object.keys(texts).filter(k => k.startsWith('adv') && (k.endsWith('Label') || k.endsWith('FlippedLabel'))).forEach(key => updateTextContent(key, key));
-      
-      // Update vigilanzminderung label separately for German
+      Object.keys(texts)
+        .filter((k) => k.startsWith('adv') && (k.endsWith('Label') || k.endsWith('FlippedLabel')))
+        .forEach((key) => updateTextContent(key, key));
+
+      // Update "Altered Sensorium" label separately for German (word length variation)
       const vigilanzLabel = document.getElementById('advVigilanzminderungLabel');
       if (vigilanzLabel) {
         vigilanzLabel.textContent = texts['advVigilanzminderungLabel'];
@@ -887,161 +1069,207 @@
 
       updateTextContent('calculateAdvancedStrokeButton', 'calculateAdvancedStrokeButton');
       updateTextContent('advancedStrokeModuleBackButton', 'backToStandardStrokeButton');
-      
+
       updateTextContent('disclaimerModalTitleText', 'disclaimer');
       updateTextContent('disclaimerConfirmButton', 'confirmButton');
 
-      // Only update placeholders for code entry and advanced module
+      // Update placeholders for code entry and advanced stroke inputs
       updatePlaceholder('accessCodeInput', 'accessCodePlaceholder');
       updatePlaceholder('advAgeInput', 'agePlaceholder');
       updatePlaceholder('advGfapInput', 'gfapPlaceholder');
       updatePlaceholder('advSbpInput', 'sbpPlaceholder');
       updatePlaceholder('advDbpInput', 'dbpPlaceholder');
 
-      const darkModeButton = document.getElementById('darkModeToggle'); 
+      // Update aria-label for dark mode toggle based on current mode
+      const darkModeButton = document.getElementById('darkModeToggle');
       if (darkModeButton) {
-        darkModeButton.setAttribute('aria-label', document.body.classList.contains('dark-mode') ? texts.darkModeToggleLabelOn : texts.darkModeToggleLabelOff);
+        darkModeButton.setAttribute(
+          'aria-label',
+          document.body.classList.contains('dark-mode')
+            ? texts.darkModeToggleLabelOn
+            : texts.darkModeToggleLabelOff
+        );
       }
-      
-      ['accessError', 'prerequisiteError', 'advancedStrokeError'].forEach(errId => {
-          const errEl = document.getElementById(errId);
-          if (errEl && !errEl.classList.contains('hidden')) {
-              let key = errId; 
-              if (errId === 'accessError' && errEl.dataset.isServerError === "true") {
-                  key = 'serverError';
-              }
-              errEl.textContent = texts[key] || "An error occurred.";
+
+      // If any errors are visible, update their text
+      ['accessError', 'prerequisiteError', 'advancedStrokeError'].forEach((errId) => {
+        const errEl = document.getElementById(errId);
+        if (errEl && !errEl.classList.contains('hidden')) {
+          let key = errId;
+          if (errId === 'accessError' && errEl.dataset.isServerError === 'true') {
+            key = 'serverError';
           }
+          errEl.textContent = texts[key] || 'An error occurred.';
+        }
       });
     }
 
+    /**
+     * Clear Coma Module inputs and hide result
+     */
     function resetComaModuleInputs() {
-        const gfapInput = document.getElementById('gfapComaInput');
-        if(gfapInput) gfapInput.value = '';
-        const comaResult = document.getElementById('comaResult');
-        if(comaResult) {
-            comaResult.classList.add('hidden');
-            comaResult.innerHTML = '';
-            comaResult.className = 'result hidden'; 
-        }
+      const gfapInput = document.getElementById('gfapComaInput');
+      if (gfapInput) gfapInput.value = '';
+      const comaResult = document.getElementById('comaResult');
+      if (comaResult) {
+        comaResult.classList.add('hidden');
+        comaResult.innerHTML = '';
+        comaResult.className = 'result hidden';
+      }
     }
 
-    function resetStrokeModuleInputs() { 
-        ['ageInput', 'gfapStrokeInput', 'sbpInput'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.value = '';
-        });
-        const strokeResult = document.getElementById('strokeResult');
-        if(strokeResult) {
-            strokeResult.classList.add('hidden');
-            strokeResult.innerHTML = '';
-            strokeResult.className = 'result hidden'; 
-        }
-        ['prerequisite1', 'prerequisite2', 'prerequisite3', 'prerequisite4'].forEach(id => {
-            const el = document.getElementById(id);
-            if(el) el.checked = false;
-        });
-        const prereqError = document.getElementById('prerequisiteError');
-        if(prereqError) prereqError.classList.add('hidden');
+    /**
+     * Clear Stroke Module inputs, checkboxes, and hide result/errors
+     */
+    function resetStrokeModuleInputs() {
+      ['ageInput', 'gfapStrokeInput', 'sbpInput'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      const strokeResult = document.getElementById('strokeResult');
+      if (strokeResult) {
+        strokeResult.classList.add('hidden');
+        strokeResult.innerHTML = '';
+        strokeResult.className = 'result hidden';
+      }
+      ['prerequisite1', 'prerequisite2', 'prerequisite3', 'prerequisite4'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.checked = false;
+      });
+      const prereqError = document.getElementById('prerequisiteError');
+      if (prereqError) prereqError.classList.add('hidden');
     }
 
+    /**
+     * Clear Advanced Stroke Module inputs, score components, and hide results/errors
+     */
     function resetAdvancedStrokeModuleInputs() {
-        const fieldsToClear = ['advAgeInput', 'advGfapInput', 'advSbpInput', 'advDbpInput'];
-        fieldsToClear.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.value = '';
-        });
+      // Clear basic fields
+      const fieldsToClear = ['advAgeInput', 'advGfapInput', 'advSbpInput', 'advDbpInput'];
+      fieldsToClear.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
 
-        const checkboxesToClear = [
-            'advEyeDeviationFlippedInput', 'advArmPareseFlippedInput', 'advBeinPareseFlippedInput', 
-            'advVigilanzminderungInput', 'advAfibInput', 'advHeadacheInput', 
-            'advNoakInput', 'advAntiplateletsInput',
-            'fastEdFacialPalsy', 
-            'raceGazeDeviation'  
-        ];
-        checkboxesToClear.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.checked = false;
-        });
+      // Clear symptom checkboxes and FAST ED/RACE toggles
+      const checkboxesToClear = [
+        'advEyeDeviationFlippedInput',
+        'advArmPareseFlippedInput',
+        'advBeinPareseFlippedInput',
+        'advVigilanzminderungInput',
+        'advAfibInput',
+        'advHeadacheInput',
+        'advNoakInput',
+        'advAntiplateletsInput',
+        'fastEdFacialPalsy',
+        'raceGazeDeviation'
+      ];
+      checkboxesToClear.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.checked = false;
+      });
 
-        const selectsToReset = { 
-            'fastEdArmWeakness': "0", 'fastEdSpeechChanges': "0", 'fastEdEyeDeviation': "0", 'fastEdDenialNeglect': "0",
-            'raceFacialPalsy': "0", 'raceArmMotor': "0", 'raceLegMotor': "0", 'raceAphasiaAgnosia': "0"
-        };
-        for (const id in selectsToReset) {
-            const el = document.getElementById(id);
-            if (el) el.value = selectsToReset[id];
+      // Reset FAST ED and RACE select values to 0
+      const selectsToReset = {
+        fastEdArmWeakness: '0',
+        fastEdSpeechChanges: '0',
+        fastEdEyeDeviation: '0',
+        fastEdDenialNeglect: '0',
+        raceFacialPalsy: '0',
+        raceArmMotor: '0',
+        raceLegMotor: '0',
+        raceAphasiaAgnosia: '0'
+      };
+      Object.keys(selectsToReset).forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.value = selectsToReset[id];
+      });
+
+      // Update displayed FAST ED and RACE scores after clearing
+      if (typeof updateFastEdScore === 'function') updateFastEdScore();
+      if (typeof updateRaceScore === 'function') updateRaceScore();
+
+      // Hide score component containers
+      ['fastEdComponentsContainer', 'raceComponentsContainer'].forEach((containerId) => {
+        const container = document.getElementById(containerId);
+        if (container) container.classList.add('hidden');
+      });
+      // Reset toggle buttons aria-expanded and text
+      ['toggleFastEdBtn', 'toggleRaceBtn'].forEach((btnId) => {
+        const btn = document.getElementById(btnId);
+        if (btn) btn.setAttribute('aria-expanded', 'false');
+        const btnTextEl = document.getElementById(btnId + 'Text');
+        if (btnTextEl && translations[currentLang]) {
+          btnTextEl.textContent = translations[currentLang].toggleFastEdBtnTextCalculate || 'Calculate/Edit';
         }
+      });
 
-        if (typeof updateFastEdScore === "function") updateFastEdScore();
-        if (typeof updateRaceScore === "function") updateRaceScore();
-
-        ['fastEdComponentsContainer', 'raceComponentsContainer'].forEach(containerId => {
-            const container = document.getElementById(containerId);
-            if (container) container.classList.add('hidden');
-        });
-        ['toggleFastEdBtn', 'toggleRaceBtn'].forEach(btnId => {
-            const btn = document.getElementById(btnId);
-            if (btn) btn.setAttribute('aria-expanded', 'false');
-            const btnTextEl = document.getElementById(btnId + "Text");
-            if (btnTextEl && translations[currentLang]) {
-                 btnTextEl.textContent = translations[currentLang].toggleFastEdBtnTextCalculate || "Calculate/Edit";
-            }
-        });
-        
-        const resultEl = document.getElementById('advancedStrokeResult');
-        if (resultEl) {
-            resultEl.classList.add('hidden');
-            resultEl.innerHTML = '';
-            resultEl.className = 'result hidden';
-        }
-        const errorEl = document.getElementById('advancedStrokeError');
-        if (errorEl) errorEl.classList.add('hidden');
+      // Hide result and error elements
+      const resultEl = document.getElementById('advancedStrokeResult');
+      if (resultEl) {
+        resultEl.classList.add('hidden');
+        resultEl.innerHTML = '';
+        resultEl.className = 'result hidden';
+      }
+      const errorEl = document.getElementById('advancedStrokeError');
+      if (errorEl) errorEl.classList.add('hidden');
     }
 
+    /**
+     * Navigate to module selection screen if authenticated; otherwise show access code entry.
+     */
     function navigateToModuleSelection() {
-      // NEW: Check authentication state
+      // Check if user is authenticated
       if (sessionStorage.getItem('isAuthenticated') !== 'true') {
         showSection('codeEntrySection');
         return;
       }
-      
+
+      // Show module selection, reset other modules
       showSection('moduleSelectionSection');
       resetComaModuleInputs();
       resetStrokeModuleInputs();
-      if (typeof resetAdvancedStrokeModuleInputs === "function") resetAdvancedStrokeModuleInputs(); 
+      if (typeof resetAdvancedStrokeModuleInputs === 'function') resetAdvancedStrokeModuleInputs();
       const accessCodeInput = document.getElementById('accessCodeInput');
-      if(accessCodeInput) accessCodeInput.value = ''; 
+      if (accessCodeInput) accessCodeInput.value = '';
       const accessErrorEl = document.getElementById('accessError');
-      if(accessErrorEl) accessErrorEl.classList.add('hidden');
+      if (accessErrorEl) accessErrorEl.classList.add('hidden');
       const prereqErrorEl = document.getElementById('prerequisiteError');
-      if(prereqErrorEl) prereqErrorEl.classList.add('hidden');
+      if (prereqErrorEl) prereqErrorEl.classList.add('hidden');
       const advErrorEl = document.getElementById('advancedStrokeError');
-      if(advErrorEl) advErrorEl.classList.add('hidden');
-    }
-    
-    function navigateToCodeEntry() { 
-        showSection('codeEntrySection');
-        resetComaModuleInputs();
-        resetStrokeModuleInputs();
-        if (typeof resetAdvancedStrokeModuleInputs === "function") resetAdvancedStrokeModuleInputs();
-        const accessCodeInput = document.getElementById('accessCodeInput');
-        if(accessCodeInput) {
-            accessCodeInput.value = '';
-            accessCodeInput.focus();
-        }
-        const accessErrorEl = document.getElementById('accessError');
-        if(accessErrorEl) accessErrorEl.classList.add('hidden');
+      if (advErrorEl) advErrorEl.classList.add('hidden');
     }
 
-    function navigateToStrokeModule() { 
-        showSection('strokeModuleSection');
-        if (typeof resetAdvancedStrokeModuleInputs === "function") resetAdvancedStrokeModuleInputs();
-        const ageInput = document.getElementById('ageInput');
-        if(ageInput) ageInput.focus(); 
+    /**
+     * Navigate back to code entry (log out).
+     */
+    function navigateToCodeEntry() {
+      showSection('codeEntrySection');
+      resetComaModuleInputs();
+      resetStrokeModuleInputs();
+      if (typeof resetAdvancedStrokeModuleInputs === 'function') resetAdvancedStrokeModuleInputs();
+      const accessCodeInput = document.getElementById('accessCodeInput');
+      if (accessCodeInput) {
+        accessCodeInput.value = '';
+        accessCodeInput.focus();
+      }
+      const accessErrorEl = document.getElementById('accessError');
+      if (accessErrorEl) accessErrorEl.classList.add('hidden');
     }
 
-    // NEW: Unified risk stratification function
+    /**
+     * Navigate directly to standard stroke module (skipping prerequisites) and clear advanced inputs.
+     */
+    function navigateToStrokeModule() {
+      showSection('strokeModuleSection');
+      if (typeof resetAdvancedStrokeModuleInputs === 'function') resetAdvancedStrokeModuleInputs();
+      const ageInput = document.getElementById('ageInput');
+      if (ageInput) ageInput.focus();
+    }
+
+    /**
+     * Determine risk category (low/medium/high) based on probability percentage.
+     */
     function updateRiskStratification(probability) {
       let riskLevel, riskClass;
       if (probability < 25) {
@@ -1057,61 +1285,75 @@
       return { riskLevel, riskClass };
     }
 
-    // NEW: Sync symptom checkboxes with score components
+    /**
+     * Synchronize symptom checkboxes (eye deviation, arm paresis, leg paresis)
+     * based on FAST ED and RACE score selections.
+     */
     function syncSymptomsFromScores() {
-        // Eye Deviation
-        const fastEdEyeDeviation = document.getElementById('fastEdEyeDeviation');
-        const raceGazeDeviation = document.getElementById('raceGazeDeviation');
-        const eyeDeviationSymptom = document.getElementById('advEyeDeviationFlippedInput');
+      // Eye Deviation: true if FAST ED eye deviation > 0 OR RACE gaze deviation checked
+      const fastEdEyeDeviation = document.getElementById('fastEdEyeDeviation');
+      const raceGazeDeviation = document.getElementById('raceGazeDeviation');
+      const eyeDeviationSymptom = document.getElementById('advEyeDeviationFlippedInput');
 
-        if (fastEdEyeDeviation && raceGazeDeviation && eyeDeviationSymptom) {
-            const eyeDevPresent = parseInt(fastEdEyeDeviation.value) > 0 || raceGazeDeviation.checked;
-            eyeDeviationSymptom.checked = eyeDevPresent;
-        }
+      if (fastEdEyeDeviation && raceGazeDeviation && eyeDeviationSymptom) {
+        const eyeDevPresent =
+          parseInt(fastEdEyeDeviation.value) > 0 || raceGazeDeviation.checked;
+        eyeDeviationSymptom.checked = eyeDevPresent;
+      }
 
-        // Arm Paresis
-        const fastEdArmWeakness = document.getElementById('fastEdArmWeakness');
-        const raceArmMotor = document.getElementById('raceArmMotor');
-        const armParesisSymptom = document.getElementById('advArmPareseFlippedInput');
+      // Arm Paresis: true if FAST ED arm weakness > 0 OR RACE arm motor > 0
+      const fastEdArmWeakness = document.getElementById('fastEdArmWeakness');
+      const raceArmMotor = document.getElementById('raceArmMotor');
+      const armParesisSymptom = document.getElementById('advArmPareseFlippedInput');
 
-        if (fastEdArmWeakness && raceArmMotor && armParesisSymptom) {
-            const armParesisPresent = parseInt(fastEdArmWeakness.value) > 0 || parseInt(raceArmMotor.value) > 0;
-            armParesisSymptom.checked = armParesisPresent;
-        }
+      if (fastEdArmWeakness && raceArmMotor && armParesisSymptom) {
+        const armParesisPresent =
+          parseInt(fastEdArmWeakness.value) > 0 || parseInt(raceArmMotor.value) > 0;
+        armParesisSymptom.checked = armParesisPresent;
+      }
 
-        // Leg Paresis
-        const raceLegMotor = document.getElementById('raceLegMotor');
-        const legParesisSymptom = document.getElementById('advBeinPareseFlippedInput');
+      // Leg Paresis: true if RACE leg motor > 0
+      const raceLegMotor = document.getElementById('raceLegMotor');
+      const legParesisSymptom = document.getElementById('advBeinPareseFlippedInput');
 
-        if (raceLegMotor && legParesisSymptom) {
-            const legParesisPresent = parseInt(raceLegMotor.value) > 0;
-            legParesisSymptom.checked = legParesisPresent;
-        }
+      if (raceLegMotor && legParesisSymptom) {
+        const legParesisPresent = parseInt(raceLegMotor.value) > 0;
+        legParesisSymptom.checked = legParesisPresent;
+      }
     }
 
+    /**
+     * Validate the access code by sending it to the backend.
+     * Show error messages or navigate to module selection on success.
+     */
     async function validateAccessCode() {
       const accessCodeInput = document.getElementById('accessCodeInput');
       const accessCode = accessCodeInput.value.trim();
       const accessErrorEl = document.getElementById('accessError');
       const accessCodeButton = document.getElementById('accessCodeButton');
 
+      // If input is empty, show error
       if (!accessCode) {
-        accessErrorEl.textContent = translations[currentLang].invalidInput; 
+        accessErrorEl.textContent = translations[currentLang].invalidInput;
         accessErrorEl.classList.remove('hidden');
-        accessErrorEl.dataset.isServerError = "false";
+        accessErrorEl.dataset.isServerError = 'false';
         return;
       }
+
       setButtonLoading(accessCodeButton, true);
-      accessErrorEl.classList.add('hidden'); 
+      accessErrorEl.classList.add('hidden');
+
       try {
+        // Send access code to validation endpoint
         const response = await fetch(ACCESS_CODE_VALIDATOR_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ accessCode: accessCode }),
         });
         const data = await response.json();
+
         if (response.ok && data.success) {
-          // NEW: Store authentication state
+          // Store authentication state and show module selection
           sessionStorage.setItem('isAuthenticated', 'true');
           navigateToModuleSelection();
         } else {
@@ -1120,234 +1362,323 @@
           accessErrorEl.dataset.isServerError = String(response.status >= 500);
         }
       } catch (error) {
-        console.error("Error validating access code:", error);
+        console.error('Error validating access code:', error);
         accessErrorEl.textContent = translations[currentLang].serverError;
         accessErrorEl.classList.remove('hidden');
-        accessErrorEl.dataset.isServerError = "true";
+        accessErrorEl.dataset.isServerError = 'true';
       } finally {
         setButtonLoading(accessCodeButton, false);
       }
     }
 
+    /**
+     * Show the Coma Module: clear inputs, focus on GFAP input.
+     */
     function startComaModule() {
       showSection('comaModuleSection');
-      resetComaModuleInputs(); 
+      resetComaModuleInputs();
       const gfapInput = document.getElementById('gfapComaInput');
-      if(gfapInput) gfapInput.focus(); 
+      if (gfapInput) gfapInput.focus();
     }
 
-    function startStandardStrokeModule() { 
+    /**
+     * Show the Stroke Prerequisite Section: clear stroke inputs, focus first checkbox.
+     */
+    function startStandardStrokeModule() {
       showSection('strokePrerequisiteSection');
-      resetStrokeModuleInputs(); 
+      resetStrokeModuleInputs();
       const prereq1 = document.getElementById('prerequisite1');
-      if(prereq1) prereq1.focus(); 
-    }
-    
-    function startAdvancedStrokeModuleFromStandard() { 
-        showSection('advancedStrokeModuleSection');
-        resetAdvancedStrokeModuleInputs(); 
-        const advAgeInput = document.getElementById('advAgeInput');
-        if(advAgeInput) advAgeInput.focus();
+      if (prereq1) prereq1.focus();
     }
 
+    /**
+     * Show the Advanced Stroke Module: clear advanced inputs, focus on age input.
+     */
+    function startAdvancedStrokeModuleFromStandard() {
+      showSection('advancedStrokeModuleSection');
+      resetAdvancedStrokeModuleInputs();
+      const advAgeInput = document.getElementById('advAgeInput');
+      if (advAgeInput) advAgeInput.focus();
+    }
+
+    /**
+     * Validate that all stroke prerequisites are checked before showing Stroke Module.
+     */
     function validatePrerequisites() {
-      const checksMet = ['prerequisite1', 'prerequisite2', 'prerequisite3', 'prerequisite4']
-                        .every(id => document.getElementById(id)?.checked);
+      const checksMet = ['prerequisite1', 'prerequisite2', 'prerequisite3', 'prerequisite4'].every(
+        (id) => document.getElementById(id)?.checked
+      );
       const prerequisiteErrorEl = document.getElementById('prerequisiteError');
-      
+
       if (checksMet) {
-        showSection('strokeModuleSection'); 
+        showSection('strokeModuleSection');
         const ageInput = document.getElementById('ageInput');
-        if(ageInput) ageInput.focus(); 
-        if(prerequisiteErrorEl) prerequisiteErrorEl.classList.add('hidden');
+        if (ageInput) ageInput.focus();
+        if (prerequisiteErrorEl) prerequisiteErrorEl.classList.add('hidden');
       } else {
-        if(prerequisiteErrorEl) {
-            prerequisiteErrorEl.textContent = translations[currentLang].prerequisiteError;
-            prerequisiteErrorEl.classList.remove('hidden');
+        if (prerequisiteErrorEl) {
+          prerequisiteErrorEl.textContent = translations[currentLang].prerequisiteError;
+          prerequisiteErrorEl.classList.remove('hidden');
         }
       }
     }
 
+    /**
+     * Display the disclaimer modal before showing results.
+     */
     function showDisclaimer() {
       const modal = document.getElementById('disclaimerModal');
       if (!modal) return;
-      modal.style.display = 'flex'; 
+      modal.style.display = 'flex';
       setTimeout(() => {
-          modal.classList.add('show');
+        modal.classList.add('show');
         const confirmBtn = document.getElementById('disclaimerConfirmButton');
-          if(confirmBtn) confirmBtn.focus(); 
-      }, 10); 
+        if (confirmBtn) confirmBtn.focus();
+      }, 10);
     }
 
+    /**
+     * Close the disclaimer modal, then reveal pendingResult if set (with risk class).
+     */
     function closeDisclaimer() {
       const modal = document.getElementById('disclaimerModal');
       if (!modal) return;
       modal.classList.remove('show');
-      modal.addEventListener('transitionend', function handler() {
-        modal.style.display = 'none';
-        modal.removeEventListener('transitionend', handler); 
-        if (pendingResult) {
+      modal.addEventListener(
+        'transitionend',
+        function handler() {
+          modal.style.display = 'none';
+          modal.removeEventListener('transitionend', handler);
+          if (pendingResult) {
             let focusButtonId = null;
             if (pendingResult.element.id === 'comaResult') focusButtonId = 'calculateComaButton';
-            else if (pendingResult.element.id === 'strokeResult') focusButtonId = 'calculateStrokeButton';
-            else if (pendingResult.element.id === 'advancedStrokeResult') focusButtonId = 'calculateAdvancedStrokeButton';
-            
+            else if (pendingResult.element.id === 'strokeResult')
+              focusButtonId = 'calculateStrokeButton';
+            else if (pendingResult.element.id === 'advancedStrokeResult')
+              focusButtonId = 'calculateAdvancedStrokeButton';
+
             const focusButton = document.getElementById(focusButtonId);
             if (focusButton) focusButton.focus();
-            
+
             // Apply risk class to result element for coma and stroke modules
-            if (pendingResult.element.id === 'comaResult' || pendingResult.element.id === 'strokeResult') {
-                pendingResult.element.classList.add(pendingResult.riskClass);
+            if (
+              pendingResult.element.id === 'comaResult' ||
+              pendingResult.element.id === 'strokeResult'
+            ) {
+              pendingResult.element.classList.add(pendingResult.riskClass);
             }
-        }
-      }, { once: true }); 
+          }
+        },
+        { once: true }
+      );
     }
 
-    let updateFastEdScore, updateRaceScore; 
+    let updateFastEdScore, updateRaceScore;
 
+    /**
+     * Setup interactive score calculator for either FAST ED or RACE.
+     * toggleBtnId: ID of button that toggles visibility
+     * componentsContainerId: ID of container holding score components
+     * scoreDisplayId: ID of element to display current score
+     * hiddenInputId: ID of hidden input to store score
+     * componentConfig: Array of component definitions { id, type, points? }
+     */
     function setupInteractiveScore(
-        toggleBtnId, 
-        componentsContainerId, 
-        scoreDisplayId, 
-        hiddenInputId, 
-        componentConfig 
+      toggleBtnId,
+      componentsContainerId,
+      scoreDisplayId,
+      hiddenInputId,
+      componentConfig
     ) {
-        const toggleBtn = document.getElementById(toggleBtnId);
-        const componentsDiv = document.getElementById(componentsContainerId);
-        const scoreDisplay = document.getElementById(scoreDisplayId);
-        const hiddenInput = document.getElementById(hiddenInputId);
-        const toggleBtnTextEl = document.getElementById(toggleBtnId + "Text");
+      const toggleBtn = document.getElementById(toggleBtnId);
+      const componentsDiv = document.getElementById(componentsContainerId);
+      const scoreDisplay = document.getElementById(scoreDisplayId);
+      const hiddenInput = document.getElementById(hiddenInputId);
+      const toggleBtnTextEl = document.getElementById(toggleBtnId + 'Text');
 
-        if (!toggleBtn || !componentsDiv || !scoreDisplay || !hiddenInput || !toggleBtnTextEl) {
-            return () => {}; 
-        }
+      // If any required element is missing, return a no-op
+      if (!toggleBtn || !componentsDiv || !scoreDisplay || !hiddenInput || !toggleBtnTextEl) {
+        return () => {};
+      }
 
-        function calculateAndUpdate() {
-            let currentScore = 0;
-            componentConfig.forEach(comp => {
-                const element = document.getElementById(comp.id);
-                if (element) {
-                    if (comp.type === 'checkbox') {
-                        if (element.checked) {
-                            currentScore += parseInt(comp.points || element.dataset.points || 0);
-                        }
-                    } else if (comp.type === 'select') {
-                        currentScore += parseInt(element.value);
-                    }
-                }
-            });
-            scoreDisplay.textContent = currentScore;
-            hiddenInput.value = currentScore;
-            syncSymptomsFromScores(); // NEW: Sync symptoms after update
-        }
-
-        componentConfig.forEach(comp => {
-            const element = document.getElementById(comp.id);
-            if (element) {
-                element.addEventListener('change', calculateAndUpdate);
+      /**
+       * Calculate total score based on component states (checkbox/select),
+       * update display and hidden input, then sync symptom checkboxes.
+       */
+      function calculateAndUpdate() {
+        let currentScore = 0;
+        componentConfig.forEach((comp) => {
+          const element = document.getElementById(comp.id);
+          if (element) {
+            if (comp.type === 'checkbox') {
+              if (element.checked) {
+                currentScore += parseInt(comp.points || element.dataset.points || 0);
+              }
+            } else if (comp.type === 'select') {
+              currentScore += parseInt(element.value);
             }
+          }
         });
+        scoreDisplay.textContent = currentScore;
+        hiddenInput.value = currentScore;
+        syncSymptomsFromScores(); // Keep symptom checkboxes in sync
+      }
 
-        toggleBtn.addEventListener('click', () => {
-            const isHiddenAfterToggle = componentsDiv.classList.toggle('hidden');
-            toggleBtn.setAttribute('aria-expanded', String(!isHiddenAfterToggle));
-            
-            let calculateKey = 'toggleFastEdBtnTextCalculate'; // Generic, can be specified
-            let hideKey = 'toggleFastEdBtnTextHide';
-            
-            toggleBtnTextEl.textContent = translations[currentLang][isHiddenAfterToggle ? calculateKey : hideKey];
-            
-             if (!isHiddenAfterToggle && componentConfig.length > 0) {
-                const firstComponent = document.getElementById(componentConfig[0].id);
-                if(firstComponent) firstComponent.focus();
-            }
-        });
-        
-        calculateAndUpdate(); 
-        return calculateAndUpdate; 
+      // Attach change listeners to each component to recalculate on change
+      componentConfig.forEach((comp) => {
+        const element = document.getElementById(comp.id);
+        if (element) {
+          element.addEventListener('change', calculateAndUpdate);
+        }
+      });
+
+      // Toggle visibility of component container on button click
+      toggleBtn.addEventListener('click', () => {
+        const isHiddenAfterToggle = componentsDiv.classList.toggle('hidden');
+        toggleBtn.setAttribute('aria-expanded', String(!isHiddenAfterToggle));
+
+        // Determine appropriate toggle button text (Calculate/Edit vs. Hide)
+        let calculateKey = 'toggleFastEdBtnTextCalculate';
+        let hideKey = 'toggleFastEdBtnTextHide';
+        toggleBtnTextEl.textContent = translations[currentLang][
+          isHiddenAfterToggle ? calculateKey : hideKey
+        ];
+
+        // If showing container, focus first component
+        if (!isHiddenAfterToggle && componentConfig.length > 0) {
+          const firstComponent = document.getElementById(componentConfig[0].id);
+          if (firstComponent) firstComponent.focus();
+        }
+      });
+
+      // Initial calculation to set score to 0
+      calculateAndUpdate();
+      return calculateAndUpdate;
     }
 
+    /**
+     * Calculate coma risk by sending GFAP value to backend.
+     * Displays a disclaimer modal before showing result.
+     */
     async function calculateComaRisk() {
       const gfapInput = document.getElementById('gfapComaInput');
-      const gfap = parseFloat(gfapInput?.value); 
+      const gfap = parseFloat(gfapInput?.value);
       const resultEl = document.getElementById('comaResult');
       const calculateButton = document.getElementById('calculateComaButton');
-      
-      if(!resultEl) return;
-      resultEl.classList.add('hidden'); 
-      resultEl.className = 'result hidden'; 
 
-      if (isNaN(gfap) || gfap < 29 || gfap > 10001) { 
-        resultEl.textContent = translations[currentLang].rangeErrorGFAP.replace('0 and 50000', '29 and 10001'); 
+      if (!resultEl) return;
+      // Hide previous result
+      resultEl.classList.add('hidden');
+      resultEl.className = 'result hidden';
+
+      // Validate GFAP input range
+      if (isNaN(gfap) || gfap < 29 || gfap > 10001) {
+        resultEl.textContent = translations[currentLang].rangeErrorGFAP.replace(
+          '0 and 50000',
+          '29 and 10001'
+        );
         resultEl.classList.add('warning');
         resultEl.classList.remove('hidden');
-        if(gfapInput) gfapInput.focus(); 
+        if (gfapInput) gfapInput.focus();
         return;
       }
-      
+
+      // Show loading spinner on button
       setButtonLoading(calculateButton, true);
       try {
+        // Send GFAP to coma risk API
         const response = await fetch(COMA_CALCULATOR_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ gfap: gfap }) 
+          body: JSON.stringify({ gfap: gfap })
         });
-        const data = await response.json(); 
+        const data = await response.json();
         if (response.ok && data.success) {
-          showDisclaimer(); 
-          
-          // UPDATED: New risk stratification
+          // Show disclaimer before revealing result
+          showDisclaimer();
+
+          // Determine risk level and CSS class
           const { riskLevel, riskClass } = updateRiskStratification(data.probability);
-          
+
+          // Store pendingResult to display after disclaimer
           pendingResult = {
             element: resultEl,
-            html: `<strong>${translations[currentLang].probability}:</strong> ${data.probability.toFixed(1)}%<br>
+            html: `<strong>${translations[currentLang].probability}:</strong> ${data.probability.toFixed(
+              1
+            )}%<br>
                    <strong>${translations[currentLang].riskLevel}:</strong> ${riskLevel}`,
-            baseClass: 'result', 
+            baseClass: 'result',
             riskClass: riskClass
           };
         } else {
+          // Show server or validation error
           resultEl.textContent = data.message || translations[currentLang].serverError;
-          resultEl.classList.add('warning'); resultEl.classList.remove('hidden');
+          resultEl.classList.add('warning');
+          resultEl.classList.remove('hidden');
         }
       } catch (error) {
-        console.error("Error calculating coma risk:", error);
+        console.error('Error calculating coma risk:', error);
         resultEl.textContent = translations[currentLang].serverError;
-        resultEl.classList.add('warning'); resultEl.classList.remove('hidden');
+        resultEl.classList.add('warning');
+        resultEl.classList.remove('hidden');
       } finally {
+        // Remove loading spinner
         setButtonLoading(calculateButton, false);
       }
     }
 
-    async function calculateStrokeRisk() { 
+    /**
+     * Calculate stroke risk by sending age, GFAP, and SBP to backend.
+     * Displays a disclaimer modal before showing result.
+     */
+    async function calculateStrokeRisk() {
       const ageInput = document.getElementById('ageInput');
       const gfapStrokeInput = document.getElementById('gfapStrokeInput');
       const sbpInput = document.getElementById('sbpInput');
       const resultEl = document.getElementById('strokeResult');
       const calculateButton = document.getElementById('calculateStrokeButton');
 
-      if(!resultEl) return;
+      if (!resultEl) return;
       const age = parseInt(ageInput?.value);
       const gfap = parseFloat(gfapStrokeInput?.value);
       const sbp = parseFloat(sbpInput?.value);
 
-      resultEl.classList.add('hidden'); resultEl.className = 'result hidden';
+      // Hide previous result
+      resultEl.classList.add('hidden');
+      resultEl.className = 'result hidden';
 
+      // Validate age
       if (isNaN(age) || age < 18 || age > 120) {
         resultEl.textContent = translations[currentLang].invalidAge;
-        resultEl.classList.add('warning'); resultEl.classList.remove('hidden'); if(ageInput) ageInput.focus(); return;
+        resultEl.classList.add('warning');
+        resultEl.classList.remove('hidden');
+        if (ageInput) ageInput.focus();
+        return;
       }
-      if (isNaN(gfap) || gfap < 29 || gfap > 10001) { 
-        resultEl.textContent = translations[currentLang].invalidGFAP.replace('0 and 50000', '29 and 10001');
-        resultEl.classList.add('warning'); resultEl.classList.remove('hidden'); if(gfapStrokeInput) gfapStrokeInput.focus(); return;
+      // Validate GFAP
+      if (isNaN(gfap) || gfap < 29 || gfap > 10001) {
+        resultEl.textContent = translations[currentLang].invalidGFAP.replace(
+          '0 and 50000',
+          '29 and 10001'
+        );
+        resultEl.classList.add('warning');
+        resultEl.classList.remove('hidden');
+        if (gfapStrokeInput) gfapStrokeInput.focus();
+        return;
       }
-      if (isNaN(sbp) || sbp < 50 || sbp > 250) { 
+      // Validate SBP
+      if (isNaN(sbp) || sbp < 50 || sbp > 250) {
         resultEl.textContent = translations[currentLang].sbpError.replace('50-300', '50-250');
-        resultEl.classList.add('warning'); resultEl.classList.remove('hidden'); if(sbpInput) sbpInput.focus(); return;
+        resultEl.classList.add('warning');
+        resultEl.classList.remove('hidden');
+        if (sbpInput) sbpInput.focus();
+        return;
       }
-      
+
+      // Show loading spinner
       setButtonLoading(calculateButton, true);
       try {
+        // Send stroke parameters to API
         const response = await fetch(STROKE_CALCULATOR_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1355,271 +1686,340 @@
         });
         const data = await response.json();
         if (response.ok && data.success) {
+          // Show disclaimer before revealing result
           showDisclaimer();
-          
-          // UPDATED: New risk stratification
+
+          // Determine risk level and CSS class
           const { riskLevel, riskClass } = updateRiskStratification(data.probability);
-          
+
+          // Store pendingResult to display after disclaimer
           pendingResult = {
             element: resultEl,
-            html: `<strong>${translations[currentLang].probability}:</strong> ${data.probability.toFixed(1)}%<br>
+            html: `<strong>${translations[currentLang].probability}:</strong> ${data.probability.toFixed(
+              1
+            )}%<br>
                    <strong>${translations[currentLang].riskLevel}:</strong> ${riskLevel}`,
-            baseClass: 'result', 
+            baseClass: 'result',
             riskClass: riskClass
           };
         } else {
+          // Show server or validation error
           resultEl.textContent = data.message || translations[currentLang].serverError;
-          resultEl.classList.add('warning'); resultEl.classList.remove('hidden');
+          resultEl.classList.add('warning');
+          resultEl.classList.remove('hidden');
         }
       } catch (error) {
-        console.error("Error calculating stroke risk:", error);
+        console.error('Error calculating stroke risk:', error);
         resultEl.textContent = translations[currentLang].serverError;
-        resultEl.classList.add('warning'); resultEl.classList.remove('hidden');
+        resultEl.classList.add('warning');
+        resultEl.classList.remove('hidden');
       } finally {
+        // Remove loading spinner
         setButtonLoading(calculateButton, false);
       }
     }
 
+    /**
+     * Calculate advanced stroke risk by sending all parameters to backend.
+     * Validates inputs, shows errors inline, displays disclaimer before result.
+     */
     async function calculateAdvancedStrokeRisk() {
-        const resultEl = document.getElementById('advancedStrokeResult');
-        const errorEl = document.getElementById('advancedStrokeError');
-        const calculateButton = document.getElementById('calculateAdvancedStrokeButton');
-        
-        if(!resultEl || !errorEl || !calculateButton) {
-            console.error("Advanced stroke module elements not found.");
-            return;
+      const resultEl = document.getElementById('advancedStrokeResult');
+      const errorEl = document.getElementById('advancedStrokeError');
+      const calculateButton = document.getElementById('calculateAdvancedStrokeButton');
+
+      if (!resultEl || !errorEl || !calculateButton) {
+        console.error('Advanced stroke module elements not found.');
+        return;
+      }
+
+      // Hide previous result and error
+      resultEl.classList.add('hidden');
+      resultEl.className = 'result hidden';
+      errorEl.classList.add('hidden');
+
+      // Remove previous input-error classes
+      document.querySelectorAll('.input-error').forEach((el) => {
+        el.classList.remove('input-error');
+      });
+
+      // Parse input values
+      const age = parseInt(document.getElementById('advAgeInput')?.value);
+      const gfap = parseFloat(document.getElementById('advGfapInput')?.value);
+      const sbp = parseFloat(document.getElementById('advSbpInput')?.value);
+      const dbp = parseFloat(document.getElementById('advDbpInput')?.value);
+      const fastEd = parseInt(document.getElementById('advFastEdInput')?.value);
+      const raceScore = parseInt(document.getElementById('advRaceScoreInput')?.value);
+
+      // Convert symptom checkboxes to binary values (1 or 0)
+      const eyeDeviation = document.getElementById('advEyeDeviationFlippedInput')?.checked ? 1 : 0;
+      const armParese = document.getElementById('advArmPareseFlippedInput')?.checked ? 1 : 0;
+      const beinParese = document.getElementById('advBeinPareseFlippedInput')?.checked ? 1 : 0;
+      const vigilanzminderung = document.getElementById('advVigilanzminderungInput')?.checked ? 1 : 0;
+      const afib = document.getElementById('advAfibInput')?.checked ? 1 : 0;
+      const headache = document.getElementById('advHeadacheInput')?.checked ? 1 : 0;
+      const noak = document.getElementById('advNoakInput')?.checked ? 1 : 0;
+      const antiplatelets = document.getElementById('advAntiplateletsInput')?.checked ? 1 : 0;
+
+      // Define validation rules for advanced inputs
+      const fieldsToValidate = [
+        { id: 'advAgeInput', condition: isNaN(age) || age < 18 || age > 120, error: translations[currentLang].invalidAge },
+        { id: 'advGfapInput', condition: isNaN(gfap) || gfap < 0 || gfap > 50000, error: translations[currentLang].invalidGFAP },
+        { id: 'advSbpInput', condition: isNaN(sbp) || sbp < 50 || sbp > 300, error: translations[currentLang].sbpError },
+        { id: 'advDbpInput', condition: isNaN(dbp) || dbp < 30 || dbp > 200, error: translations[currentLang].dbpError },
+        { id: 'advFastEdInput', condition: isNaN(fastEd) || fastEd < 0 || fastEd > 9, error: translations[currentLang].fastEdError },
+        { id: 'advRaceScoreInput', condition: isNaN(raceScore) || raceScore < 0 || raceScore > 9, error: translations[currentLang].raceScoreError }
+      ];
+
+      // Collect error messages and highlight invalid fields
+      let errorMessages = [];
+      fieldsToValidate.forEach((field) => {
+        if (field.condition) {
+          errorMessages.push(field.error);
+          const inputEl = document.getElementById(field.id);
+          if (inputEl) inputEl.classList.add('input-error');
         }
+      });
 
-        resultEl.classList.add('hidden');
-        resultEl.className = 'result hidden';
-        errorEl.classList.add('hidden');
+      // If any errors exist, show them and abort
+      if (errorMessages.length > 0) {
+        errorEl.innerHTML = errorMessages.join('<br>');
+        errorEl.classList.remove('hidden');
+        return;
+      }
 
-        // Reset previous errors
-        document.querySelectorAll('.input-error').forEach(el => {
-            el.classList.remove('input-error');
+      // Show loading spinner
+      setButtonLoading(calculateButton, true);
+
+      // Build input features for backend request
+      const inputFeatures = {
+        'Age (years)': age,
+        'FAST ED Score': fastEd,
+        'RACE Score': raceScore,
+        'Eye Deviation Flipped(1ja/0Nein)': eyeDeviation,
+        'Armparese Flipped(1ja/0Nein)': armParese,
+        'Beinparese Flipped(Ja1/0Nein)': beinParese,
+        'Vigilanzminderung (1Ja/0Nein)': vigilanzminderung,
+        'Atrial Fibrillation bekannt(Ja1/Nein0)': afib,
+        'Headache(Ja1/Nein0)': headache,
+        'Systolic BP': sbp,
+        'Diastolic BP': dbp,
+        'Antcoagulated-NOAK(Ja1/Nein0)': noak,
+        'Antiplatelets(ja1/Nein0)': antiplatelets,
+        'GFAP value': gfap
+      };
+
+      try {
+        // Send advanced stroke data to API
+        const response = await fetch(ADVANCED_STROKE_CALCULATOR_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(inputFeatures)
         });
+        const data = await response.json();
 
-        const age = parseInt(document.getElementById('advAgeInput')?.value);
-        const gfap = parseFloat(document.getElementById('advGfapInput')?.value);
-        const sbp = parseFloat(document.getElementById('advSbpInput')?.value);
-        const dbp = parseFloat(document.getElementById('advDbpInput')?.value);
-        const fastEd = parseInt(document.getElementById('advFastEdInput')?.value); 
-        const raceScore = parseInt(document.getElementById('advRaceScoreInput')?.value);
+        if (response.ok && data.success) {
+          // Show disclaimer before displaying result
+          showDisclaimer();
 
-        const eyeDeviation = document.getElementById('advEyeDeviationFlippedInput')?.checked ? 1 : 0;
-        const armParese = document.getElementById('advArmPareseFlippedInput')?.checked ? 1 : 0;
-        const beinParese = document.getElementById('advBeinPareseFlippedInput')?.checked ? 1 : 0;
-        const vigilanzminderung = document.getElementById('advVigilanzminderungInput')?.checked ? 1 : 0;
-        const afib = document.getElementById('advAfibInput')?.checked ? 1 : 0;
-        const headache = document.getElementById('advHeadacheInput')?.checked ? 1 : 0;
-        const noak = document.getElementById('advNoakInput')?.checked ? 1 : 0;
-        const antiplatelets = document.getElementById('advAntiplateletsInput')?.checked ? 1 : 0;
+          // Determine risk level and CSS class
+          const { riskLevel, riskClass } = updateRiskStratification(data.probability);
+          let riskLevelDisplay = translations[currentLang][riskLevel] || riskLevel;
 
-        // Define validation rules
-        const fieldsToValidate = [
-            {id: 'advAgeInput', condition: isNaN(age) || age < 18 || age > 120, error: translations[currentLang].invalidAge},
-            {id: 'advGfapInput', condition: isNaN(gfap) || gfap < 0 || gfap > 50000, error: translations[currentLang].invalidGFAP},
-            {id: 'advSbpInput', condition: isNaN(sbp) || sbp < 50 || sbp > 300, error: translations[currentLang].sbpError},
-            {id: 'advDbpInput', condition: isNaN(dbp) || dbp < 30 || dbp > 200, error: translations[currentLang].dbpError},
-            {id: 'advFastEdInput', condition: isNaN(fastEd) || fastEd < 0 || fastEd > 9, error: translations[currentLang].fastEdError},
-            {id: 'advRaceScoreInput', condition: isNaN(raceScore) || raceScore < 0 || raceScore > 9, error: translations[currentLang].raceScoreError}
-        ];
-
-        let errorMessages = [];
-        fieldsToValidate.forEach(field => {
-            if (field.condition) {
-                errorMessages.push(field.error);
-                const inputEl = document.getElementById(field.id);
-                if (inputEl) inputEl.classList.add('input-error');
-            }
-        });
-
-        if (errorMessages.length > 0) {
-            errorEl.innerHTML = errorMessages.join('<br>'); 
-            errorEl.classList.remove('hidden');
-            return;
+          // Store pending result for after disclaimer
+          pendingResult = {
+            element: resultEl,
+            html: `<strong>${translations[currentLang].probability}:</strong> ${
+              data.probability !== undefined ? data.probability.toFixed(1) : 'N/A'
+            }%<br>
+                   <strong>${translations[currentLang].riskLevel}:</strong> <span class="${riskClass}">${riskLevelDisplay}</span>`,
+            baseClass: 'result',
+            riskClass: riskClass
+          };
+        } else {
+          // Show server or validation error
+          errorEl.textContent = data.message || translations[currentLang].serverError;
+          errorEl.classList.remove('hidden');
         }
-        
-        setButtonLoading(calculateButton, true);
-
-        const inputFeatures = {
-            'Age (years)': age,
-            'FAST ED Score': fastEd,
-            'RACE Score': raceScore,
-            'Eye Deviation Flipped(1ja/0Nein)': eyeDeviation,
-            'Armparese Flipped(1ja/0Nein)': armParese,
-            'Beinparese Flipped(Ja1/0Nein)': beinParese,
-            'Vigilanzminderung (1Ja/0Nein)': vigilanzminderung,
-            'Atrial Fibrillation bekannt(Ja1/Nein0)': afib,
-            'Headache(Ja1/Nein0)': headache,
-            'Systolic BP': sbp,
-            'Diastolic BP': dbp,
-            'Antcoagulated-NOAK(Ja1/Nein0)': noak,
-            'Antiplatelets(ja1/Nein0)': antiplatelets,
-            'GFAP value': gfap
-        };
-
-        try {
-            const response = await fetch(ADVANCED_STROKE_CALCULATOR_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(inputFeatures)
-            });
-            const data = await response.json();
-
-            if (response.ok && data.success) {
-                showDisclaimer();
-                
-                // UPDATED: New risk stratification
-                const { riskLevel, riskClass } = updateRiskStratification(data.probability);
-                let riskLevelDisplay = translations[currentLang][riskLevel] || riskLevel;
-                
-                // Removed model performance metrics
-                pendingResult = {
-                    element: resultEl,
-                    html: `<strong>${translations[currentLang].probability}:</strong> ${data.probability !== undefined ? data.probability.toFixed(1) : 'N/A'}%<br>
-                           <strong>${translations[currentLang].riskLevel}:</strong> <span class="${riskClass}">${riskLevelDisplay}</span>`,
-                    baseClass: 'result',
-                    riskClass: riskClass
-                };
-            } else {
-                errorEl.textContent = data.message || translations[currentLang].serverError;
-                errorEl.classList.remove('hidden');
-            }
-        } catch (error) {
-            console.error("Error calculating advanced stroke risk:", error);
-            errorEl.textContent = translations[currentLang].serverError;
-            errorEl.classList.remove('hidden');
-        } finally {
-            setButtonLoading(calculateButton, false);
-        }
+      } catch (error) {
+        console.error('Error calculating advanced stroke risk:', error);
+        errorEl.textContent = translations[currentLang].serverError;
+        errorEl.classList.remove('hidden');
+      } finally {
+        // Remove loading spinner
+        setButtonLoading(calculateButton, false);
+      }
     }
 
-    // Initialize app
-    document.addEventListener('DOMContentLoaded', function() {
-      // NEW: Check authentication state on load
+    /**
+     * Initialization after DOM loads:
+     * - Check authentication state
+     * - Set current year in footer
+     * - Set focus on access code input
+     * - Initialize dark mode state
+     * - Set preferred language
+     * - Setup interactive score calculators
+     * - Register service worker
+     * - Attach event listeners
+     */
+    document.addEventListener('DOMContentLoaded', function () {
+      // Check if already authenticated, otherwise show code entry
       if (sessionStorage.getItem('isAuthenticated') === 'true') {
         navigateToModuleSelection();
       } else {
         showSection('codeEntrySection');
       }
 
-      if(document.getElementById('currentYear')) {
+      // Update footer year
+      if (document.getElementById('currentYear')) {
         document.getElementById('currentYear').textContent = new Date().getFullYear();
       }
-      
-      const accessCodeInput = document.getElementById('accessCodeInput');
-      if(accessCodeInput) accessCodeInput.focus();
 
+      // Focus on access code input
+      const accessCodeInput = document.getElementById('accessCodeInput');
+      if (accessCodeInput) accessCodeInput.focus();
+
+      // Initialize dark mode based on localStorage
       const darkModeToggleSpan = document.getElementById('darkModeToggle')?.querySelector('span');
       if (localStorage.getItem('darkMode') === 'enabled') {
-          document.body.classList.add('dark-mode');
-          if(darkModeToggleSpan) darkModeToggleSpan.textContent = '☀️';
+        document.body.classList.add('dark-mode');
+        if (darkModeToggleSpan) darkModeToggleSpan.textContent = '☀️';
       } else {
-          if(darkModeToggleSpan) darkModeToggleSpan.textContent = '🌙';
+        if (darkModeToggleSpan) darkModeToggleSpan.textContent = '🌙';
       }
+      // Set preferred language from localStorage (default English)
       const preferredLang = localStorage.getItem('language') || 'en';
-      switchLanguage(preferredLang); 
+      switchLanguage(preferredLang);
 
-      // Setup for Interactive Score Calculators
+      // Configuration for FAST ED interactive score calculator
       const fastEdComponentConfig = [
-          {id: 'fastEdFacialPalsy', type: 'checkbox', points: 1}, 
-          {id: 'fastEdArmWeakness', type: 'select'}, 
-          {id: 'fastEdSpeechChanges', type: 'select'},
-          {id: 'fastEdEyeDeviation', type: 'select'},
-          {id: 'fastEdDenialNeglect', type: 'select'}
+        { id: 'fastEdFacialPalsy', type: 'checkbox', points: 1 },
+        { id: 'fastEdArmWeakness', type: 'select' },
+        { id: 'fastEdSpeechChanges', type: 'select' },
+        { id: 'fastEdEyeDeviation', type: 'select' },
+        { id: 'fastEdDenialNeglect', type: 'select' }
       ];
-      updateFastEdScore = setupInteractiveScore( 
-          'toggleFastEdBtn', 
-          'fastEdComponentsContainer', 
-          'advFastEdScoreDisplay', 
-          'advFastEdInput', 
-          fastEdComponentConfig
+      // Initialize FAST ED score calculator logic
+      updateFastEdScore = setupInteractiveScore(
+        'toggleFastEdBtn',
+        'fastEdComponentsContainer',
+        'advFastEdScoreDisplay',
+        'advFastEdInput',
+        fastEdComponentConfig
       );
 
+      // Configuration for RACE interactive score calculator
       const raceComponentConfig = [
-          {id: 'raceFacialPalsy', type: 'select'},
-          {id: 'raceArmMotor', type: 'select'},
-          {id: 'raceLegMotor', type: 'select'},
-          {id: 'raceGazeDeviation', type: 'checkbox', points: 1}, 
-          {id: 'raceAphasiaAgnosia', type: 'select'}
+        { id: 'raceFacialPalsy', type: 'select' },
+        { id: 'raceArmMotor', type: 'select' },
+        { id: 'raceLegMotor', type: 'select' },
+        { id: 'raceGazeDeviation', type: 'checkbox', points: 1 },
+        { id: 'raceAphasiaAgnosia', type: 'select' }
       ];
-      updateRaceScore = setupInteractiveScore( 
-          'toggleRaceBtn',
-          'raceComponentsContainer',
-          'advRaceScoreDisplay',
-          'advRaceScoreInput',
-          raceComponentConfig
+      // Initialize RACE score calculator logic
+      updateRaceScore = setupInteractiveScore(
+        'toggleRaceBtn',
+        'raceComponentsContainer',
+        'advRaceScoreDisplay',
+        'advRaceScoreInput',
+        raceComponentConfig
       );
 
-      // Initial sync of symptoms
+      // Perform initial symptom synchronization
       syncSymptomsFromScores();
 
-      // Service Worker Registration
+      // Service worker registration for offline capabilities
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js')
+          navigator.serviceWorker
+            .register('./sw.js')
             .then((reg) => console.log('Service Worker registered with scope:', reg.scope))
             .catch((err) => console.error('Service Worker registration failed:', err));
         });
       }
 
-      // Event Listeners
+      // Event listeners for access code validation and Enter key press
       document.getElementById('accessCodeButton')?.addEventListener('click', validateAccessCode);
-      document.getElementById('accessCodeInput')?.addEventListener('keypress', e => { if (e.key === 'Enter') validateAccessCode(); });
-      
+      document.getElementById('accessCodeInput')?.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') validateAccessCode();
+      });
+
+      // Event listeners to switch to coma and stroke modules
       document.getElementById('comaModuleButton')?.addEventListener('click', startComaModule);
-      document.getElementById('strokeModuleButton')?.addEventListener('click', startStandardStrokeModule); 
-      document.getElementById('switchToAdvancedStrokeButton')?.addEventListener('click', startAdvancedStrokeModuleFromStandard); 
-      
+      document.getElementById('strokeModuleButton')?.addEventListener('click', startStandardStrokeModule);
+      document
+        .getElementById('switchToAdvancedStrokeButton')
+        ?.addEventListener('click', startAdvancedStrokeModuleFromStandard);
+
+      // Event listener for stroke prerequisites validation
       document.getElementById('proceedButton')?.addEventListener('click', validatePrerequisites);
-      
+
+      // Event listeners for coma risk calculation and Enter key press on GFAP input
       document.getElementById('calculateComaButton')?.addEventListener('click', calculateComaRisk);
-      document.getElementById('gfapComaInput')?.addEventListener('keypress', e => { if (e.key === 'Enter') calculateComaRisk(); });
-      
-      document.getElementById('calculateStrokeButton')?.addEventListener('click', calculateStrokeRisk);
-      ['ageInput', 'gfapStrokeInput', 'sbpInput'].forEach(id => {
-        const el = document.getElementById(id);
-        if(el) el.addEventListener('keypress', e => { if (e.key === 'Enter') calculateStrokeRisk(); });
+      document.getElementById('gfapComaInput')?.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') calculateComaRisk();
       });
 
-      document.getElementById('calculateAdvancedStrokeButton')?.addEventListener('click', calculateAdvancedStrokeRisk);
-      ['advAgeInput', 'advGfapInput', 'advSbpInput', 'advDbpInput'].forEach(id => {
+      // Event listeners for stroke risk calculation and Enter key presses on inputs
+      document
+        .getElementById('calculateStrokeButton')
+        ?.addEventListener('click', calculateStrokeRisk);
+      ['ageInput', 'gfapStrokeInput', 'sbpInput'].forEach((id) => {
         const el = document.getElementById(id);
-        if(el) el.addEventListener('keypress', e => { if (e.key === 'Enter') calculateAdvancedStrokeRisk(); });
+        if (el) el.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') calculateStrokeRisk();
+        });
       });
 
+      // Event listeners for advanced stroke calculation and Enter key presses on inputs
+      document
+        .getElementById('calculateAdvancedStrokeButton')
+        ?.addEventListener('click', calculateAdvancedStrokeRisk);
+      ['advAgeInput', 'advGfapInput', 'advSbpInput', 'advDbpInput'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') calculateAdvancedStrokeRisk();
+        });
+      });
+
+      // Dark mode toggle behavior
       const darkModeButton = document.getElementById('darkModeToggle');
-      darkModeButton?.addEventListener('click', function() {
+      darkModeButton?.addEventListener('click', function () {
         document.body.classList.toggle('dark-mode');
         const texts = translations[currentLang];
         const iconSpan = darkModeButton.querySelector('span');
         if (document.body.classList.contains('dark-mode')) {
-          if(iconSpan) iconSpan.textContent = '☀️';
+          if (iconSpan) iconSpan.textContent = '☀️';
           darkModeButton.setAttribute('aria-label', texts.darkModeToggleLabelOn);
           localStorage.setItem('darkMode', 'enabled');
         } else {
-          if(iconSpan) iconSpan.textContent = '🌙';
+          if (iconSpan) iconSpan.textContent = '🌙';
           darkModeButton.setAttribute('aria-label', texts.darkModeToggleLabelOff);
           localStorage.setItem('darkMode', 'disabled');
         }
       });
-      
-      document.getElementById('disclaimerConfirmButton')?.addEventListener('click', function() {
-        closeDisclaimer();
-        if (pendingResult) {
-          pendingResult.element.innerHTML = pendingResult.html;
-          pendingResult.element.className = `${pendingResult.baseClass}`; 
-          pendingResult.element.classList.remove('hidden');
-          
-          // Apply risk class to result element for coma and stroke modules
-          if (pendingResult.element.id === 'comaResult' || pendingResult.element.id === 'strokeResult') {
+
+      // Confirm disclaimer: close modal and show pending result
+      document
+        .getElementById('disclaimerConfirmButton')
+        ?.addEventListener('click', function () {
+          closeDisclaimer();
+          if (pendingResult) {
+            pendingResult.element.innerHTML = pendingResult.html;
+            pendingResult.element.className = `${pendingResult.baseClass}`;
+            pendingResult.element.classList.remove('hidden');
+
+            // Apply risk class to coma and stroke result elements
+            if (
+              pendingResult.element.id === 'comaResult' ||
+              pendingResult.element.id === 'strokeResult'
+            ) {
               pendingResult.element.classList.add(pendingResult.riskClass);
+            }
+
+            pendingResult = null;
           }
-          
-          pendingResult = null;
-        }
-      });
+        });
     });
   </script>
 </body>
