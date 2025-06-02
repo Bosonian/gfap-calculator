@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>iGFAP Check - Mark 4 (XGBoost Update)</title>
+  <title>iGFAP Check - Mark 5 (XGBoost Update)</title>
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#007bff" />
   <style>
@@ -519,7 +519,7 @@
     <div class="result hidden" id="comaResult" aria-live="polite"></div>
   </section>
 
-  <!-- Stroke Prerequisite Section (fourth checkbox removed) -->
+  <!-- Stroke Prerequisite Section (three checkboxes) -->
   <section id="strokePrerequisiteSection" class="container hidden">
     <h2 id="strokePrerequisiteTitle" data-translate="strokePrerequisiteTitle">
       Prerequisites for Stroke Risk Calculation
@@ -821,7 +821,7 @@
 
     // IMPORTANT: Update this URL to your NEW XGBoost Cloud Function URL after deployment
     const ADVANCED_STROKE_CALCULATOR_URL =
-      'https://europe-west3-igfap-452720.cloudfunctions.net/calculate-advanced-stroke-risk-xgb';
+      "https://europe-west3-igfap-452720.cloudfunctions.net/calculate-advanced-stroke-risk-xgb";
 
     // Translation dictionaries for English and German
     const translations = {
@@ -1086,7 +1086,7 @@
         ["gfapStrokeLabel", "gfapLabel"],
         ["sbpLabel", "sbpLabel"],
         ["calculateStrokeButton", "calculateButton"],
-        ["switchToAdvancedStrokeButtonText", "switchToAdvancedStrokeButton"],
+        ["switchToAdvancedStrokeButton", "switchToAdvancedStrokeButton"],
         ["strokeModuleBackButton", "backButton"],
         ["advancedStrokeModuleTitle", "advancedStrokeModuleTitle"],
         ["advAgeLabel", "advAgeLabel"],
@@ -1534,7 +1534,7 @@
             if (comp.type === "checkbox") {
               if (element.checked) currentScore += parseInt(comp.points || element.dataset.points || 0);
             } else if (comp.type === "select") {
-              currentScore += parseInt(element.value);
+              currentScore += parseInt(element.value, 10);
             }
           }
         });
@@ -1628,7 +1628,7 @@
       const calculateButton = document.getElementById("calculateStrokeButton");
       if (!ageInput || !gfapStrokeInput || !sbpInput || !resultEl || !calculateButton) return;
 
-      const age = parseInt(ageInput.value);
+      const age = parseInt(ageInput.value, 10);
       const gfap = parseFloat(gfapStrokeInput.value);
       const sbp = parseFloat(sbpInput.value);
       resultEl.className = "result hidden"; // Reset classes
@@ -1695,6 +1695,7 @@
 
     /**
      * Calculate advanced stroke risk.
+     * Builds a payload whose keys exactly match what main.py expects.
      */
     async function calculateAdvancedStrokeRisk() {
       const resultEl = document.getElementById("advancedStrokeResult");
@@ -1710,11 +1711,11 @@
       document.querySelectorAll(".input-error").forEach((el) => el.classList.remove("input-error"));
 
       // Read fields
-      const age = parseInt(document.getElementById("advAgeInput")?.value);
+      const age = parseInt(document.getElementById("advAgeInput")?.value, 10);
       const gfap = parseFloat(document.getElementById("advGfapInput")?.value);
       const sbp = parseFloat(document.getElementById("advSbpInput")?.value);
       const dbp = parseFloat(document.getElementById("advDbpInput")?.value);
-      const fastEd = parseInt(document.getElementById("advFastEdInput")?.value);
+      const fastEd = parseInt(document.getElementById("advFastEdInput")?.value, 10);
 
       // Checkboxes
       const eyeDeviation = document.getElementById("advEyeDeviationFlippedInput")?.checked ? 1 : 0;
@@ -1772,40 +1773,39 @@
       setButtonLoading(calculateButton, true);
 
       // Payload keys exactly as expected by your Cloud Function
-      const inputFeatures = {
-        age: age,
-        fast_ed_score: fastEd,
-        eye_deviation: eyeDeviation,
-        arm_parese: armParese,
-        bein_parese: beinParese,
-        vigilanzminderung: vigilanzminderung,
-        atrial_fibrillation: afib,
-        headache: headache,
-        noak: noak,
-        antiplatelets: antiplatelets,
-        sbp: sbp,
-        dbp: dbp,
-        gfap_value: gfap,
+      const payload = {
+        "Age (years)": age,
+        "FAST ED Score": fastEd,
+        "Eye Deviation Flipped(1ja/0Nein)": eyeDeviation,
+        "Armparese Flipped(1ja/0Nein)": armParese,
+        "Beinparese Flipped(Ja1/0Nein)": beinParese,
+        "Vigilanzminderung (1Ja/0Nein)": vigilanzminderung,
+        "Atrial Fibrillation bekannt(Ja1/Nein0)": afib,
+        "Headache(Ja1/Nein0)": headache,
+        "Systolic BP": sbp,
+        "Diastolic BP": dbp,
+        "Antcoagulated-NOAK(Ja1/Nein0)": noak,
+        "Antiplatelets(ja1/Nein0)": antiplatelets,
+        "GFAP value": gfap,
       };
 
       try {
         const response = await fetch(ADVANCED_STROKE_CALCULATOR_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(inputFeatures),
+          body: JSON.stringify(payload),
         });
         const data = await response.json();
         if (response.ok && data.success) {
           showDisclaimer();
           const { riskLevel, riskClass } = updateRiskStratification(data.probability);
-          let riskLevelDisplay = translations[currentLang][riskLevel] || riskLevel;
           pendingResult = {
             element: resultEl,
             html:
               `<strong>${translations[currentLang].probability}:</strong> ${
                 data.probability !== undefined ? data.probability.toFixed(1) : "N/A"
               }%<br>
-              <strong>${translations[currentLang].riskLevel}:</strong> <span class="${riskClass}">${riskLevelDisplay}</span>`,
+              <strong>${translations[currentLang].riskLevel}:</strong> <span class="${riskClass}">${riskLevel}</span>`,
             baseClass: "result",
             riskClass: riskClass,
           };
