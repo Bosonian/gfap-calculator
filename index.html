@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>iGFAP Check – Modular (Mark 6)</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#007bff" />
+</head>
+<body>
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="header-left">
+      <h1 id="appTitle" data-translate="appTitle">iGFAP Check</h1>
+    </div>
+    <div class="header-right">
+      <div class="language-switcher">
+        <button onclick="switchLanguage('en')" aria-label="Switch to English" title="Switch to English">
+          <img src="assets/flags/gb.svg" alt="English" />
+        </button>
+        <button onclick="switchLanguage('de')" aria-label="Switch to German" title="Switch to German">
+          <img src="assets/flags/de.svg" alt="Deutsch" />
+        </button>
+      </div>
+      <button id="darkModeToggle" aria-label="Toggle dark mode"><span>🌙</span></button>
+      <button class="home-button" id="homeButton" data-translate="homeButton" onclick="navigateToModuleSelection()">
+        <span>🏠 Home</span>
+      </button>
+    </div>
+  </header>
+  
+  <!-- Back to top button -->
+  <button id="backToTop" title="Back to top">⬆️</button>
+  
+  <!-- Debug info (bottom-left corner) -->
+  <div class="debug-info" id="debugInfo"></div>
+
+  <!-- 1) Access Code Entry Section -->
+  <section id="codeEntrySection" class="container">
+    <p id="codePrompt" data-translate="codePrompt">🔑 Please enter your access code:</p>
+    <div class="input-group">
+      <input
+        type="password"
+        id="accessCodeInput"
+        placeholder=""
+        data-translate-placeholder="accessCodePlaceholder"
+      />
+    </div>
+    <button class="primary" id="accessCodeButton" data-translate="accessCodeButton">
+      <span>Submit</span>
+    </button>
+    <p id="accessError" class="hidden" data-is-server-error="false"></p>
+  </section>
+
+  <!-- 2) Module Selection Section -->
+  <section id="moduleSelectionSection" class="container hidden">
+    <h2 id="moduleSelectionTitle" data-translate="moduleSelectionTitle">Check probability for:</h2>
+    <button class="primary" id="comaModuleButton" data-translate="comaModuleButton">
+      <span>Intracranial hemorrhage in comatose patients (GCS 3-8)</span>
+    </button>
+    <button class="primary" id="strokeModuleButton" data-translate="strokeModuleButton">
+      <span>Intracerebral hemorrhage in patients with stroke symptoms</span>
+    </button>
+  </section>
+
+  <!-- 3) Coma Module Section -->
+  <section id="comaModuleSection" class="container hidden">
+    <h2 id="comaModuleTitle" data-translate="comaModuleTitle">
+      Intracranial hemorrhage in comatose patients (GCS 3-8)
+    </h2>
+    <div class="input-group">
+      <label for="gfapComaInput" id="gfapComaLabel" data-translate="gfapLabel">GFAP Value (pg/mL)</label>
+      <input type="number" id="gfapComaInput" min="29" max="10001" placeholder="" />
+    </div>
+    <button class="primary" id="calculateComaButton" data-translate="calculateButton">
+      <span>Calculate Probability</span>
+    </button>
+    <button class="secondary" id="comaBackButton" data-translate="backButton" onclick="navigateToModuleSelection()">
+      <span>⬅️ Back</span>
+    </button>
+    <div class="result hidden" id="comaResult" aria-live="polite"></div>
+  </section>
+
+  <!-- 4) Intracerebral Hemorrhage → Model Choice -->
+  <section id="strokeChoiceSection" class="container hidden">
+    <h2 data-translate="strokeChoiceTitle">Choose Model Pathway</h2>
+    <button class="primary" id="standardModelButton" data-translate="standardModelButton">
+      <span>Standard Model (3 inputs)</span>
+    </button>
+    <button class="primary" id="advancedModelButton" data-translate="advancedModelButton">
+      <span>Advanced Model</span>
+    </button>
+    <button class="secondary" id="strokeBackButton" data-translate="backButton">
+      <span>⬅️ Back</span>
+    </button>
+  </section>
+
+  <!-- 5) Standard Model Prerequisites -->
+  <section id="standardPrerequisitesSection" class="container hidden">
+    <h2 data-translate="standardPrereqTitle">Standard Model Prerequisites</h2>
+    <div class="checkbox-group">
+      <input type="checkbox" id="stdPrereq1" />
+      <label for="stdPrereq1" data-translate="prereq1">Confirmed time window < 6 hours</label>
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="stdPrereq2" />
+      <label for="stdPrereq2" data-translate="prereq2">No prior neurological deficits</label>
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="stdPrereq3" />
+      <label for="stdPrereq3" data-translate="prereq3">No identifiable head trauma</label>
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="stdPrereq4" />
+      <label for="stdPrereq4" data-translate="prereq4">FAST ED Score ≥ 3</label>
+    </div>
+    <button class="primary" id="standardNextButton" data-translate="nextButton">
+      <span>Next</span>
+    </button>
+    <button class="secondary" id="standardBackButton" data-translate="backButton">
+      <span>⬅️ Back</span>
+    </button>
+    <p id="standardPrereqError" class="error hidden"></p>
+  </section>
+
+  <!-- 6) Standard Model Input Form (3 inputs) -->
+  <section id="standardStrokeModuleSection" class="container hidden">
+    <h2 data-translate="standardStrokeTitle">Intracerebral Hemorrhage (Standard)</h2>
+    <div class="input-group">
+      <label for="stdAgeInput" data-translate="ageLabel">Patient Age (Years)</label>
+      <input type="number" id="stdAgeInput" min="18" max="120" />
+    </div>
+    <div class="input-group">
+      <label for="stdGfapInput" data-translate="gfapLabel">GFAP Value (pg/mL)</label>
+      <input type="number" id="stdGfapInput" min="29" max="10001" />
+    </div>
+    <div class="input-group">
+      <label for="stdSbpInput" data-translate="sbpLabel">Systolic BP (mmHg)</label>
+      <input type="number" id="stdSbpInput" min="50" max="250" />
+    </div>
+    <button class="primary" id="calculateStandardButton" data-translate="calculateButton">
+      <span>Calculate Probability</span>
+    </button>
+    <button class="secondary" id="stdBackButton" data-translate="backButton">
+      <span>⬅️ Back</span>
+    </button>
+    <div class="result hidden" id="standardResult" aria-live="polite"></div>
+    <p id="standardError" class="error hidden"></p>
+  </section>
+
+  <!-- 7) Advanced Model Prerequisites -->
+  <section id="advancedPrerequisitesSection" class="container hidden">
+    <h2 data-translate="advancedPrereqTitle">Advanced Model Prerequisites</h2>
+    <div class="checkbox-group">
+      <input type="checkbox" id="advPrereq1" />
+      <label for="advPrereq1" data-translate="prereq1">Confirmed time window < 6 hours</label>
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="advPrereq2" />
+      <label for="advPrereq2" data-translate="prereq2">No prior neurological deficits</label>
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="advPrereq3" />
+      <label for="advPrereq3" data-translate="prereq3">No identifiable head trauma</label>
+    </div>
+    <button class="primary" id="advancedNextButton" data-translate="nextButton">
+      <span>Next</span>
+    </button>
+    <button class="secondary" id="advancedBackButton" data-translate="backButton">
+      <span>⬅️ Back</span>
+    </button>
+    <p id="advancedPrereqError" class="error hidden"></p>
+  </section>
+
+  <!-- 8) Advanced Model Version Choice -->
+  <section id="advancedChoiceSection" class="container hidden">
+    <h2 data-translate="advancedChoiceTitle">Advanced Model Versions</h2>
+    <button class="primary" id="rapidVersionButton" data-translate="rapidVersionButton">
+      <span>Schnell / Rapid (5 inputs)</span>
+    </button>
+    <button class="primary" id="maxVersionButton" data-translate="maxVersionButton">
+      <span>Max (13 inputs)</span>
+    </button>
+    <button class="secondary" id="advChoiceBackButton" data-translate="backButton">
+      <span>⬅️ Back</span>
+    </button>
+  </section>
+
+  <!-- 9) Rapid Version Input Form (5 inputs) -->
+  <section id="rapidModuleSection" class="container hidden">
+    <h2 data-translate="rapidTitle">Rapid Model (Schnell)</h2>
+    <div class="input-group">
+      <label for="rapAgeInput" data-translate="ageLabel">Patient Age (Years)</label>
+      <input type="number" id="rapAgeInput" min="18" max="120" />
+    </div>
+    <div class="input-group">
+      <label for="rapFastEdInput" data-translate="fastEdLabel">FAST ED Score</label>
+      <input type="number" id="rapFastEdInput" min="0" max="9" />
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="rapHeadacheInput" />
+      <label for="rapHeadacheInput" data-translate="headacheLabel">Headache ✅</label>
+    </div>
+    <div class="input-group">
+      <label for="rapSbpInput" data-translate="sbpLabel">Systolic BP (mmHg)</label>
+      <input type="number" id="rapSbpInput" min="50" max="250" />
+    </div>
+    <div class="input-group">
+      <label for="rapGfapInput" data-translate="gfapLabel">GFAP Value (pg/mL)</label>
+      <input type="number" id="rapGfapInput" min="29" max="10001" />
+    </div>
+    <button class="primary" id="calculateRapidButton" data-translate="calculateButton">
+      <span>Calculate Probability</span>
+    </button>
+    <button class="secondary" id="rapidBackButton" data-translate="backButton">
+      <span>⬅️ Back</span>
+    </button>
+    <div class="result hidden" id="rapidResult" aria-live="polite"></div>
+    <p id="rapidError" class="error hidden"></p>
+  </section>
+
+  <!-- 10) Max Version Input Form (13 inputs) -->
+  <section id="maxModuleSection" class="container hidden">
+    <h2 data-translate="maxTitle">Max Model (13 inputs)</h2>
+
+    <div class="input-group">
+      <label for="maxAgeInput" data-translate="ageLabel">Patient Age (Years)</label>
+      <input type="number" id="maxAgeInput" min="18" max="120" />
+    </div>
+    <div class="input-group">
+      <label for="maxGfapInput" data-translate="gfapLabel">GFAP Value (pg/mL)</label>
+      <input type="number" id="maxGfapInput" min="0" max="50000" />
+    </div>
+    <div class="input-group">
+      <label for="maxSbpInput" data-translate="sbpLabel">Systolic BP (mmHg)</label>
+      <input type="number" id="maxSbpInput" min="50" max="300" />
+    </div>
+    <div class="input-group">
+      <label for="maxDbpInput" data-translate="dbpLabel">Diastolic BP (mmHg)</label>
+      <input type="number" id="maxDbpInput" min="30" max="200" />
+    </div>
+
+    <!-- FAST-ED Score Calculator for Max -->
+    <div class="input-group score-calculator-group">
+      <div class="score-header">
+        <label id="maxFastEdDisplayLabel" data-translate="advFastEdDisplayLabel">FAST ED Score:</label>
+        <span id="maxFastEdScoreDisplay" class="score-value-display">0</span>
+        <button
+          type="button"
+          class="calculate-score-btn"
+          id="maxToggleFastEdBtn"
+          aria-expanded="false"
+          aria-controls="fastEdComponentsContainerMax"
+        >
+          <span id="maxToggleFastEdBtnText" data-translate="toggleFastEdBtnTextCalculate">Calculate/Edit</span>
+        </button>
+        <input type="hidden" id="maxFastEdInput" name="maxFastEdInput" value="0" />
+      </div>
+      <div id="fastEdComponentsContainerMax" class="score-components hidden">
+        <p id="fastEdInfoTextMax" data-translate="fastEdInfoText">Select present findings for FAST ED:</p>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="maxFastEdFacialPalsy" data-points="1" />
+          <label for="maxFastEdFacialPalsy" data-translate="fastEdFacialPalsyLabel">
+            Facial Palsy (Partial/Complete)
+          </label>
+        </div>
+        <div class="input-group">
+          <label for="maxFastEdArmWeakness" data-translate="fastEdArmWeaknessLabel">Arm Weakness</label>
+          <select id="maxFastEdArmWeakness" class="score-select">
+            <option value="0" data-translate="fastEdArm0Label">0 – No drift</option>
+            <option value="1" data-translate="fastEdArm1Label">1 – Drifts down</option>
+            <option value="2" data-translate="fastEdArm2Label">2 – No effort / Falls</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label for="maxFastEdSpeechChanges" data-translate="fastEdSpeechChangesLabel">Speech Changes</label>
+          <select id="maxFastEdSpeechChanges" class="score-select">
+            <option value="0" data-translate="fastEdSpeech0Label">0 – Normal</option>
+            <option value="1" data-translate="fastEdSpeech1Label">1 – Mild/Moderate</option>
+            <option value="2" data-translate="fastEdSpeech2Label">2 – Severe/Mute</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label for="maxFastEdEyeDeviation" data-translate="fastEdEyeDeviationLabel">Eye Deviation</label>
+          <select id="maxFastEdEyeDeviation" class="score-select">
+            <option value="0" data-translate="fastEdEye0Label">0 – Absent</option>
+            <option value="1" data-translate="fastEdEye1Label">1 – Partial</option>
+            <option value="2" data-translate="fastEdEye2Label">2 – Forced Deviation</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label for="maxFastEdDenialNeglect" data-translate="fastEdDenialNeglectLabel">Denial/Neglect</label>
+          <select id="maxFastEdDenialNeglect" class="score-select">
+            <option value="0" data-translate="fastEdDenial0Label">0 – Absent</option>
+            <option value="1" data-translate="fastEdDenial1Label">1 – Mild (Extinction)</option>
+            <option value="2" data-translate="fastEdDenial2Label">2 – Severe (Unawareness)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Additional Symptoms & History (8 checkboxes) -->
+    <p
+      id="maxAdditionalSymptomsLabel"
+      style="font-weight: bold; margin-top: 20px; margin-bottom: 5px;"
+      data-translate="advAdditionalSymptomsLabel"
+    >
+      Additional Symptoms & History (Check if Present/Yes):
+    </p>
+    <div class="checkbox-group">
+      <input type="checkbox" id="maxEyeDeviationInput" />
+      <label for="maxEyeDeviationInput" data-translate="advEyeDeviationFlippedLabel">
+        Eye Deviation (Symptom)
+      </label>
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="maxArmParesisInput" />
+      <label for="maxArmParesisInput" data-translate="advArmPareseFlippedLabel">
+        Arm Paresis (Symptom)
+      </label>
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="maxLegParesisInput" />
+      <label for="maxLegParesisInput" data-translate="advBeinPareseFlippedLabel">
+        Leg Paresis (Symptom)
+      </label>
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="maxVigilanceInput" />
+      <label for="maxVigilanceInput" data-translate="advVigilanzminderungLabel">
+        Altered Sensorium
+      </label>
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="maxAfibInput" />
+      <label for="maxAfibInput" data-translate="advAfibLabel">
+        Known Atrial Fibrillation
+      </label>
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="maxHeadacheInput" />
+      <label for="maxHeadacheInput" data-translate="advHeadacheLabel">
+        Headache
+      </label>
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="maxNoakInput" />
+      <label for="maxNoakInput" data-translate="advNoakLabel">
+        On Anticoagulants (NOAK)
+      </label>
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="maxAntiplateletsInput" />
+      <label for="maxAntiplateletsInput" data-translate="advAntiplateletsLabel">
+        On Antiplatelets
+      </label>
+    </div>
+
+    <button class="primary" id="calculateMaxButton" data-translate="calculateAdvancedStrokeButton">
+      <span>Calculate Probability</span>
+    </button>
+    <button class="secondary" id="maxBackButton" data-translate="backButton">
+      <span>⬅️ Back</span>
+    </button>
+    <div class="result hidden" id="maxResult" aria-live="polite"></div>
+    <p id="maxError" class="error hidden"></p>
+  </section>
+
+  <!-- Footer -->
+  <footer style="text-align:center; margin-top:20px; padding-bottom: 20px;">
+    <p>© <span id="currentYear"></span> iGFAP. All rights reserved.</p>
+  </footer>
+
+  <!-- Disclaimer Modal -->
+  <div id="disclaimerModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="disclaimerModalTitleText">
+    <div class="modal-content">
+      <p id="disclaimerModalTitleText" class="disclaimer-text" data-translate="disclaimer">
+        The calculations are for research purposes only, do not make clinical decisions based on it.
+      </p>
+      <button class="primary" id="disclaimerConfirmButton" data-translate="confirmButton">
+        <span>Confirm</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Load our modular JS (in this order) -->
+  <script type="module" src="js/translations.js"></script>
+  <script type="module" src="js/helpers.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
