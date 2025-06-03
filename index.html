@@ -2,12 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>iGFAP Check – Modular (Mark 6)</title>
+  <title>iGFAP Check</title>
+
+  <!-- Link to your external CSS file -->
   <link rel="stylesheet" href="styles.css" />
+
+  <!-- PWA Web App Manifest -->
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#007bff" />
+
+  <!-- App Icons for PWA Home Screen -->
+  <link rel="icon" href="icon-192.png" sizes="192x192" type="image/png" />
+  <link rel="icon" href="icon-512.png" sizes="512x512" type="image/png" />
 </head>
+
 <body>
   <!-- App Header -->
   <header class="app-header">
@@ -17,10 +27,10 @@
     <div class="header-right">
       <div class="language-switcher">
         <button onclick="switchLanguage('en')" aria-label="Switch to English" title="Switch to English">
-          <img src="assets/flags/gb.svg" alt="English" />
+          <img src="https://flagcdn.com/gb.svg" alt="English" />
         </button>
         <button onclick="switchLanguage('de')" aria-label="Switch to German" title="Switch to German">
-          <img src="assets/flags/de.svg" alt="Deutsch" />
+          <img src="https://flagcdn.com/de.svg" alt="Deutsch" />
         </button>
       </div>
       <button id="darkModeToggle" aria-label="Toggle dark mode"><span>🌙</span></button>
@@ -29,14 +39,14 @@
       </button>
     </div>
   </header>
-  
+
   <!-- Back to top button -->
   <button id="backToTop" title="Back to top">⬆️</button>
-  
-  <!-- Debug info (bottom-left corner) -->
+
+  <!-- Debug info -->
   <div class="debug-info" id="debugInfo"></div>
 
-  <!-- 1) Access Code Entry Section -->
+  <!-- Access Code Entry Section -->
   <section id="codeEntrySection" class="container">
     <p id="codePrompt" data-translate="codePrompt">🔑 Please enter your access code:</p>
     <div class="input-group">
@@ -53,7 +63,7 @@
     <p id="accessError" class="hidden" data-is-server-error="false"></p>
   </section>
 
-  <!-- 2) Module Selection Section -->
+  <!-- Module Selection Section -->
   <section id="moduleSelectionSection" class="container hidden">
     <h2 id="moduleSelectionTitle" data-translate="moduleSelectionTitle">Check probability for:</h2>
     <button class="primary" id="comaModuleButton" data-translate="comaModuleButton">
@@ -64,7 +74,7 @@
     </button>
   </section>
 
-  <!-- 3) Coma Module Section -->
+  <!-- Coma Module Section -->
   <section id="comaModuleSection" class="container hidden">
     <h2 id="comaModuleTitle" data-translate="comaModuleTitle">
       Intracranial hemorrhage in comatose patients (GCS 3-8)
@@ -82,7 +92,7 @@
     <div class="result hidden" id="comaResult" aria-live="polite"></div>
   </section>
 
-  <!-- 4) Intracerebral Hemorrhage → Model Choice -->
+  <!-- Intracerebral Hemorrhage Module Choice -->
   <section id="strokeChoiceSection" class="container hidden">
     <h2 data-translate="strokeChoiceTitle">Choose Model Pathway</h2>
     <button class="primary" id="standardModelButton" data-translate="standardModelButton">
@@ -96,12 +106,12 @@
     </button>
   </section>
 
-  <!-- 5) Standard Model Prerequisites -->
+  <!-- Standard Model Prerequisites -->
   <section id="standardPrerequisitesSection" class="container hidden">
     <h2 data-translate="standardPrereqTitle">Standard Model Prerequisites</h2>
     <div class="checkbox-group">
       <input type="checkbox" id="stdPrereq1" />
-      <label for="stdPrereq1" data-translate="prereq1">Confirmed time window < 6 hours</label>
+      <label for="stdPrereq1" data-translate="prereq1">Confirmed time window &lt; 6 hours</label>
     </div>
     <div class="checkbox-group">
       <input type="checkbox" id="stdPrereq2" />
@@ -124,7 +134,7 @@
     <p id="standardPrereqError" class="error hidden"></p>
   </section>
 
-  <!-- 6) Standard Model Input Form (3 inputs) -->
+  <!-- Standard Model Input Form (3 inputs) -->
   <section id="standardStrokeModuleSection" class="container hidden">
     <h2 data-translate="standardStrokeTitle">Intracerebral Hemorrhage (Standard)</h2>
     <div class="input-group">
@@ -149,12 +159,12 @@
     <p id="standardError" class="error hidden"></p>
   </section>
 
-  <!-- 7) Advanced Model Prerequisites -->
+  <!-- Advanced Model Prerequisites -->
   <section id="advancedPrerequisitesSection" class="container hidden">
     <h2 data-translate="advancedPrereqTitle">Advanced Model Prerequisites</h2>
     <div class="checkbox-group">
       <input type="checkbox" id="advPrereq1" />
-      <label for="advPrereq1" data-translate="prereq1">Confirmed time window < 6 hours</label>
+      <label for="advPrereq1" data-translate="prereq1">Confirmed time window &lt; 6 hours</label>
     </div>
     <div class="checkbox-group">
       <input type="checkbox" id="advPrereq2" />
@@ -173,11 +183,11 @@
     <p id="advancedPrereqError" class="error hidden"></p>
   </section>
 
-  <!-- 8) Advanced Model Version Choice -->
+  <!-- Advanced Model Version Choice -->
   <section id="advancedChoiceSection" class="container hidden">
     <h2 data-translate="advancedChoiceTitle">Advanced Model Versions</h2>
     <button class="primary" id="rapidVersionButton" data-translate="rapidVersionButton">
-      <span>Schnell / Rapid (5 inputs)</span>
+      <span>Schnell ⁄ Rapid (5 inputs)</span>
     </button>
     <button class="primary" id="maxVersionButton" data-translate="maxVersionButton">
       <span>Max (13 inputs)</span>
@@ -187,7 +197,7 @@
     </button>
   </section>
 
-  <!-- 9) Rapid Version Input Form (5 inputs) -->
+  <!-- Rapid Version Input Form (5 inputs) -->
   <section id="rapidModuleSection" class="container hidden">
     <h2 data-translate="rapidTitle">Rapid Model (Schnell)</h2>
     <div class="input-group">
@@ -220,7 +230,7 @@
     <p id="rapidError" class="error hidden"></p>
   </section>
 
-  <!-- 10) Max Version Input Form (13 inputs) -->
+  <!-- Max Version Input Form (13 inputs) -->
   <section id="maxModuleSection" class="container hidden">
     <h2 data-translate="maxTitle">Max Model (13 inputs)</h2>
 
@@ -246,114 +256,106 @@
       <div class="score-header">
         <label id="maxFastEdDisplayLabel" data-translate="advFastEdDisplayLabel">FAST ED Score:</label>
         <span id="maxFastEdScoreDisplay" class="score-value-display">0</span>
-        <button
-          type="button"
-          class="calculate-score-btn"
-          id="maxToggleFastEdBtn"
-          aria-expanded="false"
-          aria-controls="fastEdComponentsContainerMax"
-        >
+        <button type="button" class="calculate-score-btn" id="maxToggleFastEdBtn" aria-expanded="false" aria-controls="fastEdComponentsContainerMax">
           <span id="maxToggleFastEdBtnText" data-translate="toggleFastEdBtnTextCalculate">Calculate/Edit</span>
         </button>
         <input type="hidden" id="maxFastEdInput" name="maxFastEdInput" value="0" />
       </div>
       <div id="fastEdComponentsContainerMax" class="score-components hidden">
-        <p id="fastEdInfoTextMax" data-translate="fastEdInfoText">Select present findings for FAST ED:</p>
+        <p id="fastEdInfoTextMax" style="font-size: 0.9em; margin-bottom: 5px;" data-translate="fastEdInfoText">
+          Select present findings for FAST ED:
+        </p>
 
         <div class="checkbox-group">
           <input type="checkbox" id="maxFastEdFacialPalsy" data-points="1" />
-          <label for="maxFastEdFacialPalsy" data-translate="fastEdFacialPalsyLabel">
+          <label for="maxFastEdFacialPalsy" id="fastEdFacialPalsyLabelMax" data-translate="fastEdFacialPalsyLabel">
             Facial Palsy (Partial/Complete)
           </label>
         </div>
         <div class="input-group">
-          <label for="maxFastEdArmWeakness" data-translate="fastEdArmWeaknessLabel">Arm Weakness</label>
+          <label for="maxFastEdArmWeakness" id="fastEdArmWeaknessLabelMax" data-translate="fastEdArmWeaknessLabel">Arm Weakness</label>
           <select id="maxFastEdArmWeakness" class="score-select">
-            <option value="0" data-translate="fastEdArm0Label">0 – No drift</option>
-            <option value="1" data-translate="fastEdArm1Label">1 – Drifts down</option>
-            <option value="2" data-translate="fastEdArm2Label">2 – No effort / Falls</option>
+            <option value="0" id="fastEdArm0LabelMax" data-translate="fastEdArm0Label">0 – No drift</option>
+            <option value="1" id="fastEdArm1LabelMax" data-translate="fastEdArm1Label">1 – Drifts down</option>
+            <option value="2" id="fastEdArm2LabelMax" data-translate="fastEdArm2Label">2 – No effort / Falls</option>
           </select>
         </div>
         <div class="input-group">
-          <label for="maxFastEdSpeechChanges" data-translate="fastEdSpeechChangesLabel">Speech Changes</label>
+          <label for="maxFastEdSpeechChanges" id="fastEdSpeechChangesLabelMax" data-translate="fastEdSpeechChangesLabel">Speech Changes</label>
           <select id="maxFastEdSpeechChanges" class="score-select">
-            <option value="0" data-translate="fastEdSpeech0Label">0 – Normal</option>
-            <option value="1" data-translate="fastEdSpeech1Label">1 – Mild/Moderate</option>
-            <option value="2" data-translate="fastEdSpeech2Label">2 – Severe/Mute</option>
+            <option value="0" id="fastEdSpeech0LabelMax" data-translate="fastEdSpeech0Label">0 – Normal</option>
+            <option value="1" id="fastEdSpeech1LabelMax" data-translate="fastEdSpeech1Label">1 – Mild/Moderate</option>
+            <option value="2" id="fastEdSpeech2LabelMax" data-translate="fastEdSpeech2Label">2 – Severe/Mute</option>
           </select>
         </div>
         <div class="input-group">
-          <label for="maxFastEdEyeDeviation" data-translate="fastEdEyeDeviationLabel">Eye Deviation</label>
+          <label for="maxFastEdEyeDeviation" id="fastEdEyeDeviationLabelMax" data-translate="fastEdEyeDeviationLabel">Eye Deviation</label>
           <select id="maxFastEdEyeDeviation" class="score-select">
-            <option value="0" data-translate="fastEdEye0Label">0 – Absent</option>
-            <option value="1" data-translate="fastEdEye1Label">1 – Partial</option>
-            <option value="2" data-translate="fastEdEye2Label">2 – Forced Deviation</option>
+            <option value="0" id="fastEdEye0LabelMax" data-translate="fastEdEye0Label">0 – Absent</option>
+            <option value="1" id="fastEdEye1LabelMax" data-translate="fastEdEye1Label">1 – Partial</option>
+            <option value="2" id="fastEdEye2LabelMax" data-translate="fastEdEye2Label">2 – Forced Deviation</option>
           </select>
         </div>
         <div class="input-group">
-          <label for="maxFastEdDenialNeglect" data-translate="fastEdDenialNeglectLabel">Denial/Neglect</label>
+          <label for="maxFastEdDenialNeglect" id="fastEdDenialNeglectLabelMax" data-translate="fastEdDenialNeglectLabel">Denial/Neglect</label>
           <select id="maxFastEdDenialNeglect" class="score-select">
-            <option value="0" data-translate="fastEdDenial0Label">0 – Absent</option>
-            <option value="1" data-translate="fastEdDenial1Label">1 – Mild (Extinction)</option>
-            <option value="2" data-translate="fastEdDenial2Label">2 – Severe (Unawareness)</option>
+            <option value="0" id="fastEdDenial0LabelMax" data-translate="fastEdDenial0Label">0 – Absent</option>
+            <option value="1" id="fastEdDenial1LabelMax" data-translate="fastEdDenial1Label">1 – Mild (Extinction)</option>
+            <option value="2" id="fastEdDenial2LabelMax" data-translate="fastEdDenial2Label">2 – Severe (Unawareness)</option>
           </select>
         </div>
       </div>
     </div>
 
-    <!-- Additional Symptoms & History (8 checkboxes) -->
-    <p
-      id="maxAdditionalSymptomsLabel"
-      style="font-weight: bold; margin-top: 20px; margin-bottom: 5px;"
-      data-translate="advAdditionalSymptomsLabel"
-    >
+    <!-- Additional Symptoms & History -->
+    <p style="font-weight: bold; margin-top: 20px; margin-bottom: 5px;" id="maxAdditionalSymptomsLabel" data-translate="advAdditionalSymptomsLabel">
       Additional Symptoms & History (Check if Present/Yes):
     </p>
     <div class="checkbox-group">
       <input type="checkbox" id="maxEyeDeviationInput" />
-      <label for="maxEyeDeviationInput" data-translate="advEyeDeviationFlippedLabel">
+      <label for="maxEyeDeviationInput" id="advEyeDeviationFlippedLabelMax" data-translate="advEyeDeviationFlippedLabel">
         Eye Deviation (Symptom)
       </label>
     </div>
     <div class="checkbox-group">
       <input type="checkbox" id="maxArmParesisInput" />
-      <label for="maxArmParesisInput" data-translate="advArmPareseFlippedLabel">
+      <label for="maxArmParesisInput" id="advArmPareseFlippedLabelMax" data-translate="advArmPareseFlippedLabel">
         Arm Paresis (Symptom)
       </label>
     </div>
     <div class="checkbox-group">
       <input type="checkbox" id="maxLegParesisInput" />
-      <label for="maxLegParesisInput" data-translate="advBeinPareseFlippedLabel">
+      <label for="maxLegParesisInput" id="advBeinPareseFlippedLabelMax" data-translate="advBeinPareseFlippedLabel">
         Leg Paresis (Symptom)
       </label>
     </div>
     <div class="checkbox-group">
       <input type="checkbox" id="maxVigilanceInput" />
-      <label for="maxVigilanceInput" data-translate="advVigilanzminderungLabel">
+      <label for="maxVigilanceInput" id="advVigilanzminderungLabelMax" data-translate="advVigilanzminderungLabel">
         Altered Sensorium
       </label>
     </div>
     <div class="checkbox-group">
       <input type="checkbox" id="maxAfibInput" />
-      <label for="maxAfibInput" data-translate="advAfibLabel">
+      <label for="maxAfibInput" id="advAfibLabelMax" data-translate="advAfibLabel">
         Known Atrial Fibrillation
       </label>
     </div>
     <div class="checkbox-group">
       <input type="checkbox" id="maxHeadacheInput" />
-      <label for="maxHeadacheInput" data-translate="advHeadacheLabel">
+      <label for="maxHeadacheInput" id="advHeadacheLabelMax" data-translate="advHeadacheLabel">
         Headache
       </label>
     </div>
     <div class="checkbox-group">
       <input type="checkbox" id="maxNoakInput" />
-      <label for="maxNoakInput" data-translate="advNoakLabel">
+      <label for="maxNoakInput" id="advNoakLabelMax" data-translate="advNoakLabel">
         On Anticoagulants (NOAK)
       </label>
     </div>
     <div class="checkbox-group">
       <input type="checkbox" id="maxAntiplateletsInput" />
-      <label for="maxAntiplateletsInput" data-translate="advAntiplateletsLabel">
+      <label for="maxAntiplateletsInput" id="advAntiplateletsLabelMax" data-translate="advAntiplateletsLabel">
         On Antiplatelets
       </label>
     </div>
@@ -385,9 +387,25 @@
     </div>
   </div>
 
-  <!-- Load our modular JS (in this order) -->
-  <script type="module" src="js/translations.js"></script>
-  <script type="module" src="js/helpers.js"></script>
-  <script type="module" src="js/app.js"></script>
+  <!-- 1) Translation dictionary (must load first) -->
+  <script src="translations.js"></script>
+
+  <!-- 2) Main application logic (UI flow, event listeners, API calls) -->
+  <script src="main.js"></script>
+
+  <!-- 3) Optional: any bootstrap or additional logic in app.js -->
+  <!-- <script src="app.js"></script> -->
+
+  <!-- 4) Service worker registration (sw.js must be adjacent to index.html) -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker
+          .register("./sw.js")
+          .then((reg) => console.log("Service Worker registered:", reg.scope))
+          .catch((err) => console.error("SW registration failed:", err));
+      });
+    }
+  </script>
 </body>
 </html>
