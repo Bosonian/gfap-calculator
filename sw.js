@@ -1,7 +1,7 @@
 // sw.js
 
 // Choose a cache name, include a version number for easy updates
-const CACHE_NAME = 'igfap-cache-v20'; 
+const CACHE_NAME = 'igfap-cache-v21'; 
 
 // List of URLs to cache when the service worker is installed.
 // For your app, since everything is in index.html, this is the main file.
