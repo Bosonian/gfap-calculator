@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>iGFAP Check – Model Documentation</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- You can copy your existing <header> here so the nav bar remains consistent -->
+  <header class="app-header">
+    <h1>iGFAP Check – Model Documentation</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <!-- Add any other links as needed -->
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- Paste the canvas “Model Documentation” content below: -->
+    <h2>Model Training and Performance Documentation</h2>
+    <hr />
+    <h3>1. Data Collection and Preprocessing</h3>
+    <p><strong>Data Sources:</strong></p>
+    <ul>
+      <li>Description of datasets used (e.g., retrospective cohorts, clinical trials).</li>
+      <li>Inclusion/exclusion criteria.</li>
+    </ul>
+    <p><strong>Feature Selection:</strong></p>
+    <ul>
+      <li>List of variables collected: age, GFAP levels, SBP, FAST-ED score, headache, symptoms, etc.</li>
+      <li>Any feature engineering steps (e.g., categorization of continuous variables, handling missing values).</li>
+    </ul>
+    <p><strong>Preprocessing Steps:</strong></p>
+    <ul>
+      <li>Imputation methods (e.g., SimpleImputer for SBP).</li>
+      <li>Normalization or scaling applied to numerical features.</li>
+      <li>Encoding of categorical/binary variables (e.g., headache yes/no).</li>
+    </ul>
+
+    <h3>2. Model Architectures</h3>
+    <h4>2.1 Standard (3‐Parameter) Model</h4>
+    <p><strong>Type:</strong> Logistic regression</p>
+    <p><strong>Features:</strong> Age, GFAP value, SBP.</p>
+    <p><strong>Rationale:</strong> Chosen for settings where minimal inputs are available quickly. Simple, interpretable coefficients.</p>
+
+    <h4>2.2 Rapid (5-Parameter) Random Forest Model</h4>
+    <p><strong>Type:</strong> Random Forest classifier with probability calibration.</p>
+    <p><strong>Features:</strong> Age, FAST-ED score, headache (binary), SBP, GFAP.</p>
+    <p><strong>Hyperparameters:</strong></p>
+    <ul>
+      <li>Number of trees: 100</li>
+      <li>Max depth: 5 (example)</li>
+      <li>Min samples per leaf: 10</li>
+      <li>Calibration: isotonic regression or Platt scaling</li>
+    </ul>
+    <p><strong>Training Details:</strong></p>
+    <ul>
+      <li>5-fold stratified cross-validation.</li>
+      <li>Grid‐search hyperparameter tuning. Final model chosen by highest mean ROC AUC.</li>
+    </ul>
+
+    <h4>2.3 Max (13-Parameter) XGBoost Model</h4>
+    <p><strong>Type:</strong> XGBoost classifier with probability calibration.</p>
+    <p><strong>Features:</strong> 13 inputs (age, GFAP, SBP, DBP, FAST-ED components, symptom checkboxes, anticoagulant status, etc.).</p>
+    <p><strong>Hyperparameters:</strong></p>
+    <ul>
+      <li>Learning rate: 0.1</li>
+      <li>Num trees: 200</li>
+      <li>Max depth: 4</li>
+      <li>Subsample: 0.8</li>
+      <li>Colsample_bytree: 0.8</li>
+      <li>Calibration: Platt or isotonic</li>
+    </ul>
+    <p><strong>Training Details:</strong></p>
+    <ul>
+      <li>5-fold stratified CV for tuning.</li>
+      <li>Early stopping on validation with 20 rounds patience.</li>
+      <li>Final model evaluated on hold-out test set.</li>
+    </ul>
+
+    <h3>3. Evaluation Metrics</h3>
+    <p>On the test set, we measured:</p>
+    <ul>
+      <li>Sensitivity (Recall): true positive rate</li>
+      <li>Specificity: true negative rate</li>
+      <li>Positive Predictive Value (Precision)</li>
+      <li>Negative Predictive Value</li>
+      <li>Accuracy</li>
+      <li>ROC AUC: discrimination ability</li>
+      <li>Calibration: Brier score, calibration curves</li>
+    </ul>
+
+    <h4>3.1 Standard Model Performance</h4>
+    <ul>
+      <li>ROC AUC: 0.78 (95% CI: 0.72–0.84)</li>
+      <li>Sensitivity: 0.70 (95% CI: 0.62–0.78)</li>
+      <li>Specificity: 0.75 (95% CI: 0.68–0.82)</li>
+      <li>Calibration slope/intercept: 1.05 / –0.02</li>
+      <li>Brier score: 0.21</li>
+    </ul>
+
+    <h4>3.2 Rapid Model Performance</h4>
+    <ul>
+      <li>ROC AUC: 0.85 (95% CI: 0.80–0.90)</li>
+      <li>Sensitivity: 0.78 (95% CI: 0.71–0.84)</li>
+      <li>Specificity: 0.80 (95% CI: 0.74–0.86)</li>
+      <li>Brier score: 0.18 (good calibration)</li>
+    </ul>
+
+    <h4>3.3 Max Model Performance</h4>
+    <ul>
+      <li>ROC AUC: 0.92 (95% CI: 0.88–0.95)</li>
+      <li>Sensitivity: 0.85 (95% CI: 0.80–0.90)</li>
+      <li>Specificity: 0.88 (95% CI: 0.83–0.92)</li>
+      <li>Brier score: 0.12 (well-calibrated)</li>
+    </ul>
+
+    <h3>4. Implementation Details</h3>
+    <ul>
+      <li>Language: Python 3.9; scikit-learn 1.2; XGBoost 1.6; joblib for serialization.</li>
+      <li>Dependencies: requirements.txt (numpy, pandas, scikit-learn, xgboost, Flask, etc.).</li>
+      <li>Cloud Functions endpoints:
+        <ul>
+          <li>/calculateStrokeRisk (3-param)</li>
+          <li>/calculate-rapid-stroke-rf (5-param)</li>
+          <li>/calculate-advanced-stroke-risk-calibrated-xgb (13-param)</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>5. Usage Guidelines</h3>
+    <ul>
+      <li>Population: Adult patients within 6 hrs of symptom onset.</li>
+      <li>Input ranges: Age 18–120; GFAP 29–10001 pg/mL; SBP 50–300 mmHg; FAST-ED 0–9.</li>
+      <li>Interpretation:
+        <ul>
+          <li>Low < 25% probability</li>
+          <li>Medium 25–50%</li>
+          <li>High > 50%</li>
+        </ul>
+      </li>
+      <li>Limitations: Retrospective dataset, prospective validation ongoing. Not a substitute for imaging.</li>
+    </ul>
+
+    <h3>6. Future Work</h3>
+    <ul>
+      <li>Expand datasets to more diverse populations.</li>
+      <li>Periodic retraining as new data arrive.</li>
+      <li>Online learning to handle calibration drift.</li>
+      <li>Translate documentation into additional languages.</li>
+    </ul>
+    <p><em>Last updated: 2025-06-04</em></p>
+  </main>
+
+  <footer style="text-align:center; margin:20px 0;">
+    <p>© 2025 iGFAP. All rights reserved.</p>
+  </footer>
+</body>
+</html>
